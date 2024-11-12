@@ -1,0 +1,263 @@
+CREATE TABLE movies(
+	movie_code INT PRIMARY KEY,
+	movie_name VARCHAR(100),
+    year INT,
+    rating ENUM('G','PG','PG-13','R','A'),
+    language VARCHAR(2),
+	genre_id INT
+);
+
+LOCK TABLES movies WRITE;
+/*!40000 ALTER TABLE movies DISABLE KEYS */;
+
+INSERT INTO movies VALUES
+(1000,'Top Gun',1986,'PG-13','en',1),
+(1001,'Avengers: Endgame',2019,'PG-13','en',1),
+(1002,'Blade Runner 2049',2017,'R','en',1),
+(2000,'Kingpin',1996,'PG-13','en',2),
+(2001,'Three Idiots',2009,'PG-13','hi',2),
+(2002,'The Intouchables',2001,'R','fr',2),
+(3000,'The Shining',1980,'R','en',3),
+(3001,'Train to Busan',2016,'R','ko',3),
+(3002,'Scream VI',2023,'R','en',3),
+(4000,'All Quiet on the Western Front',2022,'R','de',4),
+(4001,'Oppenheimer',2023,'R','en',4),
+(4002,'Heneral Luna',2015,'R','tl',4),
+(5000,'Star Wars: The Return of the Jedi',1983,'PG','en',5),
+(5001,'Star Wars: The Empire Strikes Back',1980,'PG','en',5),
+(5002,'Star Trek: The Motion Picture',1979,'PG','en',5),
+(6000,'Spirited Away',2001,'PG','ja',6),
+(6001,'The Lion King',1994,'G','en',6),
+(6002,'Shrek',2001,'PG','en',6),
+(6003,'Shrek 2',2004,'PG','en',6),
+(7000,'Titanic',1997,'PG-13','en',7),
+(7001,'Hello Love Goodbye',2019,'PG','tl',7),
+(7002,'Notting Hill',1999,'PG-13','en',7),
+(8000,'The Shawshank Redemption',1994,'R','en',8),
+(8001,'Parasite',2019,'R','ko',8),
+(8002,'Whiplash',2014,'R','en',8),
+(9000,'Mamma Mia!',2008,'PG-13','en',9),
+(9001,'La La Land',2016,'PG-13','en',9),
+(9002,'Rocketman',2019,'R','en',9),
+(1,'Disney Learning Adventures: Mickey’s Around the World in 80 Days',2005,'G','en',0),
+(2003,'Barbie',2023,'PG','en',2),
+(1003,'Deadpool 2',2024,'R','en',1),
+(NULL,'Black Panther',2018,'PG-13','en',1),
+(1005,NULL,2000,'R',NULL,1);
+
+/*!40000 ALTER TABLE movies ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+CREATE TABLE genre_type (
+	genre_id INT,
+    description text(65535)
+);
+LOCK TABLES genre_type WRITE;
+/*!40000 ALTER TABLE genre_type DISABLE KEYS */;
+INSERT INTO genre_type VALUES
+(0,'Other')
+,(1,'Action')
+,(2,'Comedy')
+,(3,'Horror')
+,(4,'Historical/Documentary')
+,(5,'Sci-Fi')
+,(6,'Fantasy/Animation')
+,(7,'Romance')
+,(8,'Drama/Thriller')
+,(9,'Musical')
+;
+/*!40000 ALTER TABLE genre_type ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+CREATE TABLE users(
+	user_no INT,
+	first_name VARCHAR (50),
+    last_name VARCHAR(50),
+    birthday VARCHAR(50),
+    password VARCHAR(50)
+);
+
+LOCK TABLES users WRITE;
+/*!40000 ALTER TABLE users DISABLE KEYS */;
+INSERT INTO users VALUES
+(0001,'Lebron','James','December 30,1984','S1rive4GRea1ness')
+,(0002,'King','Von','August 9,1994','SatansGr8testS01dIer')
+,(0003,'Jamar','Pittman','Febuary 21,1970','Wazp0Pswr0ng4ThIs')
+,(0004,'Kamala','Harris','October 20,1964','Kamala4Pres')
+,(0005,'Hailey','Welch','July 13,2002','HawkTuahSpitonThat1hang')
+,(0006,'Mikha','Lim','November 8,2003','1slangPantropiko')
+,(0007,'Freddie','Freeman', 'September 12,1989','LetsGoDoyers')
+,(0008,'Jason','Belmonte','July 29,1983','2HGoat4ever')
+,(NULL,'Kobe','Bryant','August 24,1978','Mamba4ever')
+,(0010,'','','Febuary 1,1999','password123')
+,(0011,'Donald','Trump',NULL,'');
+/*!40000 ALTER TABLE users ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+CREATE TABLE review(
+	review_no INT,
+    stars ENUM('1','2','3','4','5','6','7','8','9','10'),
+    review text(65535),
+    movie_code INT,
+    user_no INT
+);
+
+LOCK TABLES review WRITE;
+/*!40000 ALTER TABLE review DISABLE KEYS */;
+INSERT INTO review VALUES
+(0001,10,'Amazing Out of Body experience will recommend to everyone #GoatApproved',8000,0001)
+,(0002,8,'Extremely emotional with memorable scenes a must watch with friends family and significant other#JackWillLiveForever',7000,0001)
+,(0003,9,'Hay naku po nakakakilig sobra OMG very relatable especially sa mga OFW around da werld sana naman lahat ng tao makakahanap ng pagibig',7001,0006)
+,(0004,3,'Honestly pretty boring definetly aged bad and would not recommend anyone to watch it unless you wanna see scifi history',5002,0008)
+,(0005,7,'Love the movie they made this NIGGA Shrek a fucking tank like DAMNNN I would shot the nigga if I saw him tho good movie #InnocentTillGuilty',6002,0002)
+,(0006,5,'Average at best #SpitonThatThang',9002,0005)
+,(0007,9,'Absolute Cinema was really sad when Mufasa killed Simbas Dad dont worry my brothers revenge is certain #Pops',6001,0003)
+,(0008,10,'Nice will recommend to all',6001,NULL)
+,(0009,1,'I would not recommend this to my dog boring trash',1010,0007)
+,(0010,8,'',1000,0010);
+/*!40000 ALTER TABLE review ENABLE KEYS */;
+UNLOCK TABLES;
+
+CREATE TABLE movie_req(
+	request_number INT,
+    movie_name VARCHAR(100),
+    date_filed DATE,
+    user_no INT,
+    approved BIT,
+    in_stock BIT,
+    media_type VARCHAR(50)
+);
+
+LOCK TABLES movie_req WRITE;
+/*!40000 ALTER TABLE movie_req DISABLE KEYS */;
+INSERT INTO movie_req VALUES
+(0001, 'The SpongeBob Movie', '2024-01-01', 0001, 1, 0, 'DVD'),
+(0002, 'Deadpool 2', '2024-01-02', 0002, 1, 1, 'Online'),
+(0003, 'Star Wars: The Force Awakens', '2024-09-11', 0003, NULL, NULL, 'VHS'),
+(0004, '42', '2024-09-22', 0006, 1, 1, 'DVD'),
+(0005, 'Barbie', '2024-09-30', 0001, 1, 1, 'Online'),
+(0006, 'Terminator 2: Judgement Day', '2024-10-01', 0004, 0, 0, 'CD'),
+(0007, 'Kingpin', '2024-10-12', 0008, 0, 1, 'CD'),
+(0008, 'Notting Hill', '2024-10-24', 0003, 1, 1, 'DVD'),
+(0009, 'Sing', '2024-11-01', 0015, 1, 0, 'Online'),
+(0010, 'scdsfdsvdsdsf', NULL, 0001, NULL, NULL, '');
+/*!40000 ALTER TABLE movie_req ENABLE KEYS */;
+UNLOCK TABLES;
+
+CREATE TABLE transactions(
+	transaction_no INT,
+    movie_code INT,
+    date_borrowed DATE,
+    date_toreturn DATE,
+    date_returned DATE,
+    payment DECIMAL(6,2),
+    admin_no INT
+);
+
+LOCK TABLES transactions WRITE;
+/*!40000 ALTER TABLE transactions DISABLE KEYS */;
+INSERT INTO transactions VALUES
+(0001, 8000, '2024-01-01', '2024-01-08', '2024-01-08', 175.00, 0001),
+(0002, 7000, '2024-01-08', '2024-01-15', '2024-01-10', 50.00, 0001),
+(0003, 7001, '2024-02-25', '2024-03-25', '2024-03-26', 765.00, 0004),
+(0004, 5002, '2024-03-28', '2024-07-01', NULL, NULL, 0003),
+(0005, 6002, '2024-07-01', '2024-09-01', '2024-10-01', 1575.00, 0003),
+(0006, 9002, '2024-07-03', '2024-07-04', '2024-07-04', 20.00, 0002),
+(0007, 6001, '2024-08-01', '2024-08-24', '2024-08-24', 600.00, 0002),
+(0008, 3002, '2024-10-01', '2024-11-01', '2024-11-01', 500.00, 0001),
+(0009, 8001, '2024-10-15', '2024-10-30', '2024-11-07', 522.00, 0003),
+(0010, 4001, '2024-10-20', '2024-10-31', '2024-10-31', 220.00, 0002),
+(0011, 4001, '2024-11-01', '2024-11-30', NULL, NULL, 0005),
+(0012, 1020, '2024-11-02', '2024-11-03', '2024-11-03', 30.00, 0002),
+(0012, 1000, '2024-11-15', '2024-11-23', '2024-11-23', 35.00, 0005),
+(0013, 1000, NULL, NULL, NULL, NULL, NULL);
+/*!40000 ALTER TABLE transactions ENABLE KEYS */;
+UNLOCK TABLES;
+
+CREATE TABLE admins(
+ admin_no INT,
+first_name VARCHAR(50),
+last_name VARCHAR(50),
+password VARCHAR(50),
+admin_level INT
+);
+
+LOCK TABLES admins WRITE;
+/*!40000 ALTER TABLE admins DISABLE KEYS */;
+INSERT INTO admins VALUES
+
+(0001,'John','Smith','Admin1p@ssw0rd*',1),
+(0002,'Meghan','Dela Cruz','Admin2p@ssw0rd*',1),
+(0003,'Robert','Harris','St0reManager1p@ssw0rd*',2),
+(0004,'Tashuan','Stevenson','St0reManager2p@ssw0rd*',2),
+(0005,'James','Washington','3xecu1iVeV1cep@ssword*',3),
+(0006,'Lauren','Cole','Pr3s1d3Ntp@ssw0rd*',4);
+/*!40000 ALTER TABLE admins ENABLE KEYS */;
+UNLOCK TABLES;
+
+CREATE TABLE media_type(
+	product_id INT,
+    movie_code INT,
+    availability BIT,
+    release_date YEAR,
+    media_type VARCHAR(50),
+    copies_available INT,
+    rental_price DECIMAL(4,2)
+);
+
+SELECT *
+FROM media_type;
+LOCK TABLES media_type WRITE;
+/*!40000 ALTER TABLE media_type DISABLE KEYS */;
+INSERT INTO media_type VALUES
+
+(0001,1000,1,1986,'VHS',1,35.00),
+(0001,3000,1,1980,'VHS',1,35.00),
+(0001,5002,1,1979,'VHS',1,65.00),
+(0001,5000,1,1983,'VHS',1,35.00),
+(0001,5001,1,1980,'VHS',1,35.00),
+(0002,1000,1,1986,'CD',1,30.00),
+(0002,2000,1,1996,'CD',1,30.00),
+(0002,6001,1,1994,'CD',2,30.00),
+(0002,8000,1,1994,'CD',1,25.00),
+(0003,7000,1,1997,'DVD',2,25.00),
+(0003,2002,1,2001,'DVD',1,30.00),
+(0003,6000,1,2001,'DVD',1,25.00),
+(0003,7002,1,2001,'DVD',2,25.00),
+(0003,7001,1,2019,'DVD',1,25.00),
+(0003,8000,1,1994,'DVD',1,25.00),
+(0003,6002,1,2001,'DVD',2,25.00),
+(0003,8000,1,2004,'DVD',2,25.00),
+(0003,0001,1,2005,'DVD',1,40.00),
+(0004,2001,1,2009,'Blu-Ray',1,30.00),
+(0004,3001,1,2016,'Blu-Ray',2,20.00),
+(0004,4002,1,2015,'Blu-Ray',1,20.00),
+(0004,8002,1,2014,'Blu-Ray',1,20.00),
+(0004,9000,1,2008,'Blu-Ray',1,20.00),
+(0004,9001,1,2016,'Blu-Ray',1,20.00),
+(0004,9002,1,2019,'Blu-Ray',1,20.00),
+(0004,1001,1,2019,'Blu-Ray',3,20.00),
+(0004,1002,1,2017,'Blu-Ray',2,20.00),
+(0004,8001,1,2019,'Blu-Ray',1,30.00),
+(0005,2001,1,2009,'Online',1,20.00),
+(0005,3001,1,2016,'Online',1,20.00),
+(0005,4002,1,2015,'Online',1,20.00),
+(0005,8002,1,2014,'Online',1,20.00),
+(0005,9000,1,2008,'Online',1,20.00),
+(0005,9001,1,2016,'Online',1,20.00),
+(0005,9002,1,2019,'Online',1,20.00),
+(0005,1001,1,2019,'Online',1,20.00),
+(0005,1002,1,2017,'Online',1,20.00),
+(0005,8001,1,2019,'Online',1,20.00),
+(0005,3002,1,2023,'Online',1,20.00),
+(0005,4000,1,2022,'Online',1,20.00),
+(0005,4001,0,2023,'Online',1,20.00),
+(0004,2003,1,2023,'Online',1,20.00),
+(0005,1003,1,2024,'Online',1,20.00),
+(0004,4003,1,NULL,'DVD',1,25.00),
+(0004,NULL,1,NULL,'DVD',1,25.00);
+/*!40000 ALTER TABLE media_type ENABLE KEYS */;
+UNLOCK TABLES;
