@@ -22,10 +22,21 @@ public class GUI extends JFrame{
 	private JButton btnReviewTable;
 	private JButton btnTransactionsTable;
 	private JButton btnUsersTable;
+	private JButton btnHome;
 	
 	
 	private JPanel MainMenu = new JPanel();
 	private JPanel TableInput = new JPanel();
+	private JPanel AdminTable = new JPanel();
+	private JPanel GenreTypeTable = new JPanel();
+	private JPanel Media_TypeTable = new JPanel();
+	private JPanel Movie_reqTable = new JPanel();
+	private JPanel MoviesTable = new JPanel();
+	private JPanel ReviewTable = new JPanel();
+	private JPanel TransactionsTable = new JPanel();
+	private JPanel UsersTable = new JPanel();
+	
+
 
 	public GUI() {
 		super("DB APP"); //frame name
@@ -42,10 +53,40 @@ public class GUI extends JFrame{
 		TableInput.setLayout(new BorderLayout());
 		TableInput();
 		
+		AdminTable.setLayout(new CardLayout());
+		AdminTablePanel();
+	
+		GenreTypeTable.setLayout(new CardLayout());
+		GenreTypeTablePanel();
+		
+		Media_TypeTable.setLayout(new CardLayout());
+		Media_TypeTablePanel();
+		
+		Movie_reqTable.setLayout(new CardLayout());
+		Movie_reqTablePanel();
+		
+		MoviesTable.setLayout(new CardLayout());
+		MoviesTablePanel();
+		
+		ReviewTable.setLayout(new CardLayout());
+		ReviewTablePanel();
+		
+		TransactionsTable.setLayout(new CardLayout());
+		TransactionsTablePanel();
+		
+		UsersTable.setLayout(new CardLayout());
+		UsersTablePanel();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 
+	public void createMainMenuPanel() {		
+		setContentPane(MainMenu);
+        revalidate();
+        repaint();
+	}
+	
 	public void mainmenu() {
 		
         // NORTH PANEL
@@ -161,37 +202,216 @@ public class GUI extends JFrame{
         btnUsersTable = new JButton("Users Table");
         panelCenterNorth.add(btnUsersTable);
         
-        btnAdminsTable.setActionCommand("AdminsTable");
-        btnGenre_TypeTable.setActionCommand("Genre_TypeTable");
-        btnMedia_TypeTable.setActionCommand("Media_TypeTable");
-        btnMovie_reqTable.setActionCommand("Movie_reqTable");
-        btnMoviesTable.setActionCommand("MoviesTable");
-        btnReviewTable.setActionCommand("ReviewTable");
-        btnTransactionsTable.setActionCommand("TransactionsTable");
-        btnUsersTable.setActionCommand("UsersTable");
+        // center south panel
+        JPanel panelCenterSouth = new JPanel();
+        panelCenterSouth.setLayout(new FlowLayout()); 
+        btnHome = new JButton("Home");
+        panelCenterSouth.add(btnHome);
         
         // Add the panel to the center of BorderLayout
         panelCenter.add(panelCenterNorth, BorderLayout.NORTH);
+        panelCenter.add(panelCenterSouth, BorderLayout.SOUTH);
+        
+        //sub panel
+        CardLayout cardLayout = new CardLayout();
+        JPanel panelCenterCenter = new JPanel(cardLayout);
+        
+        panelCenterCenter.add(AdminTable, "AdminTable"); 
+        panelCenterCenter.add(GenreTypeTable, "GenreTypeTable"); 
+        panelCenterCenter.add(Media_TypeTable, "Media_TypeTable");
+        panelCenterCenter.add(Movie_reqTable, "Movie_reqTable");
+        panelCenterCenter.add(MoviesTable, "MoviesTable"); 
+        panelCenterCenter.add(ReviewTable, "ReviewTable"); 
+        panelCenterCenter.add(TransactionsTable, "TransactionsTable");
+        panelCenterCenter.add(UsersTable, "UsersTable");
+        
+        btnAdminsTable.addActionListener(e -> {
+         System.out.println("hi");
+        cardLayout.show(panelCenterCenter,"AdminTable");
+        panelCenterCenter.setVisible(true);
+      
+        });
+        
+        btnGenre_TypeTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"GenreTypeTable");
+           panelCenterCenter.setVisible(true);
+           });
+   
+        btnMedia_TypeTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"Media_TypeTable");
+           panelCenterCenter.setVisible(true);
+           });
+        
+        btnMovie_reqTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"Movie_reqTable");
+           panelCenterCenter.setVisible(true);
+           });
+        
+        btnMoviesTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"MoviesTable");
+           panelCenterCenter.setVisible(true);
+           });
+        
+        btnReviewTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"ReviewTable");
+           panelCenterCenter.setVisible(true);
+           });
+        
+        btnTransactionsTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"TransactionsTable");
+           panelCenterCenter.setVisible(true);
+           });
+        
+        btnUsersTable.addActionListener(e -> {
+            System.out.println("hi");
+           cardLayout.show(panelCenterCenter,"UsersTable");
+           panelCenterCenter.setVisible(true);
+           });
+     
+        panelCenter.add(panelCenterCenter, BorderLayout.CENTER);
+        
         TableInput.add(panelCenter, BorderLayout.CENTER);
 	}
+	
+	public void AdminTablePanel() {
+     // NORTH PANEL
+        JPanel panelNorth = new JPanel();
+        panelNorth.setLayout(new FlowLayout());
+        panelNorth.setBackground(Color.decode("#0A285f"));
 
+        JLabel label = new JLabel("ADMIN TABLE");
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+        panelNorth.add(label);
+        
+        AdminTable.add(panelNorth, BorderLayout.NORTH);
+
+	}
+	
+	public void GenreTypeTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("GENRE TYPE TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        GenreTypeTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+	public void Media_TypeTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("MEDIA TYPE TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        Media_TypeTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+	
+	public void Movie_reqTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("MOVIE REQUEST TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        Movie_reqTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+	
+	public void MoviesTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("MOVIES TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        MoviesTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+
+	public void ReviewTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("REVIEW TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        ReviewTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+
+
+
+
+	public void TransactionsTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("TRANSACTIONS TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        TransactionsTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+
+	public void UsersTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("USER TABLE");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        UsersTable.add(panelNorth, BorderLayout.NORTH);
+
+		}
+	
 
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
 		btnReports.addActionListener(listener);
 		btnEXIT.addActionListener(listener);
-		
-		btnAdminsTable.addActionListener(listener);
-		btnGenre_TypeTable.addActionListener(listener);
-		btnMedia_TypeTable.addActionListener(listener);
-		btnMovie_reqTable.addActionListener(listener);
-		btnMoviesTable.addActionListener(listener);
-		btnReviewTable.addActionListener(listener);
-		btnTransactionsTable.addActionListener(listener);
-		btnUsersTable.addActionListener(listener);
+		btnHome.addActionListener(listener);
 
 	}
+	
+
 	
 //	public void setDocumentListener(DocumentListener listener) {
 //		tfName.getDocument().addDocumentListener(listener);
