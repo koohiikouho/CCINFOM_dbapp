@@ -43,37 +43,11 @@ public class Controller implements ActionListener, DocumentListener{
 			System.exit(0);
 			break;
 			
-		case "AdminsTable":
-			System.out.println("You clicked admin table");
+		case "Home":
+			System.out.println("return to main");
+			gui.createMainMenuPanel();
 			break;
 			
-		case "Genre_TypeTable":
-			System.out.println("You clicked Genre_TypeTable");
-			break;
-			
-		case "Media_TypeTable":
-			System.out.println("You clicked Media_TypeTable");
-			break;
-			
-		case "Movie_reqTable":
-			System.out.println("You clicked Movie_reqTable");
-			break;
-			
-		case "MoviesTable":
-			System.out.println("You clicked MoviesTable");
-			break;
-			
-		case "ReviewTable":
-			System.out.println("You clicked ReviewTable");
-			break;
-			
-		case "TransactionsTable":
-			System.out.println("You clicked TransactionsTable");
-			break;
-			
-		case "UsersTable":
-			System.out.println("You clicked UsersTable");
-			break;
 		}
 	}
 	
