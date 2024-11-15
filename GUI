@@ -1,0 +1,202 @@
+import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+
+import java.awt.*;
+import java.awt.event.ActionListener;
+
+public class GUI extends JFrame{
+	
+	//main menu
+	private JButton btnTableInput;
+	private JButton btnRecordManagement;
+	private JButton btnReports;
+	private JButton btnEXIT;
+	
+	//table input
+	private JButton btnAdminsTable;
+	private JButton btnGenre_TypeTable;
+	private JButton btnMedia_TypeTable;
+	private JButton btnMovie_reqTable;
+	private JButton btnMoviesTable;
+	private JButton btnReviewTable;
+	private JButton btnTransactionsTable;
+	private JButton btnUsersTable;
+	
+	
+	private JPanel MainMenu = new JPanel();
+	private JPanel TableInput = new JPanel();
+
+	public GUI() {
+		super("DB APP"); //frame name
+		
+		setContentPane(MainMenu);
+		MainMenu.setLayout(new BorderLayout());
+		setSize(800,600);//size of window
+		mainmenu();
+		
+		//to show and make window fixed
+		setVisible(true);
+		setResizable(false);
+		
+		TableInput.setLayout(new BorderLayout());
+		TableInput();
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+
+	public void mainmenu() {
+		
+        // NORTH PANEL
+        JPanel panelNorth = new JPanel();
+        panelNorth.setLayout(new FlowLayout());
+        panelNorth.setBackground(Color.decode("#0A285f"));
+
+        JLabel label = new JLabel("Welcome To Movie Application");
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+        panelNorth.add(label);
+
+        MainMenu.add(panelNorth, BorderLayout.NORTH);
+
+        // SOUTH PANEL
+        JPanel panelSouth = new JPanel();
+        panelSouth.setBackground(Color.BLACK);
+        MainMenu.add(panelSouth, BorderLayout.SOUTH);
+
+        // CENTER PANEL
+        JPanel panelCenter = new JPanel();
+        panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.Y_AXIS));
+        panelCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Button size
+        Dimension buttonSize = new Dimension(350, 100);
+
+        btnTableInput = new JButton("Table Input");
+        btnTableInput.setPreferredSize(buttonSize);
+        btnTableInput.setMaximumSize(buttonSize);
+        btnTableInput.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnTableInput);
+
+        btnRecordManagement = new JButton("Record Management");
+        btnRecordManagement.setPreferredSize(buttonSize);
+        btnRecordManagement.setMaximumSize(buttonSize);
+        btnRecordManagement.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnRecordManagement);
+
+        btnReports = new JButton("Reports");
+        btnReports.setPreferredSize(buttonSize);
+        btnReports.setMaximumSize(buttonSize);
+        btnReports.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnReports);
+
+        btnEXIT = new JButton("EXIT");
+        btnEXIT.setPreferredSize(buttonSize);
+        btnEXIT.setMaximumSize(buttonSize);
+        btnEXIT.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnEXIT);
+        panelCenter.add(Box.createVerticalGlue());
+
+        btnTableInput.setActionCommand("TableInput");
+        btnRecordManagement.setActionCommand("RecordManagement");
+        btnReports.setActionCommand("Reports");
+        btnEXIT.setActionCommand("EXIT");
+        
+        MainMenu.add(panelCenter, BorderLayout.CENTER);
+	}
+
+	public void createTableInputPanel() {		
+		setContentPane(TableInput);
+        revalidate();
+        repaint();
+	}
+	
+	public void TableInput() {
+		
+		 // NORTH PANEL
+        JPanel panelNorth = new JPanel();
+        panelNorth.setLayout(new FlowLayout());
+        panelNorth.setBackground(Color.decode("#0A285f"));
+
+        JLabel label = new JLabel("Welcome To Movie Application");
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+        panelNorth.add(label);
+
+        TableInput.add(panelNorth, BorderLayout.NORTH);
+
+        // SOUTH PANEL
+        JPanel panelSouth = new JPanel();
+        panelSouth.setBackground(Color.BLACK);
+        TableInput.add(panelSouth, BorderLayout.SOUTH);
+
+        // CENTER PANEL
+        JPanel panelCenter = new JPanel();
+        panelCenter.setLayout(new BorderLayout());
+        
+     // Create the main panel with specific size
+        JPanel panelCenterNorth = new JPanel();
+        panelCenterNorth.setLayout(new GridLayout(2, 4, 10, 10)); 
+
+        // Button Initialization with preferred size
+        btnAdminsTable = new JButton("Admins Table");
+        panelCenterNorth.add(btnAdminsTable);
+        btnGenre_TypeTable = new JButton("Genre Type Table");
+        panelCenterNorth.add(btnGenre_TypeTable);
+        btnMedia_TypeTable = new JButton("Media Type Table");
+        panelCenterNorth.add(btnMedia_TypeTable);
+        btnMovie_reqTable = new JButton("Movie Request Table");
+        panelCenterNorth.add(btnMovie_reqTable);
+        btnMoviesTable = new JButton("Movies Table");
+        panelCenterNorth.add(btnMoviesTable);
+        btnReviewTable = new JButton("Review Table");
+        panelCenterNorth.add(btnReviewTable);
+        btnTransactionsTable = new JButton("Transactions Table");
+        panelCenterNorth.add(btnTransactionsTable);
+        btnUsersTable = new JButton("Users Table");
+        panelCenterNorth.add(btnUsersTable);
+        
+        btnAdminsTable.setActionCommand("AdminsTable");
+        btnGenre_TypeTable.setActionCommand("Genre_TypeTable");
+        btnMedia_TypeTable.setActionCommand("Media_TypeTable");
+        btnMovie_reqTable.setActionCommand("Movie_reqTable");
+        btnMoviesTable.setActionCommand("MoviesTable");
+        btnReviewTable.setActionCommand("ReviewTable");
+        btnTransactionsTable.setActionCommand("TransactionsTable");
+        btnUsersTable.setActionCommand("UsersTable");
+        
+        // Add the panel to the center of BorderLayout
+        panelCenter.add(panelCenterNorth, BorderLayout.NORTH);
+        TableInput.add(panelCenter, BorderLayout.CENTER);
+	}
+
+
+	public void setActionListener(ActionListener listener) {
+		btnTableInput.addActionListener(listener);
+		btnRecordManagement.addActionListener(listener);
+		btnReports.addActionListener(listener);
+		btnEXIT.addActionListener(listener);
+		
+		btnAdminsTable.addActionListener(listener);
+		btnGenre_TypeTable.addActionListener(listener);
+		btnMedia_TypeTable.addActionListener(listener);
+		btnMovie_reqTable.addActionListener(listener);
+		btnMoviesTable.addActionListener(listener);
+		btnReviewTable.addActionListener(listener);
+		btnTransactionsTable.addActionListener(listener);
+		btnUsersTable.addActionListener(listener);
+
+	}
+	
+//	public void setDocumentListener(DocumentListener listener) {
+//		tfName.getDocument().addDocumentListener(listener);
+//		taDesc.getDocument().addDocumentListener(listener);
+//	}
+	
+	
+}
