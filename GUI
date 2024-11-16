@@ -1,9 +1,11 @@
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class GUI extends JFrame{
 	
@@ -24,6 +26,10 @@ public class GUI extends JFrame{
 	private JButton btnUsersTable;
 	private JButton btnHome;
 	
+	private JButton btnUpdateAdminTable;
+	private JButton btnDeleteInAdminTable;
+	private JButton btnAddInAdminTable;
+	
 	
 	private JPanel MainMenu = new JPanel();
 	private JPanel TableInput = new JPanel();
@@ -36,14 +42,24 @@ public class GUI extends JFrame{
 	private JPanel TransactionsTable = new JPanel();
 	private JPanel UsersTable = new JPanel();
 	
+	private JTextField ATAdminNo;
+	private JTextField ATFirst_Name;
+	private JTextField ATLast_Name;
+	private JTextField ATPass;
+	private JTextField ATAdminLevel;
 
+	//admin table
+		private JScrollPane scrollerAdminTable;
+		private JTable tableAdminTable;
+		private DefaultTableModel tableModelAdmin;
+		
 
 	public GUI() {
 		super("DB APP"); //frame name
 		
 		setContentPane(MainMenu);
 		MainMenu.setLayout(new BorderLayout());
-		setSize(800,600);//size of window
+		setSize(900,700);//size of window
 		mainmenu();
 		
 		//to show and make window fixed
@@ -53,28 +69,29 @@ public class GUI extends JFrame{
 		TableInput.setLayout(new BorderLayout());
 		TableInput();
 		
-		AdminTable.setLayout(new CardLayout());
+		AdminTable.setLayout(new BorderLayout());
+		showAdminTable();
 		AdminTablePanel();
 	
-		GenreTypeTable.setLayout(new CardLayout());
+		GenreTypeTable.setLayout(new BorderLayout());
 		GenreTypeTablePanel();
 		
-		Media_TypeTable.setLayout(new CardLayout());
+		Media_TypeTable.setLayout(new BorderLayout());
 		Media_TypeTablePanel();
 		
-		Movie_reqTable.setLayout(new CardLayout());
+		Movie_reqTable.setLayout(new BorderLayout());
 		Movie_reqTablePanel();
 		
-		MoviesTable.setLayout(new CardLayout());
+		MoviesTable.setLayout(new BorderLayout());
 		MoviesTablePanel();
 		
-		ReviewTable.setLayout(new CardLayout());
+		ReviewTable.setLayout(new BorderLayout());
 		ReviewTablePanel();
 		
-		TransactionsTable.setLayout(new CardLayout());
+		TransactionsTable.setLayout(new BorderLayout());
 		TransactionsTablePanel();
 		
-		UsersTable.setLayout(new CardLayout());
+		UsersTable.setLayout(new BorderLayout());
 		UsersTablePanel();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -292,7 +309,105 @@ public class GUI extends JFrame{
         
         AdminTable.add(panelNorth, BorderLayout.NORTH);
 
-	}
+        
+//        private JTextField ATAdminNo;
+//    	private JTextField ATFirst_Name;
+//    	private JTextField ATLast_Name;
+//    	private JTextField ATPass;
+//    	private JTextField ATAdminLevel;
+
+    		
+    		//center panel
+    		JPanel centerPanel = new JPanel();
+    		centerPanel.setLayout(new GridBagLayout());
+    		GridBagConstraints gbc = new GridBagConstraints();
+
+            gbc.insets = new Insets(6, 6, 6, 6);
+            gbc.anchor = GridBagConstraints.WEST;
+
+            
+    		JLabel admin_no = new JLabel("Admin No.");
+    		admin_no.setForeground(Color.BLACK);
+    		admin_no.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 1;
+            centerPanel.add(admin_no, gbc);
+            ATAdminNo = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 1;
+            centerPanel.add(ATAdminNo, gbc);
+    		
+    		JLabel first_name = new JLabel("First Name");
+    		first_name.setForeground(Color.BLACK);
+    		first_name.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 2;
+            centerPanel.add(first_name, gbc);
+            ATFirst_Name = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 2;
+            centerPanel.add(ATFirst_Name,gbc);
+    		
+    		JLabel last_name = new JLabel("Last Name");
+    		last_name.setForeground(Color.BLACK);
+    		last_name.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 3;
+            centerPanel.add(last_name,gbc);
+            ATLast_Name = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 3;
+            centerPanel.add(ATLast_Name, gbc);
+    		
+    		JLabel password = new JLabel("Password");
+    		password.setForeground(Color.BLACK);
+    		password.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 4;
+            centerPanel.add(password , gbc);
+            ATPass = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 4;
+            centerPanel.add(ATPass, gbc);
+            
+            JLabel adminlvl = new JLabel("Admin Level");
+            adminlvl.setForeground(Color.BLACK);
+            adminlvl.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 5;
+            centerPanel.add(adminlvl , gbc);
+            ATAdminLevel = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 5;
+            centerPanel.add(ATAdminLevel, gbc);
+            
+            
+         
+            
+            AdminTable.add(centerPanel , BorderLayout.EAST);
+    		
+    		        	
+    		//SOUTH PANEL
+    		JPanel panelSouth = new JPanel();
+    		panelSouth.setLayout(new FlowLayout());
+    		panelSouth.setBackground(Color.decode("#fdfdfd"));
+    		
+    		btnAddInAdminTable = new JButton("Add");
+    		btnUpdateAdminTable = new JButton("Update");
+    		btnDeleteInAdminTable = new JButton("Delete");
+       		panelSouth.add(btnAddInAdminTable);
+    		panelSouth.add(btnUpdateAdminTable);
+    		panelSouth.add(btnDeleteInAdminTable);
+    		
+    		btnUpdateAdminTable.setActionCommand("UpdateAdminTable");
+    		btnDeleteInAdminTable.setActionCommand("DeleteInAdminTable");
+    		btnAddInAdminTable.setActionCommand("AddInAdminTable");
+    		
+    		AdminTable.add(panelSouth, BorderLayout.SOUTH);
+    		
+    	}
+    	
+	
 	
 	public void GenreTypeTablePanel() {
 	     // NORTH PANEL
@@ -308,6 +423,7 @@ public class GUI extends JFrame{
 	        GenreTypeTable.add(panelNorth, BorderLayout.NORTH);
 
 		}
+	
 	public void Media_TypeTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -368,6 +484,85 @@ public class GUI extends JFrame{
 
 		}
 
+	//admin table
+	public void showAdminTable() {
+		String[] col;
+		col = new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"};
+		tableModelAdmin = new DefaultTableModel(getAdmin(), col);
+		refreshAdminTable();
+		tableAdminTable = new JTable(tableModelAdmin);
+		tableAdminTable.setEnabled(false);
+		scrollerAdminTable = new JScrollPane(tableAdminTable);
+		scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+		
+        //center panel
+        JPanel moreCenter = new JPanel(new BorderLayout());
+        
+        // CENTER PANEL center panel
+        JPanel panelCenter = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+        gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+        gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+        gbc.insets = new Insets(10, 10, 10, 10);
+        panelCenter.add(scrollerAdminTable, gbc);
+        moreCenter.add(panelCenter, BorderLayout.CENTER);
+        
+        AdminTable.add(moreCenter, BorderLayout.WEST);
+        AdminTable.revalidate(); // Refresh the UI
+        AdminTable.repaint(); // Ensure it's redrawn
+		}
+
+	//getting data from db
+	public Object[][] getAdmin() {
+    String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
+
+    ArrayList<Object[]> list = new ArrayList<>();
+
+    try {
+        // Load the JDBC driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Establish connection
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
+
+            // Process the ResultSet
+            while (resultSet.next()) {
+                Object[] row = new Object[5];
+                row[0] = resultSet.getInt(1); // Assuming column 1 is int
+                row[1] = resultSet.getString(2); // Assuming column 2 is String
+                row[2] = resultSet.getString(3); // Assuming column 3 is int
+                row[3] = resultSet.getString(4); // Assuming column 4 is String
+                row[4] = resultSet.getInt(5); // Assuming column 5 is String
+                
+                list.add(row);
+
+                // Optional: Debug print
+                System.out.println(
+                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
+                );
+            }
+        }
+
+        // Convert the list to a 2D array
+        return list.toArray(new Object[0][5]);
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Print stack trace for debugging
+        return null;
+    }
+}
+
+	//refreshing admin table
+	public void refreshAdminTable() {
+		tableModelAdmin.setDataVector(getAdmin(), new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"});
+    }
 
 
 
