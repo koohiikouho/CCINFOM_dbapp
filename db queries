@@ -46,3 +46,79 @@ INSERT
 INTO movie_req 
 (movie_name, date filed, user_no, approved, in_stock, media_type) " +
 "VALUES (?, ?, ?, ?, ?, ?);
+
+Movies borrowed in a day,month,year
+Day
+SELECT DATE(t.date_borrowed) AS `Date Borrowed`, COUNT(t.movie_code) AS `Number of Movies Borrowed`
+FROM transactions t
+WHERE DATE(t.date_borrowed) = '?'
+WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+GROUP BY `Date Borrowed`
+ORDER BY `Date Borrowed`;
+
+Month
+SELECT YEAR(t.date_borrowed) AS `Year`,MONTH(t.date_borrowed) AS `Month`,COUNT(t.movie_code) AS `Number of Movies Borrowed`
+FROM transactions t
+WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+GROUP BY `Year`, `Month`
+ORDER BY `Year`, `Month`;
+
+Year
+SELECT YEAR(t.date_borrowed) AS `Year`,COUNT(t.movie_code) AS `Number of Movies Borrowed`
+FROM transactions t
+WHERE YEAR(t.date_borrowed) = '?'
+GROUP BY `Year`
+ORDER BY `Year`;
+
+List of most borrowed movies
+Monthly
+SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), m.movie_code
+ORDER BY `Times Borrowed` DESC;
+
+Yearly
+SELECT YEAR(t.date_borrowed) AS `Year`, m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+WHERE YEAR(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed), m.movie_code
+ORDER BY `Times Borrowed` DESC;
+
+In General
+SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+GROUP BY m.movie_code
+ORDER BY `Times Borrowed` DESC;
+
+Most popular movie genres are based on borrow rate(per day, month, year)
+
+Day
+SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, DAY(t.date_borrowed) AS `Day`, gt.genre_id,gt.description, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+JOIN genre_type gt ON gt.genre_id = m.genre_id
+WHERE DATE(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), DAY(t.date_borrowed), gt.genre_id
+ORDER BY `Times Borrowed` DESC;
+
+Month
+SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, gt.genre_id,gt.description, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+JOIN genre_type gt ON gt.genre_id = m.genre_id
+WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), gt.genre_id
+ORDER BY `Times Borrowed` DESC;
+
+Year
+SELECT YEAR(t.date_borrowed) AS `Year` gt.genre_id,gt.description, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+JOIN genre_type gt ON gt.genre_id = m.genre_id
+WHERE YEAR(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed), gt.genre_id
+ORDER BY `Times Borrowed` DESC;
