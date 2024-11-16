@@ -199,3 +199,37 @@ JOIN users u ON t.user_no = u.user_no
 JOIN movies m ON t.movie_code = m.movie_code
 WHERE t.date_toreturn < t.date_returned OR (t.date_toreturn < CURDATE() AND t.date_returned IS NULL)
 ORDER BY t.transaction_no;
+
+total revenue from movie rentals, etc
+
+Monthly
+SELECT YEAR(t.date_returned) AS `Year`,MONTH(t.date_returned) AS `Month`,SUM(t.payment) AS `Total Revenue`
+FROM transactions t
+WHERE YEAR(t.date_returned) = '?' AND MONTH(t.date_returned) = '?' AND t.date_returned IS NOT NULL
+GROUP BY `Year`,`Month`;
+
+Yearly
+SELECT YEAR(t.date_returned) AS `Year`,SUM(t.payment) AS `Total Revenue`
+FROM transactions t
+WHERE YEAR(t.date_returned) = '?'
+GROUP BY `Year`;
+
+most profitable movies per genre
+
+Monthly
+SELECT YEAR(t.date_returned) AS `Year`,MONTH(t.date_returned) AS `Month`,gt.genre_id,gt.description,m.movie_code,m.movie_name,SUM(t.payment) AS `Total Revenue`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+JOIN genre_type gt ON m.genre_id = gt.genre_id
+WHERE YEAR(t.date_returned) = '?' AND MONTH(t.date_returned) = '?'
+GROUP BY YEAR(t.date_returned), MONTH(t.date_returned), gt.genre_id, m.movie_code
+ORDER BY gt.genre_id, `Total Revenue` DESC;
+
+Yearly
+SELECT YEAR(t.date_returned) AS `Year`,gt.genre_id,gt.description,m.movie_code,m.movie_name,SUM(t.payment) AS `Total Revenue`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+JOIN genre_type gt ON m.genre_id = gt.genre_id
+WHERE YEAR(t.date_returned) = '?'
+GROUP BY YEAR(t.date_returned) gt.genre_id, m.movie_code
+ORDER BY gt.genre_id, `Total Revenue` DESC;
