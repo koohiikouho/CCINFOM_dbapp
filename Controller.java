@@ -24,12 +24,12 @@ public class Controller implements ActionListener, DocumentListener{
 		PreparedStatement pstmt;
 		
 		try {
-		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//		    String username = "root";
-//		    String password = "dl_MySQL_su";
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+		    String username = "root";
+		    String password = "dl_MySQL_su";
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		Connection connections = DriverManager.getConnection(url,username,password);
 		
@@ -100,9 +100,33 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt = connections.prepareStatement(DeleteAdmin);
 			pstmt.execute();
 			gui.refreshAdminTable();
+			ClearAdminInputs();
 
 			break;
 			
+		case "UpdateAdminTable":
+			admin_no1 = gui.getAdminNumber();
+			first_name1 = gui.getAdminFirstName();
+			last_name1 = gui.getAdminLastName();
+			admin_password1 = gui.getAdminPassword();
+			admin_level1 = gui.getAdminLevel();
+						
+			String updateAdmin = "UPDATE admins SET first_name = ?, last_name = ?, password = ?, admin_level = ? WHERE admin_no = ?";
+			pstmt = connections.prepareStatement(updateAdmin);
+			pstmt.setString(1, first_name1);
+			pstmt.setString(2, last_name1);
+			pstmt.setString(3, admin_password1);
+			pstmt.setInt(4, admin_level1);
+			pstmt.setInt(5, admin_no1);
+
+			pstmt.execute();
+			gui.refreshAdminTable();
+
+
+			
+		
+		break;
+		
 		}
 
 	}
