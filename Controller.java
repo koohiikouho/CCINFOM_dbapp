@@ -3,7 +3,6 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -24,12 +23,12 @@ public class Controller implements ActionListener, DocumentListener{
 		PreparedStatement pstmt;
 		
 		try {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-		    String username = "root";
-		    String password = "dl_MySQL_su";
+		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//		    String username = "root";
+//		    String password = "dl_MySQL_su";
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		Connection connections = DriverManager.getConnection(url,username,password);
 		
@@ -165,6 +164,85 @@ public class Controller implements ActionListener, DocumentListener{
 			ClearGenreInputs();
 			break;
 		
+		case "AddInMediaTable":
+			//admin table
+			
+			int copies_available3,movie_code3,product_id3;
+			float rental_price3;
+			String release_date3,media_type3,availability3;
+			
+			
+			String InsertMedia = " insert into media_type (product_id,movie_code, availability, release_date,media_type,copies_available,rental_price)"
+				    + " values (?, ?, ?, ?, ?, ?, ?)";
+			pstmt = connections.prepareStatement(InsertMedia);
+			
+			copies_available3 = gui.getMediaCopies();
+			movie_code3 = gui.getMmovieCode();
+			product_id3 = gui.getMProductID();
+			rental_price3 = gui.getRentalPrice();
+			release_date3 = gui.getMediaRelease();
+			media_type3 = gui.getMmedia_type();
+			availability3 = gui.getMavailability();
+			 int transmute = 1;
+             if(availability3.equals("NO")) {
+             	transmute = 0;
+             }
+			pstmt.setInt(1,product_id3);
+			pstmt.setInt(2,movie_code3);
+			pstmt.setInt(3, transmute);
+			pstmt.setInt(4, Integer.parseInt(release_date3));
+			pstmt.setString(5, media_type3);
+			pstmt.setInt(6, copies_available3);
+			pstmt.setFloat(7, rental_price3);
+			pstmt.execute();
+			gui.refreshMediaTable();
+			ClearMediaInputs();
+			break;
+			
+		case "DeleteInMediaTable":
+			
+			movie_code3 = gui.getMmovieCode();
+			media_type3 = gui.getMmedia_type();
+
+			String DeleteMedia = " DELETE FROM media_type WHERE movie_code = ? AND media_type = ?";
+			pstmt = connections.prepareStatement(DeleteMedia);
+			pstmt.setInt(1, movie_code3);
+			pstmt.setString(2, media_type3);
+			pstmt.execute();
+			gui.refreshMediaTable();
+			ClearMediaInputs();
+			
+			break;
+			
+		case "UpdateMediaTable":
+			
+			copies_available3 = gui.getMediaCopies();
+			movie_code3 = gui.getMmovieCode();
+			product_id3 = gui.getMProductID();
+			rental_price3 = gui.getRentalPrice();
+			release_date3 = gui.getMediaRelease();
+			media_type3 = gui.getMmedia_type();
+			availability3 = gui.getMavailability();
+
+			transmute = 1;
+            if(availability3.equals("NO")) {
+            	transmute = 0;
+            }
+            
+			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
+			pstmt = connections.prepareStatement(updateMedia);
+			pstmt.setInt(1, movie_code3);
+			pstmt.setInt(2, transmute);
+			pstmt.setInt(3, Integer.parseInt(release_date3));
+			pstmt.setString(4, media_type3);
+			pstmt.setInt(5, copies_available3);
+			pstmt.setFloat(6, rental_price3);
+			pstmt.setInt(7, product_id3);
+			
+			pstmt.execute();
+			gui.refreshMediaTable();
+			ClearMediaInputs();
+			break;
 		}
 
 	}
@@ -184,6 +262,17 @@ public class Controller implements ActionListener, DocumentListener{
 	public void ClearGenreInputs() {
 		gui.setGenreID("");
 		gui.setGenreDesc("");
+	}
+	
+	public void ClearMediaInputs() {
+		gui.setMProductID("");
+		gui.setMmovieCode("");
+		gui.setMavailability("");
+		gui.setMediaRelease("");
+		gui.setMmedia_type("");
+		gui.setMediaCopies("");
+		gui.setRentalPrice("");
+		
 	}
 
 	@Override
