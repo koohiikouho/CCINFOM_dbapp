@@ -1,13 +1,9 @@
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class GUI extends JFrame{
 	
@@ -27,12 +23,19 @@ public class GUI extends JFrame{
 	private JButton btnTransactionsTable;
 	private JButton btnUsersTable;
 	private JButton btnHome;
-	
+	//admin table
 	private JButton btnUpdateAdminTable;
 	private JButton btnDeleteInAdminTable;
 	private JButton btnAddInAdminTable;
 	
-	
+	private JButton btnUpdateGenreTable;
+   	private JButton btnDeleteInGenreTable;
+   	private JButton btnAddInGenreTable;
+   	
+   	private JButton btnUpdateMediaTable;
+   	private JButton btnDeleteInMediaTable;
+   	private JButton btnAddInMediaTable;
+   	
 	private JPanel MainMenu = new JPanel();
 	private JPanel TableInput = new JPanel();
 	private JPanel AdminTable = new JPanel();
@@ -50,12 +53,35 @@ public class GUI extends JFrame{
 	private JTextField ATPass;
 	private JTextField ATAdminLevel;
 
+	private JTextField GTGenre_Num;
+	private JTextArea GTDesc;
+	
+	private JTextField MTproduct_id;
+	private JTextField MTmovie_code;
+	private JTextField MTavailability;
+	private JTextField MTrelease;
+	//private JTextField MTmedia_type;
+	private JTextField MTcopies;
+	private JTextField MTrentprice;
+	
+	private JComboBox MTmedia_type;
+	
 	//admin table
-		private JScrollPane scrollerAdminTable;
-		private JTable tableAdminTable;
-		private DefaultTableModel tableModelAdmin;
+	private JScrollPane scrollerAdminTable;
+	private JTable tableAdminTable;
+	private DefaultTableModel tableModelAdmin;
 		
-
+	//genre type table
+	private JScrollPane scrollerGenreTable;
+	private JTable tableGenreTable;
+	private DefaultTableModel tableModelGenre;
+		
+	
+	private JScrollPane scrollerMediaTable;
+	private JTable tableMediaTable;
+	private DefaultTableModel tableModelMedia;
+	
+	
 	public GUI() {
 		super("DB APP"); //frame name
 		
@@ -76,9 +102,11 @@ public class GUI extends JFrame{
 		AdminTablePanel();
 	
 		GenreTypeTable.setLayout(new BorderLayout());
+		showGenreTable();
 		GenreTypeTablePanel();
 		
 		Media_TypeTable.setLayout(new BorderLayout());
+		showMediaTable();
 		Media_TypeTablePanel();
 		
 		Movie_reqTable.setLayout(new BorderLayout());
@@ -99,7 +127,6 @@ public class GUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-
 	public void createMainMenuPanel() {		
 		setContentPane(MainMenu);
         revalidate();
@@ -375,9 +402,6 @@ public class GUI extends JFrame{
             gbc.gridy = 5;
             centerPanel.add(ATAdminLevel, gbc);
             
-            
-         
-            
             AdminTable.add(centerPanel , BorderLayout.EAST);
     		
     		        	
@@ -400,22 +424,274 @@ public class GUI extends JFrame{
     		AdminTable.add(panelSouth, BorderLayout.SOUTH);
     		
     	}
-    	
-	
-	public void GenreTypeTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
-
-	        JLabel label = new JLabel("GENRE TYPE TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        GenreTypeTable.add(panelNorth, BorderLayout.NORTH);
-
+	//admin table
+	public void showAdminTable() {
+		    String[] col = {"admin_no", "first_name", "last_name", "password", "admin_level"};
+		    tableModelAdmin = new DefaultTableModel(getAdmin(), col);
+		    refreshAdminTable();
+		    tableAdminTable = new JTable(tableModelAdmin);
+		    tableAdminTable.setEnabled(true); // Enable selection
+		    
+		    // Add a mouse click listener to the table
+		    tableAdminTable.addMouseListener(new java.awt.event.MouseAdapter() {
+		       
+		        public void mouseClicked(java.awt.event.MouseEvent evt) {
+		            int row = tableAdminTable.getSelectedRow(); // Get selected row index
+		           
+		            
+		            if (row != -1) { // Ensure a valid cell is selected
+		                int admin_number = (int)tableAdminTable.getValueAt(row,0);
+		                String first_name = (String)tableAdminTable.getValueAt(row,1);
+		                String last_name = (String)tableAdminTable.getValueAt(row,2);
+		                String password = (String)tableAdminTable.getValueAt(row,3);             
+		                int admin_lvl = (int)tableAdminTable.getValueAt(row,4); 
+		                
+		                ATAdminNo.setText(String.valueOf(admin_number));
+		                ATFirst_Name.setText(first_name);
+		            	ATLast_Name.setText(last_name);
+		            	ATPass.setText(password);
+		            	ATAdminLevel.setText(String.valueOf(admin_lvl));		               
+		            }
+		        }
+		    });
+		    
+		    scrollerAdminTable = new JScrollPane(tableAdminTable);
+		    scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+		    
+		    // Center panel
+		    JPanel moreCenter = new JPanel(new BorderLayout());
+		    
+		    // CENTER PANEL center panel
+		    JPanel panelCenter = new JPanel(new GridBagLayout());
+		    GridBagConstraints gbc = new GridBagConstraints();
+		    gbc.gridx = 0;
+		    gbc.gridy = 0;
+		    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		    gbc.insets = new Insets(10, 10, 10, 10);
+		    panelCenter.add(scrollerAdminTable, gbc);
+		    moreCenter.add(panelCenter, BorderLayout.CENTER);
+		    
+		    AdminTable.add(moreCenter, BorderLayout.WEST);
+		    AdminTable.revalidate(); // Refresh the UI
+		    AdminTable.repaint(); // Ensure it's redrawn
 		}
+
+		//getting data from db
+	public Object[][] getAdmin() {
+//			String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//			String username = "user";
+//			String password= "12345";
+		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+	    String username = "root";
+	    String password = "dl_MySQL_su";
+
+	    ArrayList<Object[]> list = new ArrayList<>();
+
+	    try {
+	        // Load the JDBC driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+	        // Establish connection
+	        try (Connection connection = DriverManager.getConnection(url, username, password);
+	             Statement statement = connection.createStatement();
+	             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
+
+	            // Process the ResultSet
+	            while (resultSet.next()) {
+	                Object[] row = new Object[5];
+	                row[0] = resultSet.getInt(1); // Assuming column 1 is int
+	                row[1] = resultSet.getString(2); // Assuming column 2 is String
+	                row[2] = resultSet.getString(3); // Assuming column 3 is int
+	                row[3] = resultSet.getString(4); // Assuming column 4 is String
+	                row[4] = resultSet.getInt(5); // Assuming column 5 is String
+	                
+	                list.add(row);
+
+	                // Debug print
+//	                System.out.println(
+//	                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
+	              //  );
+	            }
+	        }
+
+	        // Convert the list to a 2D array
+	        return list.toArray(new Object[0][5]);
+
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Print stack trace for debugging
+	        return null;
+	    }
+	}
+
+		//refreshing admin table
+	public void refreshAdminTable() {
+			tableModelAdmin.setDataVector(getAdmin(), new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"});
+	    }
+
+	public void GenreTypeTablePanel() {
+	    // NORTH PANEL
+	    JPanel panelNorth = new JPanel();
+	    panelNorth.setLayout(new FlowLayout());
+	    panelNorth.setBackground(Color.decode("#0A285f"));
+
+	    JLabel label = new JLabel("GENRE TYPE TABLE");
+	    label.setForeground(Color.WHITE);
+	    label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	    panelNorth.add(label);
+	    GenreTypeTable.add(panelNorth, BorderLayout.NORTH);
+
+	    // CENTER PANEL
+	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    centerPanel.setBackground(Color.decode("#f5f5f5")); // Light background for better readability
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(10, 10, 10, 10); // Add padding between components
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+
+	    // Genre ID
+	    gbc.gridx = 0; // Column 0
+	    gbc.gridy = 0; // Row 0
+	    JLabel lblGenreID = new JLabel("Genre ID:");
+	    lblGenreID.setForeground(Color.BLACK);
+	    lblGenreID.setFont(new Font("Verdana", Font.BOLD, 14));
+	    centerPanel.add(lblGenreID, gbc);
+
+	    gbc.gridx = 1; // Column 1
+	    GTGenre_Num = new JTextField(20);
+	    centerPanel.add(GTGenre_Num, gbc);
+
+	    // Description
+	    gbc.gridx = 0; // Column 0
+	    gbc.gridy = 1; // Row 1
+	    JLabel lblDescription = new JLabel("Description:");
+	    lblDescription.setForeground(Color.BLACK);
+	    lblDescription.setFont(new Font("Verdana", Font.BOLD, 14));
+	    centerPanel.add(lblDescription, gbc);
+
+	    gbc.gridx = 1; // Column 1
+	    gbc.gridy = 1; // Row 1
+	    GTDesc = new JTextArea(3, 20);
+	    JScrollPane scrollPane = new JScrollPane(GTDesc); // Add scroll pane for better usability
+	    centerPanel.add(scrollPane, gbc);
+
+	    GenreTypeTable.add(centerPanel, BorderLayout.CENTER);
+
+	    // SOUTH PANEL
+	    JPanel panelSouth = new JPanel(new FlowLayout());
+	    panelSouth.setBackground(Color.decode("#fdfdfd"));
+
+	    btnAddInGenreTable = new JButton("Add");
+	    btnUpdateGenreTable = new JButton("Update");
+	    btnDeleteInGenreTable = new JButton("Delete");
+
+	    panelSouth.add(btnAddInGenreTable);
+	    panelSouth.add(btnUpdateGenreTable);
+	    panelSouth.add(btnDeleteInGenreTable);
+
+	    // Assign Action Commands
+	    btnUpdateGenreTable.setActionCommand("UpdateGenreTable");
+	    btnDeleteInGenreTable.setActionCommand("DeleteInGenreTable");
+	    btnAddInGenreTable.setActionCommand("AddInGenreTable");
+
+	    GenreTypeTable.add(panelSouth, BorderLayout.SOUTH);
+	}
+
+	public void showGenreTable() {
+	    String[] col = {"genre_id", "description"};
+	    tableModelGenre = new DefaultTableModel(getGenre(), col);
+	    refreshGenreTable();
+	    tableGenreTable = new JTable(tableModelGenre);
+	    tableGenreTable.setEnabled(true); // Enable selection
+	    
+	    // Add a mouse click listener to the table
+	    tableGenreTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	       
+	        public void mouseClicked(java.awt.event.MouseEvent evt) {
+	            int row = tableGenreTable.getSelectedRow(); // Get selected row index
+	           
+	            
+	            if (row != -1) { // Ensure a valid cell is selected
+	                int genre_number = (int)tableGenreTable.getValueAt(row,0);
+	                String description = (String)tableGenreTable.getValueAt(row,1);
+	                 
+	                GTGenre_Num.setText(String.valueOf(genre_number));
+	            	GTDesc.setText(description);  			            
+	            }
+	        }
+	    });
+	    
+	    scrollerGenreTable = new JScrollPane(tableGenreTable);
+	    scrollerGenreTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerGenreTable, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    GenreTypeTable.add(moreCenter, BorderLayout.WEST);
+	    GenreTypeTable.revalidate(); // Refresh the UI
+	    GenreTypeTable.repaint(); // Ensure it's redrawn
+	}
+
+	//getting data from db
+	public Object[][] getGenre() {
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
+
+    ArrayList<Object[]> list = new ArrayList<>();
+
+    try {
+        // Load the JDBC driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Establish connection
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM genre_type")) {
+
+            // Process the ResultSet
+            while (resultSet.next()) {
+                Object[] row = new Object[2];
+                row[0] = resultSet.getInt(1); // Assuming column 1 is int
+                row[1] = resultSet.getString(2); // Assuming column 2 is String           
+                list.add(row);
+
+                // Debug print
+//                System.out.println(
+//                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
+              //  );
+            }
+        }
+
+        // Convert the list to a 2D array
+        return list.toArray(new Object[0][2]);
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Print stack trace for debugging
+        return null;
+    }
+}
+
+	//refreshing genre type table
+	public void refreshGenreTable() {
+		tableModelGenre.setDataVector(getGenre(), new String[]{"genre_id", "description"});
+    }
+
 	
 	public void Media_TypeTablePanel() {
 	     // NORTH PANEL
@@ -429,9 +705,231 @@ public class GUI extends JFrame{
 	        panelNorth.add(label);
 	        
 	        Media_TypeTable.add(panelNorth, BorderLayout.NORTH);
+	    	
+    		//center panel
+    		JPanel centerPanel = new JPanel();
+    		centerPanel.setLayout(new GridBagLayout());
+    		GridBagConstraints gbc = new GridBagConstraints();
 
+            gbc.insets = new Insets(6, 6, 6, 6);
+            gbc.anchor = GridBagConstraints.WEST;
+
+            
+    		JLabel pID = new JLabel("Product ID");
+    		pID.setForeground(Color.BLACK);
+    		pID.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 1;
+            centerPanel.add(pID, gbc);
+            MTproduct_id = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 1;
+            centerPanel.add(MTproduct_id, gbc);
+    		
+    		JLabel mcode = new JLabel("Movie Code");
+    		mcode.setForeground(Color.BLACK);
+    		mcode.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 2;
+            centerPanel.add(mcode, gbc);
+            MTmovie_code = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 2;
+            centerPanel.add(MTmovie_code,gbc);
+    		
+    		JLabel avail = new JLabel("Availability");
+    		avail.setForeground(Color.BLACK);
+    		avail.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 3;
+            centerPanel.add(avail,gbc);
+            MTavailability = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 3;
+            centerPanel.add(MTavailability, gbc);
+    		
+    		JLabel releasedate = new JLabel("Release Date");
+    		releasedate.setForeground(Color.BLACK);
+    		releasedate.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 4;
+            centerPanel.add(releasedate , gbc);
+            MTrelease = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 4;
+            centerPanel.add(MTrelease, gbc);
+            
+            JLabel mediaType = new JLabel("Media Type");
+            mediaType.setForeground(Color.BLACK);
+            mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 5;
+            centerPanel.add(mediaType , gbc);
+            String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
+            MTmedia_type = new JComboBox(mediachoice);
+           //MTmedia_type = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 5;
+            centerPanel.add(MTmedia_type, gbc);
+            
+            JLabel copies = new JLabel("Copies Available");
+            copies.setForeground(Color.BLACK);
+            copies.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 6;
+            centerPanel.add(copies , gbc);
+            MTcopies = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 6;
+            centerPanel.add(MTcopies, gbc);
+            
+            JLabel rentprice = new JLabel("RentalPrice");
+            rentprice.setForeground(Color.BLACK);
+            rentprice.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 7;
+            centerPanel.add(rentprice , gbc);
+            MTrentprice = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 7;
+            centerPanel.add(MTrentprice, gbc);
+            
+            
+            Media_TypeTable.add(centerPanel , BorderLayout.EAST);
+    		
+            
+    		//SOUTH PANEL
+    		JPanel panelSouth = new JPanel();
+    		panelSouth.setLayout(new FlowLayout());
+    		panelSouth.setBackground(Color.decode("#fdfdfd"));
+    		
+    		btnAddInMediaTable = new JButton("Add");
+    		btnUpdateMediaTable = new JButton("Update");
+    		btnDeleteInMediaTable = new JButton("Delete");
+       		panelSouth.add(btnAddInMediaTable);
+    		panelSouth.add(btnUpdateMediaTable);
+    		panelSouth.add(btnDeleteInMediaTable);
+    		
+    		btnUpdateMediaTable.setActionCommand("UpdateMediaTable");
+    		btnDeleteInMediaTable.setActionCommand("DeleteInMediaTable");
+    		btnAddInMediaTable.setActionCommand("AddInMediaTable");
+    		
+    		Media_TypeTable.add(panelSouth, BorderLayout.SOUTH);
 		}
 	
+	
+	public void showMediaTable() {
+	    String[] col = {"product_id", "movie_code","availability", "release_date","media_type","copies_available","rental_price"};
+	    tableModelMedia = new DefaultTableModel(getMedia(), col);
+	    refreshAdminTable();
+	    tableMediaTable = new JTable(tableModelMedia);
+	    tableMediaTable.setEnabled(true); // Enable selection
+	    
+	    // Add a mouse click listener to the table
+	    tableMediaTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	       
+	        public void mouseClicked(java.awt.event.MouseEvent evt) {
+	            int row = tableMediaTable.getSelectedRow(); // Get selected row index
+	           
+	            
+	            if (row != -1) { // Ensure a valid cell is selected
+	                int product_id = (int)tableMediaTable.getValueAt(row,0);
+	                int movie_code = (int)tableMediaTable.getValueAt(row,1);
+	                String availability = (String)tableMediaTable.getValueAt(row,2);
+	                String release_date = (String)tableMediaTable.getValueAt(row,3);
+	                String media_type = (String)tableMediaTable.getValueAt(row,4);             
+	                int copies_available = (int)tableMediaTable.getValueAt(row,5); 
+	                float rental_price = (float)tableMediaTable.getValueAt(row,6); 
+	                
+	                MTproduct_id.setText(String.valueOf(product_id));
+	            	MTmovie_code.setText(String.valueOf(movie_code));
+	            	MTavailability.setText(availability);
+	            	MTrelease.setText(release_date);
+	            	MTmedia_type.setSelectedItem(media_type);
+	            	MTcopies.setText(String.valueOf(copies_available));
+	            	MTrentprice.setText(String.valueOf(rental_price));		               
+	            }
+	        }
+	    });
+	    
+	    scrollerMediaTable = new JScrollPane(tableMediaTable);
+	    scrollerMediaTable.setPreferredSize(new Dimension(500, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerMediaTable, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    Media_TypeTable.add(moreCenter, BorderLayout.WEST);
+	    Media_TypeTable.revalidate(); // Refresh the UI
+	    Media_TypeTable.repaint(); // Ensure it's redrawn
+	}
+
+	//getting data from db
+	public Object[][] getMedia() {
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
+
+    ArrayList<Object[]> list = new ArrayList<>();
+
+    try {
+        // Load the JDBC driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Establish connection
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM media_type")) {
+
+            // Process the ResultSet
+            while (resultSet.next()) {
+                Object[] row = new Object[7];
+                row[0] = resultSet.getInt(1); // Assuming column 1 is int
+                row[1] = resultSet.getInt(2); // Assuming column 2 is String
+                row[2] = resultSet.getString(3); // Assuming column 3 is int
+                row[3] = resultSet.getString(4); // Assuming column 4 is String
+                row[4] = resultSet.getString(5); // Assuming column 5 is String
+                row[5] = resultSet.getInt(6); // Assuming column 6 is String
+                row[6] = resultSet.getFloat(7); // Assuming column 7 is float          
+                list.add(row);
+            }
+        }
+
+        // Convert the list to a 2D array
+        return list.toArray(new Object[0][7]);
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Print stack trace for debugging
+        return null;
+    }
+}
+
+	//refreshing admin table
+	public void refreshMediaTable() {
+	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code","availability", "release_date", "media_type","copies_available","rental_price"});
+    }
+
+
+
+
+
+
+
+
 	public void Movie_reqTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -477,125 +975,6 @@ public class GUI extends JFrame{
 
 		}
 
-	//admin table
-	public void showAdminTable() {
-	    String[] col = {"admin_no", "first_name", "last_name", "password", "admin_level"};
-	    tableModelAdmin = new DefaultTableModel(getAdmin(), col);
-	    refreshAdminTable();
-	    tableAdminTable = new JTable(tableModelAdmin);
-	    tableAdminTable.setEnabled(true); // Enable selection
-	    
-	    // Add a mouse click listener to the table
-	    tableAdminTable.addMouseListener(new java.awt.event.MouseAdapter() {
-	       
-	        public void mouseClicked(java.awt.event.MouseEvent evt) {
-	            int row = tableAdminTable.getSelectedRow(); // Get selected row index
-	           
-	            
-	            if (row != -1) { // Ensure a valid cell is selected
-	                int admin_number = (int)tableAdminTable.getValueAt(row,0);
-	                String first_name = (String)tableAdminTable.getValueAt(row,1);
-	                String last_name = (String)tableAdminTable.getValueAt(row,2);
-	                String password = (String)tableAdminTable.getValueAt(row,3);             
-	                int admin_lvl = (int)tableAdminTable.getValueAt(row,4); 
-	                
-	                ATAdminNo.setText(String.valueOf(admin_number));
-	                ATFirst_Name.setText(first_name);
-	            	ATLast_Name.setText(last_name);
-	            	ATPass.setText(password);
-	            	ATAdminLevel.setText(String.valueOf(admin_lvl));
-
-	                // check if correct
-	                System.out.println(admin_number);
-	                System.out.println(first_name);
-	                System.out.println(last_name);
-	                System.out.println(password);
-	                System.out.println(admin_lvl);
-	               
-	            }
-	        }
-	    });
-	    
-	    scrollerAdminTable = new JScrollPane(tableAdminTable);
-	    scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
-	    
-	    // Center panel
-	    JPanel moreCenter = new JPanel(new BorderLayout());
-	    
-	    // CENTER PANEL center panel
-	    JPanel panelCenter = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
-	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
-	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    panelCenter.add(scrollerAdminTable, gbc);
-	    moreCenter.add(panelCenter, BorderLayout.CENTER);
-	    
-	    AdminTable.add(moreCenter, BorderLayout.WEST);
-	    AdminTable.revalidate(); // Refresh the UI
-	    AdminTable.repaint(); // Ensure it's redrawn
-	}
-
-	//getting data from db
-	public Object[][] getAdmin() {
-    String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "dl_MySQL_su";
-
-    ArrayList<Object[]> list = new ArrayList<>();
-
-    try {
-        // Load the JDBC driver
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
-
-            // Process the ResultSet
-            while (resultSet.next()) {
-                Object[] row = new Object[5];
-                row[0] = resultSet.getInt(1); // Assuming column 1 is int
-                row[1] = resultSet.getString(2); // Assuming column 2 is String
-                row[2] = resultSet.getString(3); // Assuming column 3 is int
-                row[3] = resultSet.getString(4); // Assuming column 4 is String
-                row[4] = resultSet.getInt(5); // Assuming column 5 is String
-                
-                list.add(row);
-
-                // Optional: Debug print
-                System.out.println(
-                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
-                );
-            }
-        }
-
-        // Convert the list to a 2D array
-        return list.toArray(new Object[0][5]);
-
-    } catch (Exception e) {
-        e.printStackTrace(); // Print stack trace for debugging
-        return null;
-    }
-}
-
-	//refreshing admin table
-	public void refreshAdminTable() {
-		tableModelAdmin.setDataVector(getAdmin(), new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"});
-    }
-
-	private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
-		int index = tableAdminTable.getSelectedRow();
-		TableModel model = tableAdminTable.getModel();
-		int value1 = Integer.parseInt(model.getValueAt(index,0).toString());
-		System.out.println(value1);
-		
-	}
-
 	public void TransactionsTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -626,14 +1005,24 @@ public class GUI extends JFrame{
 
 		}
 	
-
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
 		btnReports.addActionListener(listener);
 		btnEXIT.addActionListener(listener);
 		btnHome.addActionListener(listener);
+		
+		btnUpdateAdminTable.addActionListener(listener);
+		btnDeleteInAdminTable.addActionListener(listener);
+		btnAddInAdminTable.addActionListener(listener);
 
+		btnUpdateGenreTable.addActionListener(listener);
+       	btnDeleteInGenreTable.addActionListener(listener);
+       	btnAddInGenreTable.addActionListener(listener);
+       	
+       	btnUpdateMediaTable.addActionListener(listener);
+     	btnDeleteInMediaTable.addActionListener(listener);
+       	btnAddInMediaTable.addActionListener(listener);
 	}
 	
 
@@ -642,6 +1031,64 @@ public class GUI extends JFrame{
 //		tfName.getDocument().addDocumentListener(listener);
 //		taDesc.getDocument().addDocumentListener(listener);
 //	}
+	
+	
+	 // Retrieves the text from the JTextField.
+	public int getAdminNumber() {
+	    return Integer.parseInt(ATAdminNo.getText());
+	}
+	
+	public void setAdminNumber(String num) {
+		ATAdminNo.setText(num);
+	}
+	
+	public String getAdminFirstName() {
+	    return ATFirst_Name.getText();
+	}
+	
+	public void setAdminFirstName(String name) {
+		ATFirst_Name.setText(name);
+	}
+
+	public String getAdminLastName() {
+	    return ATLast_Name.getText();
+	}
+	
+	public void setAdminLastName(String name) {
+		ATLast_Name.setText(name);
+	}
+
+	public String getAdminPassword() {
+	    return ATPass.getText();
+	}
+	
+	public void setAdminPassword(String name) {
+		ATPass.setText(name);
+	}
+
+	public int getAdminLevel() {
+	    return Integer.parseInt(ATAdminLevel.getText());
+	}
+	
+	public void setAdminLevel(String num) {
+		ATAdminLevel.setText(num);
+	}
+	
+	public int getGenreID() {
+	    return Integer.parseInt(GTGenre_Num.getText());
+	}
+	
+	public void setGenreID(String num) {
+		GTGenre_Num.setText(num);
+	}
+	
+	public String getGenreDesc() {
+	    return GTDesc.getText();
+	}
+	
+	public void setGenreDesc(String desc) {
+		GTDesc.setText(desc);
+	}
 	
 	
 }
