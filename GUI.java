@@ -58,13 +58,12 @@ public class GUI extends JFrame{
 	
 	private JTextField MTproduct_id;
 	private JTextField MTmovie_code;
-	private JTextField MTavailability;
 	private JTextField MTrelease;
-	//private JTextField MTmedia_type;
 	private JTextField MTcopies;
 	private JTextField MTrentprice;
 	
 	private JComboBox MTmedia_type;
+	private JComboBox MTavailability;
 	
 	//admin table
 	private JScrollPane scrollerAdminTable;
@@ -743,7 +742,8 @@ public class GUI extends JFrame{
     		gbc.gridx = 1;
             gbc.gridy = 3;
             centerPanel.add(avail,gbc);
-            MTavailability = new JTextField(15);
+            String[] availability = {"", "YES", "NO"};
+            MTavailability = new JComboBox(availability);
     		gbc.gridx = 2;
             gbc.gridy = 3;
             centerPanel.add(MTavailability, gbc);
@@ -843,7 +843,7 @@ public class GUI extends JFrame{
 	                
 	                MTproduct_id.setText(String.valueOf(product_id));
 	            	MTmovie_code.setText(String.valueOf(movie_code));
-	            	MTavailability.setText(availability);
+	            	MTavailability.setSelectedItem(availability);
 	            	MTrelease.setText(release_date);
 	            	MTmedia_type.setSelectedItem(media_type);
 	            	MTcopies.setText(String.valueOf(copies_available));
@@ -900,7 +900,11 @@ public class GUI extends JFrame{
                 Object[] row = new Object[7];
                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
-                row[2] = resultSet.getString(3); // Assuming column 3 is int
+                String transmute = "NO";
+                if(resultSet.getString(3).equals("1")) {
+                	transmute = "YES";
+                }
+                row[2] = transmute;
                 row[3] = resultSet.getString(4); // Assuming column 4 is String
                 row[4] = resultSet.getString(5); // Assuming column 5 is String
                 row[5] = resultSet.getInt(6); // Assuming column 6 is String
@@ -1088,6 +1092,66 @@ public class GUI extends JFrame{
 	
 	public void setGenreDesc(String desc) {
 		GTDesc.setText(desc);
+	}
+	
+
+	
+	
+	public int getMProductID() {
+	    return Integer.parseInt(MTproduct_id.getText());
+	}
+	
+	public void setMProductID(String num) {
+		MTproduct_id.setText(num);
+	}
+	
+	public int getMmovieCode() {
+	    return Integer.parseInt(MTmovie_code.getText());
+	}
+	
+	public void setMmovieCode(String num) {
+		MTmovie_code.setText(num);
+	}
+	
+	public String getMediaRelease() {
+	    return MTrelease.getText();
+	}
+	
+	public void setMediaRelease(String desc) {
+		MTrelease.setText(desc);
+	}
+	
+	public int getMediaCopies() {
+	    return Integer.parseInt(MTcopies.getText());
+	}
+	
+	public void setMediaCopies(String desc) {
+			MTcopies.setText(desc);
+		}
+		
+	public float getRentalPrice() {
+	    return Float.parseFloat(MTrentprice.getText());
+	}
+	
+	public void setRentalPrice(String num) {
+		MTrentprice.setText(num);
+	}
+	
+	public String getMavailability() {
+	    return MTavailability.getSelectedItem().toString();
+	}
+	
+	public void setMavailability(String num) {
+		MTavailability.setSelectedItem(num);
+	}
+	
+	
+	public String getMmedia_type() {
+	    return MTmedia_type.getSelectedItem().toString();
+	}
+	
+	public void setMmedia_type(String num) {
+		MTmedia_type.setSelectedItem(num);
 	}
 	
 	
