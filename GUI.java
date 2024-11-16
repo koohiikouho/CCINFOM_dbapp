@@ -1,17 +1,13 @@
-<<<<<<< HEAD:GUI.java
-=======
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
->>>>>>> 33e75de2226767078185fef0b089d55695bcdb43:GUI
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import java.util.Scanner;
 
 public class GUI extends JFrame{
 	
@@ -545,9 +541,9 @@ public class GUI extends JFrame{
 
 	//getting data from db
 	public Object[][] getAdmin() {
-		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-		String username = "user";
-		String password= "12345";
+    String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
 
     ArrayList<Object[]> list = new ArrayList<>();
 
