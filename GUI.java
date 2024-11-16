@@ -453,12 +453,12 @@ public class GUI extends JFrame{
 
 		//getting data from db
 	public Object[][] getAdmin() {
-			String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-			String username = "user";
-			String password= "12345";
-//		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//	    String username = "root";
-//	    String password = "dl_MySQL_su";
+//			String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//			String username = "user";
+//			String password= "12345";
+		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+	    String username = "root";
+	    String password = "dl_MySQL_su";
 
 	    ArrayList<Object[]> list = new ArrayList<>();
 
