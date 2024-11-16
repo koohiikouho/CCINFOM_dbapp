@@ -1,5 +1,4 @@
 
-
 CREATE TABLE movies(
 	movie_code INT PRIMARY KEY,
 	movie_name VARCHAR(100),
@@ -177,6 +176,22 @@ INSERT INTO `transactions` VALUES
 (0013, 1000,NULL, NULL, NULL, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
+
+UPDATE `transactions`
+SET payment = '750.50'
+WHERE transaction_no = 0003;
+
+UPDATE `transactions`
+SET payment = '2315.00'
+WHERE transaction_no = 0003;
+
+UPDATE `transactions`
+SET payment = '694.80'
+WHERE transaction_no = 0009;
+
+UPDATE `media_type`
+SET movie_code = 6003
+WHERE product_id = 3 AND release_date = 2004 AND media_type = 'DVD';
 
 CREATE TABLE admins(
  admin_no INT PRIMARY KEY auto_increment,
