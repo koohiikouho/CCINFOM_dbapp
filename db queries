@@ -1,0 +1,48 @@
+Queries List
+
+View All Movies In the Database
+SELECT *
+FROM movies m
+ORDER BY m.movie_code;
+
+View How Many Times Each Movie has been borrowed
+(Using Name)
+SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+WHERE m.movie_name LIKE ? // For JAVA GUI '?' as placeholder
+GROUP BY m.movie_name, t.movie_code
+ORDER BY t.movie_code;
+
+(Using Code)
+SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+FROM transactions t
+JOIN movies m ON m.movie_code = t.movie_code
+WHERE m.movie_code = ? // For JAVA GUI '?' as placeholder
+GROUP BY m.movie_name, t.movie_code
+ORDER BY t.movie_code;
+
+Viewing user profiles
+(User Data)
+SELECT *
+FROM users u
+WHERE u.user_id = ?; // For JAVA GUI '?' as placeholder
+
+(Borrow History)
+SELECT u.user_no,u.first_name,u.last_name,m.movie_name,t.date_borrowed,t.date_returned
+FROM transactions t
+JOIN users u ON u.user_no = t.user_no
+JOIN movies m ON m.movie_code = t.movie_code
+WHERE u.user_id = ? // For JAVA GUI '?' as placeholder
+ORDER BY t.date_borrowed;
+
+Change password
+UPDATE `users`
+SET `password` = ?
+WHERE user_no = ? AND `password` = ?;
+
+Request a movie
+INSERT 
+INTO movie_req 
+(movie_name, date filed, user_no, approved, in_stock, media_type) " +
+"VALUES (?, ?, ?, ?, ?, ?);
