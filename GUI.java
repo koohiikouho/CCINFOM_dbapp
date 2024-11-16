@@ -375,9 +375,6 @@ public class GUI extends JFrame{
             gbc.gridy = 5;
             centerPanel.add(ATAdminLevel, gbc);
             
-            
-         
-            
             AdminTable.add(centerPanel , BorderLayout.EAST);
     		
     		        	
@@ -400,8 +397,113 @@ public class GUI extends JFrame{
     		AdminTable.add(panelSouth, BorderLayout.SOUTH);
     		
     	}
-    	
-	
+	//admin table
+	public void showAdminTable() {
+		    String[] col = {"admin_no", "first_name", "last_name", "password", "admin_level"};
+		    tableModelAdmin = new DefaultTableModel(getAdmin(), col);
+		    refreshAdminTable();
+		    tableAdminTable = new JTable(tableModelAdmin);
+		    tableAdminTable.setEnabled(true); // Enable selection
+		    
+		    // Add a mouse click listener to the table
+		    tableAdminTable.addMouseListener(new java.awt.event.MouseAdapter() {
+		       
+		        public void mouseClicked(java.awt.event.MouseEvent evt) {
+		            int row = tableAdminTable.getSelectedRow(); // Get selected row index
+		           
+		            
+		            if (row != -1) { // Ensure a valid cell is selected
+		                int admin_number = (int)tableAdminTable.getValueAt(row,0);
+		                String first_name = (String)tableAdminTable.getValueAt(row,1);
+		                String last_name = (String)tableAdminTable.getValueAt(row,2);
+		                String password = (String)tableAdminTable.getValueAt(row,3);             
+		                int admin_lvl = (int)tableAdminTable.getValueAt(row,4); 
+		                
+		                ATAdminNo.setText(String.valueOf(admin_number));
+		                ATFirst_Name.setText(first_name);
+		            	ATLast_Name.setText(last_name);
+		            	ATPass.setText(password);
+		            	ATAdminLevel.setText(String.valueOf(admin_lvl));		               
+		            }
+		        }
+		    });
+		    
+		    scrollerAdminTable = new JScrollPane(tableAdminTable);
+		    scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+		    
+		    // Center panel
+		    JPanel moreCenter = new JPanel(new BorderLayout());
+		    
+		    // CENTER PANEL center panel
+		    JPanel panelCenter = new JPanel(new GridBagLayout());
+		    GridBagConstraints gbc = new GridBagConstraints();
+		    gbc.gridx = 0;
+		    gbc.gridy = 0;
+		    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		    gbc.insets = new Insets(10, 10, 10, 10);
+		    panelCenter.add(scrollerAdminTable, gbc);
+		    moreCenter.add(panelCenter, BorderLayout.CENTER);
+		    
+		    AdminTable.add(moreCenter, BorderLayout.WEST);
+		    AdminTable.revalidate(); // Refresh the UI
+		    AdminTable.repaint(); // Ensure it's redrawn
+		}
+
+		//getting data from db
+	public Object[][] getAdmin() {
+			String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+			String username = "user";
+			String password= "12345";
+//		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//	    String username = "root";
+//	    String password = "dl_MySQL_su";
+
+	    ArrayList<Object[]> list = new ArrayList<>();
+
+	    try {
+	        // Load the JDBC driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+	        // Establish connection
+	        try (Connection connection = DriverManager.getConnection(url, username, password);
+	             Statement statement = connection.createStatement();
+	             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
+
+	            // Process the ResultSet
+	            while (resultSet.next()) {
+	                Object[] row = new Object[5];
+	                row[0] = resultSet.getInt(1); // Assuming column 1 is int
+	                row[1] = resultSet.getString(2); // Assuming column 2 is String
+	                row[2] = resultSet.getString(3); // Assuming column 3 is int
+	                row[3] = resultSet.getString(4); // Assuming column 4 is String
+	                row[4] = resultSet.getInt(5); // Assuming column 5 is String
+	                
+	                list.add(row);
+
+	                // Debug print
+//	                System.out.println(
+//	                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
+	              //  );
+	            }
+	        }
+
+	        // Convert the list to a 2D array
+	        return list.toArray(new Object[0][5]);
+
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Print stack trace for debugging
+	        return null;
+	    }
+	}
+
+		//refreshing admin table
+	public void refreshAdminTable() {
+			tableModelAdmin.setDataVector(getAdmin(), new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"});
+	    }
+
+		
 	public void GenreTypeTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -477,125 +579,6 @@ public class GUI extends JFrame{
 
 		}
 
-	//admin table
-	public void showAdminTable() {
-	    String[] col = {"admin_no", "first_name", "last_name", "password", "admin_level"};
-	    tableModelAdmin = new DefaultTableModel(getAdmin(), col);
-	    refreshAdminTable();
-	    tableAdminTable = new JTable(tableModelAdmin);
-	    tableAdminTable.setEnabled(true); // Enable selection
-	    
-	    // Add a mouse click listener to the table
-	    tableAdminTable.addMouseListener(new java.awt.event.MouseAdapter() {
-	       
-	        public void mouseClicked(java.awt.event.MouseEvent evt) {
-	            int row = tableAdminTable.getSelectedRow(); // Get selected row index
-	           
-	            
-	            if (row != -1) { // Ensure a valid cell is selected
-	                int admin_number = (int)tableAdminTable.getValueAt(row,0);
-	                String first_name = (String)tableAdminTable.getValueAt(row,1);
-	                String last_name = (String)tableAdminTable.getValueAt(row,2);
-	                String password = (String)tableAdminTable.getValueAt(row,3);             
-	                int admin_lvl = (int)tableAdminTable.getValueAt(row,4); 
-	                
-	                ATAdminNo.setText(String.valueOf(admin_number));
-	                ATFirst_Name.setText(first_name);
-	            	ATLast_Name.setText(last_name);
-	            	ATPass.setText(password);
-	            	ATAdminLevel.setText(String.valueOf(admin_lvl));
-
-	                // check if correct
-	                System.out.println(admin_number);
-	                System.out.println(first_name);
-	                System.out.println(last_name);
-	                System.out.println(password);
-	                System.out.println(admin_lvl);
-	               
-	            }
-	        }
-	    });
-	    
-	    scrollerAdminTable = new JScrollPane(tableAdminTable);
-	    scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
-	    
-	    // Center panel
-	    JPanel moreCenter = new JPanel(new BorderLayout());
-	    
-	    // CENTER PANEL center panel
-	    JPanel panelCenter = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
-	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
-	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    panelCenter.add(scrollerAdminTable, gbc);
-	    moreCenter.add(panelCenter, BorderLayout.CENTER);
-	    
-	    AdminTable.add(moreCenter, BorderLayout.WEST);
-	    AdminTable.revalidate(); // Refresh the UI
-	    AdminTable.repaint(); // Ensure it's redrawn
-	}
-
-	//getting data from db
-	public Object[][] getAdmin() {
-    String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "dl_MySQL_su";
-
-    ArrayList<Object[]> list = new ArrayList<>();
-
-    try {
-        // Load the JDBC driver
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
-
-            // Process the ResultSet
-            while (resultSet.next()) {
-                Object[] row = new Object[5];
-                row[0] = resultSet.getInt(1); // Assuming column 1 is int
-                row[1] = resultSet.getString(2); // Assuming column 2 is String
-                row[2] = resultSet.getString(3); // Assuming column 3 is int
-                row[3] = resultSet.getString(4); // Assuming column 4 is String
-                row[4] = resultSet.getInt(5); // Assuming column 5 is String
-                
-                list.add(row);
-
-                // Optional: Debug print
-                System.out.println(
-                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
-                );
-            }
-        }
-
-        // Convert the list to a 2D array
-        return list.toArray(new Object[0][5]);
-
-    } catch (Exception e) {
-        e.printStackTrace(); // Print stack trace for debugging
-        return null;
-    }
-}
-
-	//refreshing admin table
-	public void refreshAdminTable() {
-		tableModelAdmin.setDataVector(getAdmin(), new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"});
-    }
-
-	private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
-		int index = tableAdminTable.getSelectedRow();
-		TableModel model = tableAdminTable.getModel();
-		int value1 = Integer.parseInt(model.getValueAt(index,0).toString());
-		System.out.println(value1);
-		
-	}
-
 	public void TransactionsTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -626,13 +609,17 @@ public class GUI extends JFrame{
 
 		}
 	
-
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
 		btnReports.addActionListener(listener);
 		btnEXIT.addActionListener(listener);
 		btnHome.addActionListener(listener);
+		
+		btnUpdateAdminTable.addActionListener(listener);
+		btnDeleteInAdminTable.addActionListener(listener);
+		btnAddInAdminTable.addActionListener(listener);
+
 
 	}
 	
@@ -643,5 +630,49 @@ public class GUI extends JFrame{
 //		taDesc.getDocument().addDocumentListener(listener);
 //	}
 	
+	
+	 // Retrieves the text from the JTextField.
+	public int getAdminNumber() {
+	    return Integer.parseInt(ATAdminNo.getText());
+	}
+	
+	public void setAdminNumber(String num) {
+		ATAdminNo.setText(num);
+	}
+	
+	public String getAdminFirstName() {
+	    return ATFirst_Name.getText();
+	}
+	
+	public void setAdminFirstName(String name) {
+		ATFirst_Name.setText(name);
+	}
+
+	public String getAdminLastName() {
+	    return ATLast_Name.getText();
+	}
+	
+	public void setAdminLastName(String name) {
+		ATLast_Name.setText(name);
+	}
+
+	
+	public String getAdminPassword() {
+	    return ATPass.getText();
+	}
+	public void setAdminPassword(String name) {
+		ATPass.setText(name);
+	}
+
+
+	public int getAdminLevel() {
+	    return Integer.parseInt(ATAdminLevel.getText());
+	}
+	
+	public void setAdminLevel(String num) {
+		ATAdminLevel.setText(num);
+	}
+	
+
 	
 }
