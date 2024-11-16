@@ -95,7 +95,6 @@ GROUP BY m.movie_code
 ORDER BY `Times Borrowed` DESC;
 
 Most popular movie genres are based on borrow rate(per day, month, year)
-
 Day
 SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, DAY(t.date_borrowed) AS `Day`, gt.genre_id,gt.description, COUNT(t.movie_code) AS `Times Borrowed`
 FROM transactions t
@@ -122,3 +121,81 @@ JOIN genre_type gt ON gt.genre_id = m.genre_id
 WHERE YEAR(t.date_borrowed) = '?'
 GROUP BY YEAR(t.date_borrowed), gt.genre_id
 ORDER BY `Times Borrowed` DESC;
+
+approved and disapproved movie requests
+SELECT mr.date_filed,mr.movie_name,mr.media_type,
+CASE 
+        WHEN mr.approved = 1 THEN 'Approved'
+        WHEN mr.approved = 0 THEN 'Rejected'
+        WHEN mr.approved IS NULL THEN 'Processing'
+    END AS `Status`
+FROM movie_req mr
+WHERE mr.date_filed IS NOT NULL
+ORDER BY mr.date_filed;
+
+most requested movies
+In general
+SELECT mr.movie_name,COUNT(mr.movie_name) AS `Number of Requests`
+FROM movie_req mr
+GROUP BY mr.movie_name
+ORDER BY `Number of Requests` DESC;
+
+Monthly
+SELECT YEAR(mr.date_filed) AS `Year`, MONTH(mr.date_filed) AS `Month`,mr.movie_name,COUNT(mr.movie_name) AS `Number of Requests`
+FROM movie_req mr
+WHERE YEAR(mr.date_filed) = '?' AND MONTH(mr.date_filed) = '?'
+GROUP BY YEAR(mr.date_filed), MONTH(mr.date_filed), mr.movie_name
+ORDER BY `Number of Requests` DESC;
+
+Yearly
+SELECT YEAR(mr.date_filed) AS `Year`,mr.movie_name,COUNT(mr.movie_name) AS `Number of Requests`
+FROM movie_req mr
+WHERE YEAR(mr.date_filed) = '?'
+GROUP BY YEAR(mr.date_filed),mr.movie_name
+ORDER BY `Number of Requests` DESC;
+
+rental history of a movie
+SELECT m.movie_code,m.movie_name,u.user_no,CONCAT(u.first_name,' ',u.last_name) AS `Borrower Name`,t.date_borrowed,t.date_toreturn,t.date_returned
+FROM transactions t
+JOIN users u ON t.user_no = u.user_no
+JOIN movies m ON m.movie_code = t.movie_code
+WHERE m.movie_code = '?'
+ORDER BY m.movie_code;
+
+Users who borrowed the most movies
+Monthly
+SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`,u.first_name,u.last_name,COUNT(t.user_no) AS `Number of Movies Borrowed`
+FROM users u
+JOIN transactions t ON u.user_no = t.user_no
+WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+GROUP BY `year`,`month`,t.user_no
+ORDER BY `Number of Movies Borrowed` DESC;
+
+Yearly
+SELECT YEAR(t.date_borrowed) AS `Year`,u.first_name,u.last_name,COUNT(t.user_no) AS `Number of Movies Borrowed`
+FROM users u
+JOIN transactions t ON u.user_no = t.user_no
+WHERE YEAR(t.date_borrowed) = '?'
+GROUP BY `year`,t.user_no
+ORDER BY `Number of Movies Borrowed` DESC;
+
+successful return rate (on time)
+Monthly
+SELECT YEAR(t.date_borrowed) AS `Year`,MONTH(t.date_borrowed) AS `Month`,FORMAT((SUM(t.date_returned <= t.date_toreturn AND t.date_returned IS NOT NULL) / COUNT(t.transaction_no)) * 100, 2) AS `Successful Return Rate (%)`
+FROM transactions t
+WHERE t.date_returned IS NOT NULL AND YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed);
+
+Yearly
+SELECT YEAR(t.date_borrowed) AS `Year`,FORMAT((SUM(t.date_returned <= t.date_toreturn AND t.date_returned IS NOT NULL) / COUNT(t.transaction_no)) * 100, 2) AS `Successful Return Rate (%)`
+FROM transactions t
+WHERE t.date_returned IS NOT NULL AND YEAR(t.date_borrowed) = '?'
+GROUP BY YEAR(t.date_borrowed);
+
+users who violated the return policy
+SELECT u.user_no,u.first_name,u.last_name,m.movie_name,t.date_borrowed,t.date_toreturn,t.date_returned,t.payment,IF(t.date_returned IS NOT NULL, 'Resolved', 'Unresolved') AS `Status`
+FROM transactions t
+JOIN users u ON t.user_no = u.user_no
+JOIN movies m ON t.movie_code = m.movie_code
+WHERE t.date_toreturn < t.date_returned OR (t.date_toreturn < CURDATE() AND t.date_returned IS NULL)
+ORDER BY t.transaction_no;
