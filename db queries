@@ -22,6 +22,14 @@ WHERE m.movie_code = ? // For JAVA GUI '?' as placeholder
 GROUP BY m.movie_name, t.movie_code
 ORDER BY t.movie_code;
 
+See reviews per movie
+SELECT u.first_name,u.last_name,m.movie_name,r.stars,r.review
+FROM review r
+JOIN movies m ON m.movie_code = r.movie_code
+JOIN users u ON u.user_no = r.user_no
+WHERE m.movie_code = '?'
+ORDER BY m.movie_code;
+
 Viewing user profiles
 (User Data)
 SELECT *
@@ -35,6 +43,14 @@ JOIN users u ON u.user_no = t.user_no
 JOIN movies m ON m.movie_code = t.movie_code
 WHERE u.user_id = ? // For JAVA GUI '?' as placeholder
 ORDER BY t.date_borrowed;
+
+(User Review History)
+SELECT u.first_name,u.last_name,m.movie_name,r.stars,r.review
+FROM review r
+JOIN movies m ON m.movie_code = r.movie_code
+JOIN users u ON u.user_no = r.user_no
+WHERE u.user_no = '?'
+ORDER BY m.movie_code;
 
 Change password
 UPDATE `users`
