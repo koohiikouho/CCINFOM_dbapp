@@ -8,9 +8,6 @@ CREATE TABLE movies(
 	genre_id INT
 );
 
-LOCK TABLES `movies` WRITE;
-/*!40000 ALTER TABLE `movies` DISABLE KEYS */;
-
 INSERT INTO `movies` VALUES 
 (1000,'Top Gun',1986,'PG-13','en',1),
 (1001,'Avengers: Endgame',2019,'PG-13','en',1),
@@ -46,15 +43,11 @@ INSERT INTO `movies` VALUES
 (1004,'Black Panther',2018,'PG-13','en',1),
 (1005,NULL,2000,'R',NULL,1);
 
-/*!40000 ALTER TABLE `movies` ENABLE KEYS */;
-UNLOCK TABLES;
-
 CREATE TABLE genre_type(
 	genre_id INT PRIMARY KEY,
     `description` text(65535)
 );
-LOCK TABLES `genre_type` WRITE;
-/*!40000 ALTER TABLE `genre_type` DISABLE KEYS */;
+
 INSERT INTO `genre_type` VALUES
 (0,'Other')
 ,(1,'Action')
@@ -65,10 +58,7 @@ INSERT INTO `genre_type` VALUES
 ,(6,'Fantasy/Animation')
 ,(7,'Romance')
 ,(8,'Drama/Thriller')
-,(9,'Musical')
-;
-/*!40000 ALTER TABLE `genre_type` ENABLE KEYS */;
-UNLOCK TABLES;
+,(9,'Musical');
 
 
 CREATE TABLE users(
@@ -78,24 +68,20 @@ CREATE TABLE users(
     email VARCHAR(50),
     birthday VARCHAR(50),
     `password` VARCHAR(50)
-);
+)AUTO_INCREMENT = 0;
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES 
-(0001,'Lebron','James','kingjamesyear21@gmail.com','December 30,1984','S1rive4GRea1ness')
-,(0002,'King','Von','kingvongreatest@gmail.com','August 9,1994','SatansGr8testS01dIer')
-,(0003,'Jamar','Pittman','popsJamar123@hotmail.com','Febuary 21,1970','Wazp0Pswr0ng4ThIs')
-,(0004,'Kamala','Harris','kamala2024@gmail.com','October 20,1964','Kamala4Pres')
-,(0005,'Hailey','Welch','hawktuahspitonthatthang@gmail.com','July 13,2002','HawkTuahSpitonThat1hang')
-,(0006,'Mikha','Lim','mikha.lim@gmail.com','November 8,2003','1slangPantropiko')
-,(0007,'Freddie','Freeman','freediefreemandoyers@gmail.com', 'September 12,1989','LetsGoDoyers')
-,(0008,'Jason','Belmonte','jasonbelmonte@yahoo.com','July 29,1983','2HGoat4ever')
-,(0009,'Kobe','Bryant','kobebryant24@yahoo.com','August 24,1978','Mamba4ever')
-,(0010,'','','dalermendhi@gmail.com','Febuary 1,1999','password123')
-,(0011,'Donald','Trump',NULL,NULL,'');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `users` (first_name,last_name,email,birthday,`password`) VALUES 
+('Lebron','James','kingjamesyear21@gmail.com','December 30,1984','S1rive4GRea1ness')
+,('King','Von','kingvongreatest@gmail.com','August 9,1994','SatansGr8testS01dIer')
+,('Jamar','Pittman','popsJamar123@hotmail.com','Febuary 21,1970','Wazp0Pswr0ng4ThIs')
+,('Kamala','Harris','kamala2024@gmail.com','October 20,1964','Kamala4Pres')
+,('Hailey','Welch','hawktuahspitonthatthang@gmail.com','July 13,2002','HawkTuahSpitonThat1hang')
+,('Mikha','Lim','mikha.lim@gmail.com','November 8,2003','1slangPantropiko')
+,('Freddie','Freeman','freediefreemandoyers@gmail.com', 'September 12,1989','LetsGoDoyers')
+,('Jason','Belmonte','jasonbelmonte@yahoo.com','July 29,1983','2HGoat4ever')
+,('Kobe','Bryant','kobebryant24@yahoo.com','August 24,1978','Mamba4ever')
+,('','','dalermendhi@gmail.com','Febuary 1,1999','password123')
+,('Donald','Trump',NULL,NULL,'');
 
 CREATE TABLE review(
 	review_no INT PRIMARY KEY auto_increment,
@@ -103,23 +89,22 @@ CREATE TABLE review(
     review text(65535),
     movie_code INT,
     user_no INT
-);
+)AUTO_INCREMENT = 0;
 
-LOCK TABLES `review` WRITE;
-/*!40000 ALTER TABLE `review` DISABLE KEYS */;
-INSERT INTO `review` VALUES 
-(0001,10,'Amazing Out of Body experience will recommend to everyone #GoatApproved',8000,0001)
-,(0002,8,'Extremely emotional with memorable scenes a must watch with friends family and significant other#JackWillLiveForever',7000,0001)
-,(0003,9,'Hay naku po nakakakilig sobra OMG very relatable especially sa mga OFW around da werld sana naman lahat ng tao makakahanap ng pagibig',7001,0006)
-,(0004,3,'Honestly pretty boring definetly aged bad and would not recommend anyone to watch it unless you wanna see scifi history',5002,0008)
-,(0005,7,'Love the movie they made this NIGGA Shrek a fucking tank like DAMNNN I would shot the nigga if I saw him tho good movie #InnocentTillGuilty',6002,0002)
-,(0006,5,'Average at best #SpitonThatThang',9002,0005)
-,(0007,9,'Absolute Cinema was really sad when Mufasa killed Simbas Dad dont worry my brothers revenge is certain #Pops',6001,0003)
-,(0008,10,'Nice will recommend to all',6001,NULL)
-,(0009,1,'I would not recommend this to my dog boring trash',1010,0007)
-,(0010,8,'',1000,0010);
-/*!40000 ALTER TABLE `review` ENABLE KEYS */;
-UNLOCK TABLES;
+SELECT *
+FROM review;
+INSERT INTO `review` (stars,review,movie_code,user_no) VALUES 
+(10,'Amazing Out of Body experience will recommend to everyone #GoatApproved',8000,0001)
+,(8,'Extremely emotional with memorable scenes a must watch with friends family and significant other#JackWillLiveForever',7000,0001)
+,(9,'Hay naku po nakakakilig sobra OMG very relatable especially sa mga OFW around da werld sana naman lahat ng tao makakahanap ng pagibig',7001,0006)
+,(3,'Honestly pretty boring definetly aged bad and would not recommend anyone to watch it unless you wanna see scifi history',5002,0008)
+,(7,'Love the movie they made this NIGGA Shrek a fucking tank like DAMNNN I would shot the nigga if I saw him tho good movie #InnocentTillGuilty',6002,0002)
+,(5,'Average at best #SpitonThatThang',9002,0005)
+,(9,'Absolute Cinema was really sad when Mufasa killed Simbas Dad dont worry my brothers revenge is certain #Pops',6001,0003)
+,(10,'Nice will recommend to all',6001,NULL)
+,(1,'I would not recommend this to my dog boring trash',1010,0007)
+,(8,'',1000,0010);
+
 
 CREATE TABLE movie_req(
 	request_number INT PRIMARY KEY auto_increment,
@@ -129,69 +114,48 @@ CREATE TABLE movie_req(
     approved BIT,
     in_stock BIT,
     media_type VARCHAR(50)
-);
+) AUTO_INCREMENT = 0;
 
-LOCK TABLES `movie_req` WRITE;
-/*!40000 ALTER TABLE `movie_req` DISABLE KEYS */;
-INSERT INTO `movie_req` VALUES
-(0001, 'The SpongeBob Movie', '2024-01-01', 0001, 1, 0, 'DVD'),
-(0002, 'Deadpool 2', '2024-01-02', 0002, 1, 1, 'Online'),
-(0003, 'Star Wars: The Force Awakens', '2024-09-11', 0003, NULL, NULL, 'VHS'),
-(0004, '42', '2024-09-22', 0006, 1, 1, 'DVD'),
-(0005, 'Barbie', '2024-09-30', 0001, 1, 1, 'Online'),
-(0006, 'Terminator 2: Judgement Day', '2024-10-01', 0004, 0, 0, 'CD'),
-(0007, 'Kingpin', '2024-10-12', 0008, 0, 1, 'CD'),
-(0008, 'Notting Hill', '2024-10-24', 0003, 1, 1, 'DVD'),
-(0009, 'Sing', '2024-11-01', 0015, 1, 0, 'Online'),
-(0010, 'scdsfdsvdsdsf', NULL, 0001, NULL, NULL, '');
-/*!40000 ALTER TABLE `movie_req` ENABLE KEYS */;
-UNLOCK TABLES;
+
+INSERT INTO `movie_req` (movie_name,date_filed,user_no,approved,in_stock,media_type) VALUES
+('The SpongeBob Movie', '2024-01-01', 0001, 1, 0, 'DVD'),
+('Deadpool 2', '2024-01-02', 0002, 1, 1, 'Online'),
+('Star Wars: The Force Awakens', '2024-09-11', 0003, NULL, NULL, 'VHS'),
+('42', '2024-09-22', 0006, 1, 1, 'DVD'),
+('Barbie', '2024-09-30', 0001, 1, 1, 'Online'),
+('Terminator 2: Judgement Day', '2024-10-01', 0004, 0, 0, 'CD'),
+('Kingpin', '2024-10-12', 0008, 0, 1, 'CD'),
+('Notting Hill', '2024-10-24', 0003, 1, 1, 'DVD'),
+('Sing', '2024-11-01', 0015, 1, 0, 'Online'),
+('scdsfdsvdsdsf', NULL, 0001, NULL, NULL, '');
 
 CREATE TABLE transactions(
-	transaction_no INT auto_increment,
+	transaction_no INT auto_increment PRIMARY KEY,
     movie_code INT,
+    product_id INT,
     user_no INT,
     date_borrowed DATE,
     date_toreturn DATE,
     date_returned DATE,
     payment DECIMAL(6,2),
     admin_no INT
-);
+) AUTO_INCREMENT = 0;
 
-LOCK TABLES `transactions` WRITE;
-/*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES 
-(0001, 8000,0001, '2024-01-01', '2024-01-08', '2024-01-08', 175.00, 0001),
-(0002, 7000,0001, '2024-01-08', '2024-01-15', '2024-01-10', 50.00, 0001),
-(0003, 7001,0006, '2024-02-25', '2024-03-25', '2024-03-26', 750.50, 0004),
-(0004, 5002,0008, '2024-03-28', '2024-07-01', NULL, NULL, 0003),
-(0005, 6002,0002, '2024-07-01', '2024-09-01', '2024-10-01', 2315.00, 0003),
-(0006, 9002,0005, '2024-07-03', '2024-07-04', '2024-07-04', 20.00, 0002),
-(0007, 6001,0003, '2024-08-01', '2024-08-24', '2024-08-24', 600.00, 0002),
-(0008, 3002,0005, '2024-10-01', '2024-11-01', '2024-11-01', 500.00, 0001),
-(0009, 8001,0004, '2024-10-15', '2024-10-30', '2024-11-07', 694.80, 0003),
-(0010, 4001,0009, '2024-10-20', '2024-10-31', '2024-10-31', 220.00, 0002),
-(0011, 4001,0002, '2024-11-01', '2024-11-30', NULL, NULL, 0005),
-(0012, 1000,0010, '2024-11-15', '2024-11-23', '2024-11-23', 35.00, 0005),
-(0013, 1000,NULL, NULL, NULL, NULL, NULL, NULL);
-/*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
-UNLOCK TABLES;
-
-UPDATE `transactions`
-SET payment = '750.50'
-WHERE transaction_no = 0003;
-
-UPDATE `transactions`
-SET payment = '2315.00'
-WHERE transaction_no = 0003;
-
-UPDATE `transactions`
-SET payment = '694.80'
-WHERE transaction_no = 0009;
-
-UPDATE `media_type`
-SET movie_code = 6003
-WHERE product_id = 3 AND release_date = 2004 AND media_type = 'DVD';
+INSERT INTO `transactions` (movie_code,product_id,user_no,date_borrowed,date_toreturn,date_returned,payment,admin_no)
+VALUES
+(8000,3005, 0001, '2024-01-01', '2024-01-08', '2024-01-08', 175.00, 0001),
+(7000,3000,0001, '2024-01-08', '2024-01-15', '2024-01-10', 50.00, 0001),
+(7001,3004,0006, '2024-02-25', '2024-03-25', '2024-03-26', 750.50, 0004),
+(5002,1002,0008, '2024-03-28', '2024-07-01', NULL, NULL, 0003),
+(6002,3006,0002, '2024-07-01', '2024-09-01', '2024-10-01', 2315.00, 0003),
+(9002,5006,0005, '2024-07-03', '2024-07-04', '2024-07-04', 20.00, 0002),
+(6001,2002,0003,'2024-08-01', '2024-08-24', '2024-08-24', 600.00, 0002),
+(3002,5010,0005, '2024-10-01', '2024-11-01', '2024-11-01', 620.00, 0001),
+(8001,4009,0004,'2024-10-15', '2024-10-30', '2024-11-07', 694.80, 0003),
+(4001,5012,0009, '2024-10-20', '2024-10-31', '2024-10-31', 220.00, 0002),
+(4001,5012,0002, '2024-11-01', '2024-11-30', NULL, NULL, 0005),
+(1000,NULL,0010, '2024-11-15', '2024-11-23', '2024-11-23', 35.00, 0005),
+(1000,NULL,NULL, NULL, NULL, NULL, NULL, NULL);
 
 CREATE TABLE admins(
  admin_no INT PRIMARY KEY auto_increment,
@@ -199,23 +163,19 @@ first_name VARCHAR(50),
 last_name VARCHAR(50),
 `password` VARCHAR(50),
 admin_level INT
-);
+) AUTO_INCREMENT = 0001;
 
-LOCK TABLES `admins` WRITE;
-/*!40000 ALTER TABLE `admins` DISABLE KEYS */;
-INSERT INTO `admins` VALUES 
-
-(0001,'John','Smith','Admin1p@ssw0rd*',1),
-(0002,'Meghan','Dela Cruz','Admin2p@ssw0rd*',1),
-(0003,'Robert','Harris','St0reManager1p@ssw0rd*',2),
-(0004,'Tashuan','Stevenson','St0reManager2p@ssw0rd*',2),
-(0005,'James','Washington','3xecu1iVeV1cep@ssword*',3),
-(0006,'Lauren','Cole','Pr3s1d3Ntp@ssw0rd*',4);
-/*!40000 ALTER TABLE `admins` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `admins`(first_name,last_name,`password`,admin_level)
+VALUES
+('John','Smith','Admin1p@ssw0rd*',1),
+('Meghan','Dela Cruz','Admin2p@ssw0rd*',1),
+('Robert','Harris','St0reManager1p@ssw0rd*',2),
+('Tashuan','Stevenson','St0reManager2p@ssw0rd*',2),
+('James','Washington','3xecu1iVeV1cep@ssword*',3),
+('Lauren','Cole','Pr3s1d3Ntp@ssw0rd*',4);
 
 CREATE TABLE media_type(
-	product_id INT,
+	product_id INT PRIMARY KEY,
     movie_code INT,
     availability BIT,
     release_date YEAR,
@@ -224,55 +184,50 @@ CREATE TABLE media_type(
     rental_price DECIMAL(4,2)
 );
 
-
-LOCK TABLES `media_type` WRITE;
-/*!40000 ALTER TABLE `media_type` DISABLE KEYS */;
-INSERT INTO `media_type` VALUES 
-
-(0001,1000,1,1986,'VHS',1,35.00),
-(0001,3000,1,1980,'VHS',1,35.00),
-(0001,5002,1,1979,'VHS',1,65.00),
-(0001,5000,1,1983,'VHS',1,35.00),
-(0001,5001,1,1980,'VHS',1,35.00),
-(0002,1000,1,1986,'CD',1,30.00),
-(0002,2000,1,1996,'CD',1,30.00),
-(0002,6001,1,1994,'CD',2,30.00),
-(0002,8000,1,1994,'CD',1,25.00),
-(0003,7000,1,1997,'DVD',2,25.00),
-(0003,2002,1,2001,'DVD',1,30.00),
-(0003,6000,1,2001,'DVD',1,25.00),
-(0003,7002,1,2001,'DVD',2,25.00),
-(0003,7001,1,2019,'DVD',1,25.00),
-(0003,8000,1,1994,'DVD',1,25.00),
-(0003,6002,1,2001,'DVD',2,25.00),
-(0003,6003,1,2004,'DVD',2,25.00),
-(0003,0001,1,2005,'DVD',1,40.00),
-(0004,2001,1,2009,'Blu-Ray',1,30.00),
-(0004,3001,1,2016,'Blu-Ray',2,20.00),
-(0004,4002,1,2015,'Blu-Ray',1,20.00),
-(0004,8002,1,2014,'Blu-Ray',1,20.00),
-(0004,9000,1,2008,'Blu-Ray',1,20.00),
-(0004,9001,1,2016,'Blu-Ray',1,20.00),
-(0004,9002,1,2019,'Blu-Ray',1,20.00),
-(0004,1001,1,2019,'Blu-Ray',3,20.00),
-(0004,1002,1,2017,'Blu-Ray',2,20.00),
-(0004,8001,1,2019,'Blu-Ray',1,30.00),
-(0005,2001,1,2009,'Online',1,20.00),
-(0005,3001,1,2016,'Online',1,20.00),
-(0005,4002,1,2015,'Online',1,20.00),
-(0005,8002,1,2014,'Online',1,20.00),
-(0005,9000,1,2008,'Online',1,20.00),
-(0005,9001,1,2016,'Online',1,20.00),
-(0005,9002,1,2019,'Online',1,20.00),
-(0005,1001,1,2019,'Online',1,20.00),
-(0005,1002,1,2017,'Online',1,20.00),
-(0005,8001,1,2019,'Online',1,20.00),
-(0005,3002,1,2023,'Online',1,20.00),
-(0005,4000,1,2022,'Online',1,20.00),
-(0005,4001,0,2023,'Online',1,20.00),
-(0004,2003,1,2023,'Online',1,20.00),
-(0005,1003,1,2024,'Online',1,20.00),
-(0004,4003,1,NULL,'DVD',1,25.00),
-(0004,NULL,1,NULL,'DVD',1,25.00);
-/*!40000 ALTER TABLE `media_type` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `media_type`
+VALUES
+(1000,1000,1,1986,'VHS',1,35.00),
+(1001,3000,1,1980,'VHS',1,35.00),
+(1002,5002,1,1979,'VHS',1,65.00),
+(1003,5000,1,1983,'VHS',1,35.00),
+(1004,5001,1,1980,'VHS',1,35.00),
+(2000,1000,1,1986,'CD',1,30.00),
+(2001,2000,1,1996,'CD',1,30.00),
+(2002,6001,1,1994,'CD',2,30.00),
+(2003,8000,1,1994,'CD',1,25.00),
+(3000,7000,1,1997,'DVD',2,25.00),
+(3001,2002,1,2001,'DVD',1,30.00),
+(3002,6000,1,2001,'DVD',1,25.00),
+(3003,7002,1,2001,'DVD',2,25.00),
+(3004,7001,1,2019,'DVD',1,25.00),
+(3005,8000,1,1994,'DVD',1,25.00),
+(3006,6002,1,2001,'DVD',2,25.00),
+(3007,6003,1,2004,'DVD',2,25.00),
+(3008,0001,1,2005,'DVD',1,40.00),
+(4000,2001,1,2009,'Blu-Ray',1,30.00),
+(4001,3001,1,2016,'Blu-Ray',2,20.00),
+(4002,4002,1,2015,'Blu-Ray',1,20.00),
+(4003,8002,1,2014,'Blu-Ray',1,20.00),
+(4004,9000,1,2008,'Blu-Ray',1,20.00),
+(4005,9001,1,2016,'Blu-Ray',1,20.00),
+(4006,9002,1,2019,'Blu-Ray',1,20.00),
+(4007,1001,1,2019,'Blu-Ray',3,20.00),
+(4008,1002,1,2017,'Blu-Ray',2,20.00),
+(4009,8001,1,2019,'Blu-Ray',1,30.00),
+(5000,2001,1,2009,'Online',1,20.00),
+(5001,3001,1,2016,'Online',1,20.00),
+(5002,4002,1,2015,'Online',1,20.00),
+(5003,8002,1,2014,'Online',1,20.00),
+(5004,9000,1,2008,'Online',1,20.00),
+(5005,9001,1,2016,'Online',1,20.00),
+(5006,9002,1,2019,'Online',1,20.00),
+(5007,1001,1,2019,'Online',1,20.00),
+(5008,1002,1,2017,'Online',1,20.00),
+(5009,8001,1,2019,'Online',1,20.00),
+(5010,3002,1,2023,'Online',1,20.00),
+(5011,4000,1,2022,'Online',1,20.00),
+(5012,4001,0,2023,'Online',1,20.00),
+(5013,2003,1,2023,'Online',1,20.00),
+(5014,1003,1,2024,'Online',1,20.00),
+(4010,4003,1,NULL,'DVD',1,25.00),
+(4011,NULL,1,NULL,'DVD',1,25.00);
