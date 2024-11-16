@@ -91,10 +91,10 @@ public class Controller implements ActionListener, DocumentListener{
 		case "DeleteInAdminTable":
 			
 			admin_no1 = gui.getAdminNumber();
-			first_name1 = gui.getAdminFirstName();
-			last_name1 = gui.getAdminLastName();
-			admin_password1 = gui.getAdminPassword();
-			admin_level1 = gui.getAdminLevel();
+//			first_name1 = gui.getAdminFirstName();
+//			last_name1 = gui.getAdminLastName();
+//			admin_password1 = gui.getAdminPassword();
+//			admin_level1 = gui.getAdminLevel();
 			
 			String DeleteAdmin = " DELETE FROM admins WHERE admin_no = " + admin_no1 ;
 			pstmt = connections.prepareStatement(DeleteAdmin);
@@ -118,14 +118,52 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.setString(3, admin_password1);
 			pstmt.setInt(4, admin_level1);
 			pstmt.setInt(5, admin_no1);
-
 			pstmt.execute();
 			gui.refreshAdminTable();
-
-
-			
-		
+			ClearAdminInputs();
 		break;
+		
+		case "AddInGenreTable":
+			System.out.println("add clicked");
+			
+			//admin table
+			int genreid2;
+			String description2;
+			String InsertGenre = " insert into genre_type (genre_id,description)"
+				    + " values (?, ?)";
+			pstmt = connections.prepareStatement(InsertGenre);
+			genreid2 = gui.getGenreID();
+			description2 = gui.getGenreDesc();
+			pstmt.setInt(1,genreid2);
+			pstmt.setString(2, description2);
+			pstmt.execute();
+			gui.refreshGenreTable();
+			ClearGenreInputs();
+			
+			break;
+			
+		case "DeleteInGenreTable":
+			genreid2 = gui.getGenreID();
+			String DeleteGenre = " DELETE FROM genre_type WHERE genre_id = " + genreid2;
+			pstmt = connections.prepareStatement(DeleteGenre);
+			pstmt.execute();
+			gui.refreshGenreTable();
+			ClearGenreInputs();
+			break;
+			
+		case "UpdateGenreTable":
+			genreid2 = gui.getGenreID();
+			description2 = gui.getGenreDesc();
+			
+						
+			String updateGenre = "UPDATE genre_type SET description = ? WHERE genre_id = ?";
+			pstmt = connections.prepareStatement(updateGenre);
+			pstmt.setString(1, description2);
+			pstmt.setInt(2, genreid2);
+			pstmt.execute();
+			gui.refreshGenreTable();
+			ClearGenreInputs();
+			break;
 		
 		}
 
@@ -143,6 +181,11 @@ public class Controller implements ActionListener, DocumentListener{
 		gui.setAdminLevel("");
 	}
 	
+	public void ClearGenreInputs() {
+		gui.setGenreID("");
+		gui.setGenreDesc("");
+	}
+
 	@Override
 	public void insertUpdate(DocumentEvent e) {
 		// TODO Auto-generated method stub
