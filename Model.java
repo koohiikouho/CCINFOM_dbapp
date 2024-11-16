@@ -1,12 +1,11 @@
 import java.sql.*;
 import java.util.Scanner;
 
-public class JDBCDemo {
-
+public class Model {
 	public static void main(String[] args) {
-		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-		String username = "root";
-		String password= "dl_MySQL_su";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
 		PreparedStatement pstmt;
 		int choice;//for condition
 		
