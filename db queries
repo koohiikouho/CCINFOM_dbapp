@@ -249,3 +249,23 @@ JOIN genre_type gt ON m.genre_id = gt.genre_id
 WHERE YEAR(t.date_returned) = '?'
 GROUP BY YEAR(t.date_returned) gt.genre_id, m.movie_code
 ORDER BY gt.genre_id, `Total Revenue` DESC;
+
+most profitable users
+
+Monthly
+SELECT YEAR(t.date_returned) AS `YEAR`,MONTH(t.date_returned) AS `MONTH`,u.first_name,u.last_name,SUM(t.payment) AS `Total Payments`,SUM(TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price) AS `Rental Fees`,SUM(t.payment - (TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price)) AS `Late and Additional Fees`
+FROM users u
+JOIN transactions t ON u.user_no = t.user_no
+JOIN media_type mt ON t.product_id = mt.product_id
+WHERE t.date_returned IS NOT NULL AND YEAR(t.date_returned) = '?' AND MONTH(t.date_returned) = '?'
+GROUP BY u.user_no,`YEAR`,`MONTH`
+ORDER BY `Total Payments` DESC;
+
+Yearly
+SELECT YEAR(t.date_returned) AS `YEAR`,u.first_name,u.last_name,SUM(t.payment) AS `Total Payments`,SUM(TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price) AS `Rental Fees`,SUM(t.payment - (TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price)) AS `Late and Additional Fees`
+FROM users u
+JOIN transactions t ON u.user_no = t.user_no
+JOIN media_type mt ON t.product_id = mt.product_id
+WHERE t.date_returned IS NOT NULL AND YEAR(t.date_returned) = '?'
+GROUP BY u.user_no,`YEAR`
+ORDER BY `Total Payments` DESC;
