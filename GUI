@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -308,15 +310,7 @@ public class GUI extends JFrame{
         panelNorth.add(label);
         
         AdminTable.add(panelNorth, BorderLayout.NORTH);
-
-        
-//        private JTextField ATAdminNo;
-//    	private JTextField ATFirst_Name;
-//    	private JTextField ATLast_Name;
-//    	private JTextField ATPass;
-//    	private JTextField ATAdminLevel;
-
-    		
+ 		
     		//center panel
     		JPanel centerPanel = new JPanel();
     		centerPanel.setLayout(new GridBagLayout());
@@ -408,7 +402,6 @@ public class GUI extends JFrame{
     	}
     	
 	
-	
 	public void GenreTypeTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -486,34 +479,65 @@ public class GUI extends JFrame{
 
 	//admin table
 	public void showAdminTable() {
-		String[] col;
-		col = new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"};
-		tableModelAdmin = new DefaultTableModel(getAdmin(), col);
-		refreshAdminTable();
-		tableAdminTable = new JTable(tableModelAdmin);
-		tableAdminTable.setEnabled(false);
-		scrollerAdminTable = new JScrollPane(tableAdminTable);
-		scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
-		
-        //center panel
-        JPanel moreCenter = new JPanel(new BorderLayout());
-        
-        // CENTER PANEL center panel
-        JPanel panelCenter = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
-        gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
-        gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
-        gbc.insets = new Insets(10, 10, 10, 10);
-        panelCenter.add(scrollerAdminTable, gbc);
-        moreCenter.add(panelCenter, BorderLayout.CENTER);
-        
-        AdminTable.add(moreCenter, BorderLayout.WEST);
-        AdminTable.revalidate(); // Refresh the UI
-        AdminTable.repaint(); // Ensure it's redrawn
-		}
+	    String[] col = {"admin_no", "first_name", "last_name", "password", "admin_level"};
+	    tableModelAdmin = new DefaultTableModel(getAdmin(), col);
+	    refreshAdminTable();
+	    tableAdminTable = new JTable(tableModelAdmin);
+	    tableAdminTable.setEnabled(true); // Enable selection
+	    
+	    // Add a mouse click listener to the table
+	    tableAdminTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	       
+	        public void mouseClicked(java.awt.event.MouseEvent evt) {
+	            int row = tableAdminTable.getSelectedRow(); // Get selected row index
+	           
+	            
+	            if (row != -1) { // Ensure a valid cell is selected
+	                int admin_number = (int)tableAdminTable.getValueAt(row,0);
+	                String first_name = (String)tableAdminTable.getValueAt(row,1);
+	                String last_name = (String)tableAdminTable.getValueAt(row,2);
+	                String password = (String)tableAdminTable.getValueAt(row,3);             
+	                int admin_lvl = (int)tableAdminTable.getValueAt(row,4); 
+	                
+	                ATAdminNo.setText(String.valueOf(admin_number));
+	                ATFirst_Name.setText(first_name);
+	            	ATLast_Name.setText(last_name);
+	            	ATPass.setText(password);
+	            	ATAdminLevel.setText(String.valueOf(admin_lvl));
+
+	                // check if correct
+	                System.out.println(admin_number);
+	                System.out.println(first_name);
+	                System.out.println(last_name);
+	                System.out.println(password);
+	                System.out.println(admin_lvl);
+	               
+	            }
+	        }
+	    });
+	    
+	    scrollerAdminTable = new JScrollPane(tableAdminTable);
+	    scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerAdminTable, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    AdminTable.add(moreCenter, BorderLayout.WEST);
+	    AdminTable.revalidate(); // Refresh the UI
+	    AdminTable.repaint(); // Ensure it's redrawn
+	}
 
 	//getting data from db
 	public Object[][] getAdmin() {
@@ -564,7 +588,13 @@ public class GUI extends JFrame{
 		tableModelAdmin.setDataVector(getAdmin(), new String[]{"admin_no", "first_name", "last_name", "password", "admin_level"});
     }
 
-
+	private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
+		int index = tableAdminTable.getSelectedRow();
+		TableModel model = tableAdminTable.getModel();
+		int value1 = Integer.parseInt(model.getValueAt(index,0).toString());
+		System.out.println(value1);
+		
+	}
 
 	public void TransactionsTablePanel() {
 	     // NORTH PANEL
