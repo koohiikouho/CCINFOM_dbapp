@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class GUI extends JFrame{
+public class newGUI extends JFrame{
 	
 	//main menu
 	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
@@ -80,7 +80,7 @@ public class GUI extends JFrame{
 	private JTable tableTransactionTable;
 	private DefaultTableModel tableModelTransaction;
 	
-	public GUI() {
+	public GUI(Connection connection) {
 		super("DB APP"); //frame name
 		
 		setContentPane(MainMenu);

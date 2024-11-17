@@ -24,12 +24,6 @@ public class Controller implements ActionListener, DocumentListener{
 		PreparedStatement pstmt;
 		
 		try {
-		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//		    String username = "root";
-//		    String password = "dl_MySQL_su";
 
 		switch(command) {
 		

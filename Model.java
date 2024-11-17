@@ -4,13 +4,11 @@ import java.util.Scanner;
 public class Model {
 
 	static Connection connections;
+
 	public Model(Connection connection){
 		connections = connection;
 	}
 	public static void main(String[] args) {
-		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-		String username = "user";
-		String password= "12345";
 		PreparedStatement pstmt;
 		int choice;//for condition
 		
