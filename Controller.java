@@ -1,21 +1,21 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class Controller implements ActionListener, DocumentListener{
 	private GUI gui;
 	private Model model;
+	private static Connection connections;
 	
-	public Controller(GUI gui, Model model) {
+	public Controller(GUI gui, Model model, Connection connection) {
 		this.gui = gui;
 		this.model = model;
 		gui.setActionListener(this);
+		connections = connection;
 		//gui.setDocumentListener(this);
 	}
 	
@@ -24,15 +24,13 @@ public class Controller implements ActionListener, DocumentListener{
 		PreparedStatement pstmt;
 		
 		try {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-		    String username = "root";
-		    String password = "dl_MySQL_su";
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection connections = DriverManager.getConnection(url,username,password);
-		
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//		    String username = "root";
+//		    String password = "dl_MySQL_su";
+
 		switch(command) {
 		
 		case "TableInput":

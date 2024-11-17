@@ -2,6 +2,11 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Model {
+
+	static Connection connections;
+	public Model(Connection connection){
+		connections = connection;
+	}
 	public static void main(String[] args) {
 		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
 		String username = "user";
@@ -11,8 +16,6 @@ public class Model {
 		
 		Scanner sc = new Scanner(System.in);
 		try {
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection connections = DriverManager.getConnection(url,username,password);
 		
 		// for searching and printing from table in db
 //		Statement statement = connections.createStatement();
