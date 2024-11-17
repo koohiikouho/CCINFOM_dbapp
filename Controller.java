@@ -23,12 +23,12 @@ public class Controller implements ActionListener, DocumentListener{
 		PreparedStatement pstmt;
 		
 		try {
-		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//		    String username = "root";
-//		    String password = "dl_MySQL_su";
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+		    String username = "root";
+		    String password = "dl_MySQL_su";
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		Connection connections = DriverManager.getConnection(url,username,password);
 		
@@ -38,7 +38,7 @@ public class Controller implements ActionListener, DocumentListener{
 			System.out.println("You clicked TableInput");
 			gui.createTableInputPanel();
 			gui.refreshAdminTable();
-			ClearAdminInputs();
+			gui.ClearAllTableInputs();
 			break;
 			
 		case "RecordManagement":
@@ -48,7 +48,6 @@ public class Controller implements ActionListener, DocumentListener{
 		
 		case "Reports":
 			System.out.println("You clicked Reports");
-			
 			break;
 			
 		case "EXIT":
@@ -56,17 +55,15 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 			
 		case "Home":
-			System.out.println("return to main");
 			gui.createMainMenuPanel();
+			gui.ClearAllTableInputs();
 			break;
 		
 		case "AddInAdminTable":
-			System.out.println("add clicked");
-			
 			//admin table
 			int admin_no1, admin_level1;
 			String first_name1, last_name1, admin_password1;
-			
+			try {
 			String InsertAdmin = " insert into admins (admin_no, first_name, last_name, password, admin_level)"
 				    + " values (?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertAdmin);
@@ -85,6 +82,9 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshAdminTable();
 			ClearAdminInputs();
+			}catch(Exception ex){
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
 			break;
 			
 		case "DeleteInAdminTable":
@@ -95,10 +95,10 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshAdminTable();
 			ClearAdminInputs();
-
 			break;
 			
 		case "UpdateAdminTable":
+			try {
 			admin_no1 = gui.getAdminNumber();
 			first_name1 = gui.getAdminFirstName();
 			last_name1 = gui.getAdminLastName();
@@ -115,14 +115,16 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshAdminTable();
 			ClearAdminInputs();
-		break;
+			}catch(Exception ex) { 
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
+			break;
 		
 		case "AddInGenreTable":
-			System.out.println("add clicked");
 			
-			//admin table
 			int genreid2;
 			String description2;
+			try {
 			String InsertGenre = " insert into genre_type (genre_id,description)"
 				    + " values (?, ?)";
 			pstmt = connections.prepareStatement(InsertGenre);
@@ -133,7 +135,9 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshGenreTable();
 			ClearGenreInputs();
-			
+			}catch(Exception ex){
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
 			break;
 			
 		case "DeleteInGenreTable":
@@ -148,8 +152,7 @@ public class Controller implements ActionListener, DocumentListener{
 		case "UpdateGenreTable":
 			genreid2 = gui.getGenreID();
 			description2 = gui.getGenreDesc();
-			
-						
+			try {
 			String updateGenre = "UPDATE genre_type SET description = ? WHERE genre_id = ?";
 			pstmt = connections.prepareStatement(updateGenre);
 			pstmt.setString(1, description2);
@@ -157,6 +160,9 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshGenreTable();
 			ClearGenreInputs();
+			}catch(Exception ex) {
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
 			break;
 		
 		case "AddInMediaTable":
@@ -165,8 +171,9 @@ public class Controller implements ActionListener, DocumentListener{
 			int copies_available3,movie_code3,product_id3;
 			float rental_price3;
 			String release_date3,media_type3,availability3;
+			int transmute = 1;
 			
-			
+			try {
 			String InsertMedia = " insert into media_type (product_id,movie_code, availability, release_date,media_type,copies_available,rental_price)"
 				    + " values (?, ?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMedia);
@@ -178,7 +185,7 @@ public class Controller implements ActionListener, DocumentListener{
 			release_date3 = gui.getMediaRelease();
 			media_type3 = gui.getMmedia_type();
 			availability3 = gui.getMavailability();
-			 int transmute = 1;
+			 
              if(availability3.equals("NO")) {
              	transmute = 0;
              }
@@ -192,6 +199,9 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshMediaTable();
 			ClearMediaInputs();
+			}catch(Exception ex){
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
 			break;
 			
 		case "DeleteInMediaTable":
@@ -211,6 +221,7 @@ public class Controller implements ActionListener, DocumentListener{
 			
 		case "UpdateMediaTable":
 			
+			try {
 			copies_available3 = gui.getMediaCopies();
 			movie_code3 = gui.getMmovieCode();
 			product_id3 = gui.getMProductID();
@@ -237,7 +248,98 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.execute();
 			gui.refreshMediaTable();
 			ClearMediaInputs();
+			}catch(Exception ex) {
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
 			break;
+			
+		case "AddInMovieReqTable":			
+			int request_number4, user_no4; 
+			String movie_name4, date_filled4,approved4,in_stock4, media_type4;
+			
+			try {
+			String InsertMovieReq = " insert into movie_req (request_number, movie_name, date_filed, user_no,approved,in_stock,media_type)"
+				    + " values (?, ?, ?, ?, ?, ?, ?)";
+			pstmt = connections.prepareStatement(InsertMovieReq);
+			
+			request_number4 = gui.getMRMovieReqNo();
+			user_no4 = gui.getMRUserno(); 
+			movie_name4 = gui.getMRmoviename();
+			date_filled4 = gui.getMRdate_filled();
+			approved4 = gui.getMRapproved();
+			in_stock4 = gui.getMRin_stock();
+			media_type4 = gui.getMRmedia_type();
+
+			pstmt.setInt(1,request_number4);
+			pstmt.setString(2,movie_name4);
+			pstmt.setString(3, date_filled4);
+			pstmt.setInt(4, user_no4);
+			 transmute = 1;
+             if(approved4.equals("NO")) {
+             	transmute = 0;
+             }
+			pstmt.setInt(5, transmute);
+			 transmute = 1;
+             if(in_stock4.equals("NO")) {
+             	transmute = 0;
+             }
+			pstmt.setInt(6, transmute);
+			pstmt.setString(7, media_type4);
+			pstmt.execute();
+			gui.refreshMovieReqTable();
+			ClearMovieReqInputs();
+			}catch(Exception ex) {
+				JOptionPane.showMessageDialog(null, "Invalid Inputs");
+			}
+			break;
+			
+		case "UpdateMovieReqTable":
+
+            try {
+			request_number4 = gui.getMRMovieReqNo();
+			user_no4 = gui.getMRUserno(); 
+			movie_name4 = gui.getMRmoviename();
+			date_filled4 = gui.getMRdate_filled();
+			approved4 = gui.getMRapproved();
+			in_stock4 = gui.getMRin_stock();
+			media_type4 = gui.getMRmedia_type();
+			String updateMovieReq = "UPDATE movie_req SET movie_name = ?, date_filed = ?, user_no = ?,approved =?, in_stock =?, media_type =? WHERE request_number = ?";
+			pstmt = connections.prepareStatement(updateMovieReq);
+			pstmt.setString(1, movie_name4);
+			pstmt.setString(2, date_filled4);
+			pstmt.setInt(3, user_no4);
+			
+			transmute =1;
+            if(approved4.equals("NO")) {
+            	transmute = 0;
+            }
+			pstmt.setInt(4, transmute);
+			transmute =1;
+            if(approved4.equals("NO")) {
+            	transmute = 0;
+            }
+			pstmt.setInt(5, transmute);
+			pstmt.setString(6, media_type4);
+			pstmt.setInt(7, request_number4);
+			
+			pstmt.execute();
+			gui.refreshMovieReqTable();
+			ClearMovieReqInputs();
+		}catch(Exception ex) {
+			JOptionPane.showMessageDialog(null, "Invalid Inputs");
+		}
+			break;
+			
+		case "DeleteInMovieReqTable":
+			request_number4 = gui.getMRMovieReqNo();
+			String DeleteMovieReq = " DELETE FROM movie_req WHERE request_number = ?";
+			pstmt = connections.prepareStatement(DeleteMovieReq);
+			pstmt.setInt(1, request_number4);
+			pstmt.execute();
+			gui.refreshMovieReqTable();
+			ClearMovieReqInputs();
+			break;
+
 		}
 
 	}
@@ -253,7 +355,7 @@ public class Controller implements ActionListener, DocumentListener{
 		gui.setAdminPassword("");
 		gui.setAdminLevel("");
 	}
-	
+
 	public void ClearGenreInputs() {
 		gui.setGenreID("");
 		gui.setGenreDesc("");
@@ -267,7 +369,18 @@ public class Controller implements ActionListener, DocumentListener{
 		gui.setMmedia_type("");
 		gui.setMediaCopies("");
 		gui.setRentalPrice("");
-		
+	}
+	
+	public void ClearMovieReqInputs() {
+		gui.setMRapproved("");
+		gui.setMRdate_filled("");
+		gui.setMRin_stock("");
+		gui.setMRmedia_type("");
+		gui.setMRmoviename("");
+		gui.setMRMovieReqNo("");
+		gui.setMRUserno("");
+		gui.setMediaRelease("");
+	
 	}
 
 	@Override
