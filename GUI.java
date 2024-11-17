@@ -844,7 +844,7 @@ public class GUI extends JFrame{
 	                MTproduct_id.setText(String.valueOf(product_id));
 	            	MTmovie_code.setText(String.valueOf(movie_code));
 	            	MTavailability.setSelectedItem(availability);
-	            	MTrelease.setText(release_date);
+	            	MTrelease.setText(release_date.substring(0, 4));
 	            	MTmedia_type.setSelectedItem(media_type);
 	            	MTcopies.setText(String.valueOf(copies_available));
 	            	MTrentprice.setText(String.valueOf(rental_price));		               
