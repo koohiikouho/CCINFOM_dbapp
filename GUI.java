@@ -36,6 +36,10 @@ public class GUI extends JFrame{
    	private JButton btnDeleteInMediaTable;
    	private JButton btnAddInMediaTable;
    	
+	private JButton btnUpdateMovieReqTable;
+   	private JButton btnDeleteInMovieReqTable;
+   	private JButton btnAddInMovieReqTable;
+   	
 	private JPanel MainMenu = new JPanel();
 	private JPanel TableInput = new JPanel();
 	private JPanel AdminTable = new JPanel();
@@ -65,6 +69,15 @@ public class GUI extends JFrame{
 	private JComboBox MTmedia_type;
 	private JComboBox MTavailability;
 	
+	private JTextField MRrequest_no;
+	private JTextField MRmovie_name;
+	private JTextField MRdate_filled;
+	private JTextField MRuser_no;
+	
+	private JComboBox MRmedia_type;
+	private JComboBox MRin_stock;
+	private JComboBox MRapproved;
+	
 	//admin table
 	private JScrollPane scrollerAdminTable;
 	private JTable tableAdminTable;
@@ -75,11 +88,16 @@ public class GUI extends JFrame{
 	private JTable tableGenreTable;
 	private DefaultTableModel tableModelGenre;
 		
-	
+	//mediatype table
 	private JScrollPane scrollerMediaTable;
 	private JTable tableMediaTable;
 	private DefaultTableModel tableModelMedia;
 	
+	//movie req table
+	private JScrollPane scrollerMovieReqTable;
+	private JTable tableMovieReqTable;
+	private DefaultTableModel tableModelMovieReq;
+		
 	
 	public GUI() {
 		super("DB APP"); //frame name
@@ -109,6 +127,7 @@ public class GUI extends JFrame{
 		Media_TypeTablePanel();
 		
 		Movie_reqTable.setLayout(new BorderLayout());
+		showMovieReqTable();
 		Movie_reqTablePanel();
 		
 		MoviesTable.setLayout(new BorderLayout());
@@ -271,52 +290,51 @@ public class GUI extends JFrame{
         panelCenterCenter.add(UsersTable, "UsersTable");
         
         btnAdminsTable.addActionListener(e -> {
-         System.out.println("hi");
         cardLayout.show(panelCenterCenter,"AdminTable");
         panelCenterCenter.setVisible(true);
-      
+        ClearAllTableInputs();
         });
         
         btnGenre_TypeTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"GenreTypeTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
    
         btnMedia_TypeTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"Media_TypeTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
         
         btnMovie_reqTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"Movie_reqTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
         
         btnMoviesTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"MoviesTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
         
         btnReviewTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"ReviewTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
         
         btnTransactionsTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"TransactionsTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
         
         btnUsersTable.addActionListener(e -> {
-            System.out.println("hi");
            cardLayout.show(panelCenterCenter,"UsersTable");
            panelCenterCenter.setVisible(true);
+           ClearAllTableInputs();
            });
      
         panelCenter.add(panelCenterCenter, BorderLayout.CENTER);
@@ -426,7 +444,13 @@ public class GUI extends JFrame{
 	//admin table
 	public void showAdminTable() {
 		    String[] col = {"admin_no", "first_name", "last_name", "password", "admin_level"};
-		    tableModelAdmin = new DefaultTableModel(getAdmin(), col);
+		    tableModelAdmin = new DefaultTableModel(getAdmin(), col){
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Disable editing for all cells
+	            }
+	        };
+	        
 		    refreshAdminTable();
 		    tableAdminTable = new JTable(tableModelAdmin);
 		    tableAdminTable.setEnabled(true); // Enable selection
@@ -507,11 +531,6 @@ public class GUI extends JFrame{
 	                row[4] = resultSet.getInt(5); // Assuming column 5 is String
 	                
 	                list.add(row);
-
-	                // Debug print
-//	                System.out.println(
-//	                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
-	              //  );
 	            }
 	        }
 
@@ -598,7 +617,12 @@ public class GUI extends JFrame{
 
 	public void showGenreTable() {
 	    String[] col = {"genre_id", "description"};
-	    tableModelGenre = new DefaultTableModel(getGenre(), col);
+	    tableModelGenre = new DefaultTableModel(getGenre(), col){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
 	    refreshGenreTable();
 	    tableGenreTable = new JTable(tableModelGenre);
 	    tableGenreTable.setEnabled(true); // Enable selection
@@ -691,7 +715,6 @@ public class GUI extends JFrame{
 		tableModelGenre.setDataVector(getGenre(), new String[]{"genre_id", "description"});
     }
 
-	
 	public void Media_TypeTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -783,7 +806,7 @@ public class GUI extends JFrame{
             gbc.gridy = 6;
             centerPanel.add(MTcopies, gbc);
             
-            JLabel rentprice = new JLabel("RentalPrice");
+            JLabel rentprice = new JLabel("Rental Price");
             rentprice.setForeground(Color.BLACK);
             rentprice.setFont(new Font("Verdana", Font.BOLD, 19));
     		gbc.gridx = 1;
@@ -817,10 +840,15 @@ public class GUI extends JFrame{
     		Media_TypeTable.add(panelSouth, BorderLayout.SOUTH);
 		}
 	
-	
 	public void showMediaTable() {
 	    String[] col = {"product_id", "movie_code","availability", "release_date","media_type","copies_available","rental_price"};
-	    tableModelMedia = new DefaultTableModel(getMedia(), col);
+	    tableModelMedia = new DefaultTableModel(getMedia(), col) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
+;
 	    refreshAdminTable();
 	    tableMediaTable = new JTable(tableModelMedia);
 	    tableMediaTable.setEnabled(true); // Enable selection
@@ -926,14 +954,7 @@ public class GUI extends JFrame{
 	public void refreshMediaTable() {
 	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code","availability", "release_date", "media_type","copies_available","rental_price"});
     }
-
-
-
-
-
-
-
-
+	
 	public void Movie_reqTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -947,7 +968,247 @@ public class GUI extends JFrame{
 	        
 	        Movie_reqTable.add(panelNorth, BorderLayout.NORTH);
 
+
+	      //center panel
+    		JPanel centerPanel = new JPanel();
+    		centerPanel.setLayout(new GridBagLayout());
+    		GridBagConstraints gbc = new GridBagConstraints();
+
+            gbc.insets = new Insets(6, 6, 6, 6);
+            gbc.anchor = GridBagConstraints.WEST;
+
+            
+    		JLabel mrequest_no = new JLabel("Request no.");
+    		mrequest_no.setForeground(Color.BLACK);
+    		mrequest_no.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 1;
+            centerPanel.add(mrequest_no, gbc);
+            MRrequest_no = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 1;
+            centerPanel.add(MRrequest_no, gbc);
+    		
+    		JLabel movname = new JLabel("Movie Name");
+    		movname.setForeground(Color.BLACK);
+    		movname.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 2;
+            centerPanel.add(movname, gbc);
+            MRmovie_name = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 2;
+            centerPanel.add(MRmovie_name,gbc);
+    		
+    		JLabel datefilled = new JLabel("Date Filled");
+    		datefilled.setForeground(Color.BLACK);
+    		datefilled.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 3;
+            centerPanel.add(datefilled,gbc);
+            MRdate_filled = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 3;
+            centerPanel.add(MRdate_filled, gbc);
+    		
+    		JLabel userno = new JLabel("User no.");
+    		userno.setForeground(Color.BLACK);
+    		userno.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 4;
+            centerPanel.add(userno , gbc);
+            MRuser_no = new JTextField(15);
+    		gbc.gridx = 2;
+            gbc.gridy = 4;
+            centerPanel.add(MRuser_no, gbc);
+            
+            JLabel mediaType = new JLabel("Media Type");
+            mediaType.setForeground(Color.BLACK);
+            mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 5;
+            centerPanel.add(mediaType , gbc);
+            String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
+            MRmedia_type = new JComboBox(mediachoice);
+    		gbc.gridx = 2;
+            gbc.gridy = 5;
+            centerPanel.add(MRmedia_type, gbc);
+            
+            JLabel stock = new JLabel("In Stock");
+            stock.setForeground(Color.BLACK);
+            stock.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 6;
+            centerPanel.add(stock , gbc);
+            String[] isInStock = {"", "YES", "NO"};
+            MRin_stock = new JComboBox(isInStock);
+    		gbc.gridx = 2;
+            gbc.gridy = 6;
+            centerPanel.add(MRin_stock, gbc);
+            
+            JLabel approve = new JLabel("Approved");
+            approve.setForeground(Color.BLACK);
+            approve.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 7;
+            centerPanel.add(approve , gbc);
+            String[] isApproved = {"", "YES", "NO"};
+            MRapproved = new JComboBox(isApproved);
+            gbc.gridx = 2;
+            gbc.gridy = 7;
+            centerPanel.add(MRapproved, gbc);
+            
+            Movie_reqTable.add(centerPanel , BorderLayout.EAST);
+
+    		//SOUTH PANEL
+    		JPanel panelSouth = new JPanel();
+    		panelSouth.setLayout(new FlowLayout());
+    		panelSouth.setBackground(Color.decode("#fdfdfd"));
+    		
+    		btnAddInMovieReqTable = new JButton("Add");
+    		btnUpdateMovieReqTable = new JButton("Update");
+    		btnDeleteInMovieReqTable = new JButton("Delete");
+       		panelSouth.add(btnAddInMovieReqTable);
+    		panelSouth.add(btnUpdateMovieReqTable);
+    		panelSouth.add(btnDeleteInMovieReqTable);
+    		
+    		btnUpdateMovieReqTable.setActionCommand("UpdateMovieReqTable");
+    		btnDeleteInMovieReqTable.setActionCommand("DeleteInMovieReqTable");
+    		btnAddInMovieReqTable.setActionCommand("AddInMovieReqTable");
+    		
+    		Movie_reqTable.add(panelSouth, BorderLayout.SOUTH);
 		}
+	
+	public void showMovieReqTable() {
+	    String[] col = {"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"};
+	    tableModelMovieReq = new DefaultTableModel(getMovieReq(), col){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
+        
+	    refreshAdminTable();
+	    tableMovieReqTable = new JTable(tableModelMovieReq);
+	    tableMovieReqTable.setEnabled(true); // Enable selection
+	    
+	   
+	    // Add a mouse click listener to the table
+	    tableMovieReqTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	       
+	        public void mouseClicked(java.awt.event.MouseEvent evt) {
+	            int row = tableMovieReqTable.getSelectedRow(); // Get selected row index
+	           
+	            
+	            if (row != -1) { // Ensure a valid cell is selected
+	                int request_number = (int)tableMovieReqTable.getValueAt(row,0);
+	                String movie_name = (String)tableMovieReqTable.getValueAt(row,1);
+	                String date_filled = (String)tableMovieReqTable.getValueAt(row,2);
+	                int user_no = (int)tableMovieReqTable.getValueAt(row,3);
+	                String approved = (String)tableMovieReqTable.getValueAt(row,4);             
+	                String in_stock = (String)tableMovieReqTable.getValueAt(row,5); 
+	                String media_type = (String)tableMovieReqTable.getValueAt(row,6); 
+	                
+	                MRrequest_no.setText(String.valueOf(request_number));
+	            	MRmovie_name.setText(movie_name);
+	            	MRdate_filled.setText(date_filled);
+	            	MRuser_no.setText(String.valueOf(user_no));
+	            	MRapproved.setSelectedItem(approved);
+	            	MRin_stock.setSelectedItem(in_stock);
+	            	MRmedia_type.setSelectedItem(media_type);
+	            		               
+	            }
+	        }
+	    });
+	    
+	    scrollerMovieReqTable = new JScrollPane(tableMovieReqTable);
+	    scrollerMovieReqTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerMovieReqTable, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    Movie_reqTable.add(moreCenter, BorderLayout.WEST);
+	    Movie_reqTable.revalidate(); // Refresh the UI
+	    Movie_reqTable.repaint(); // Ensure it's redrawn
+	}
+
+	//getting data from db
+	public Object[][] getMovieReq() {
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
+
+    ArrayList<Object[]> list = new ArrayList<>();
+
+    try {
+        // Load the JDBC driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Establish connection
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM movie_req")) {
+
+            // Process the ResultSet
+        	
+            
+            while (resultSet.next()) {
+                Object[] row = new Object[7];
+                row[0] = resultSet.getInt(1); 
+                row[1] = resultSet.getString(2);            
+                row[2] = resultSet.getString(3);
+                row[3] = resultSet.getInt(4); 
+                String transmute;
+                if(resultSet.getInt(5) == 1) {
+                	transmute = "YES";
+                }else if(resultSet.getInt(5) == 0){
+                	transmute = "NO";
+                }else transmute = "";
+                row[4] = transmute;
+                if(resultSet.getInt(6) == 1) {
+                	transmute = "YES";
+                }else if(resultSet.getInt(6) == 0){
+                	transmute = "NO";
+                }else transmute = "";
+                row[5] = transmute;
+                row[6] = resultSet.getString(7);           
+                list.add(row);
+            }
+        }
+
+        // Convert the list to a 2D array
+        return list.toArray(new Object[0][7]);
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Print stack trace for debugging
+        return null;
+    }
+}
+
+	//refreshing admin table
+	public void refreshMovieReqTable() {
+		tableModelMovieReq.setDataVector(getMovieReq(), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"});
+    }
+
+
+	
+	
+	
 	
 	public void MoviesTablePanel() {
 	     // NORTH PANEL
@@ -1027,6 +1288,10 @@ public class GUI extends JFrame{
        	btnUpdateMediaTable.addActionListener(listener);
      	btnDeleteInMediaTable.addActionListener(listener);
        	btnAddInMediaTable.addActionListener(listener);
+       	
+       	btnUpdateMovieReqTable.addActionListener(listener);
+       	btnDeleteInMovieReqTable.addActionListener(listener);
+       	btnAddInMovieReqTable.addActionListener(listener);
 	}
 	
 
@@ -1145,13 +1410,93 @@ public class GUI extends JFrame{
 		MTavailability.setSelectedItem(num);
 	}
 	
-	
 	public String getMmedia_type() {
 	    return MTmedia_type.getSelectedItem().toString();
 	}
 	
 	public void setMmedia_type(String num) {
 		MTmedia_type.setSelectedItem(num);
+	}
+	
+	public int getMRMovieReqNo() {
+	    return Integer.parseInt(MRrequest_no.getText());
+	}
+	
+	public void setMRMovieReqNo(String desc) {
+		MRrequest_no.setText(desc);
+	}
+	
+	public String getMRmoviename() {
+	    return MRmovie_name.getText();
+	}
+	
+	public void setMRmoviename(String num) {
+		MRmovie_name.setText(num);
+	}
+
+	public String getMRdate_filled() {
+	    return MRdate_filled.getText();
+	}
+	
+	public void setMRdate_filled(String num) {
+		MRdate_filled.setText(num);
+	}
+	
+	public int getMRUserno() {
+	    return Integer.parseInt(MRuser_no.getText());
+	}
+	
+	public void setMRUserno(String desc) {
+		MRuser_no.setText(desc);
+	}
+	
+	public String getMRmedia_type() {
+	    return MRmedia_type.getSelectedItem().toString();
+	}
+	
+	public void setMRmedia_type(String num) {
+		MRmedia_type.setSelectedItem(num);
+	}
+
+	public String getMRin_stock() {
+	    return MRin_stock.getSelectedItem().toString();
+	}
+	
+	public void setMRin_stock(String num) {
+		MRin_stock.setSelectedItem(num);
+	}
+	
+	public String getMRapproved() {
+	    return MRapproved.getSelectedItem().toString();
+	}
+	
+	public void setMRapproved(String num) {
+		MRapproved.setSelectedItem(num);
+	}
+	
+	public void ClearAllTableInputs() {
+		setAdminFirstName("");
+		setAdminLastName("");
+		setAdminNumber("");
+		setAdminPassword("");
+		setAdminLevel("");
+		setGenreID("");
+		setGenreDesc("");
+		setMProductID("");
+		setMmovieCode("");
+		setMavailability("");
+		setMediaRelease("");
+		setMmedia_type("");
+		setMediaCopies("");
+		setRentalPrice("");
+		setMRapproved("");
+		setMRdate_filled("");
+		setMRin_stock("");
+		setMRmedia_type("");
+		setMRmoviename("");
+		setMRMovieReqNo("");
+		setMRUserno("");
+		setMediaRelease("");
 	}
 	
 	
