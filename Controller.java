@@ -43,6 +43,7 @@ public class Controller implements ActionListener, DocumentListener{
 			
 		case "RecordManagement":
 			System.out.println("You clicked TableManagement");
+			gui.createRecordmanagementPanel();
 		
 			break;
 		
@@ -58,7 +59,24 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.createMainMenuPanel();
 			gui.ClearAllTableInputs();
 			break;
-		
+			
+		case "MovieRecord" :
+			System.out.println("MovieRecord");
+			break;
+			
+		case"UserRecord":
+			System.out.println("UserRecord");
+			break;
+			
+		case "AdminRecord" :
+			System.out.println("AdminRecord");
+			break;
+			
+		case "MediaTypeRecord" :
+			System.out.println("MediaTypeRecord");
+			break;
+
+	        
 		case "AddInAdminTable":
 			//admin table
 			int admin_no1, admin_level1;
