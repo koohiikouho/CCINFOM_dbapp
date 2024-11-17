@@ -1,9 +1,9 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class GUI extends JFrame{
 	
@@ -32,9 +32,15 @@ public class GUI extends JFrame{
    	private JButton btnDeleteInGenreTable;
    	private JButton btnAddInGenreTable;
    	
+	//media table Button south panel
    	private JButton btnUpdateMediaTable;
    	private JButton btnDeleteInMediaTable;
    	private JButton btnAddInMediaTable;
+
+	//movie table JButton south panel
+	private JButton btnUpdateMoviesTable;
+   	private JButton btnDeleteInMoviesTable;
+   	private JButton btnAddInMoviesTable;
    	
 	private JPanel MainMenu = new JPanel();
 	private JPanel TableInput = new JPanel();
@@ -63,8 +69,31 @@ public class GUI extends JFrame{
 	//private JTextField MTmedia_type;
 	private JTextField MTcopies;
 	private JTextField MTrentprice;
-	
-	private JComboBox MTmedia_type;
+	private JComboBox  MTmedia_type;
+
+	//for Movies Table
+	private JTextField Mmovie_code;
+	private JTextField Mmovie_name;
+	private JTextField Myear;
+	private JTextField Mrating;
+	private JTextField Mlanguage;
+	private JTextField Mgenre_id;
+
+	//for reviews table
+	private JTextField Rreview_no;
+	private JTextField Rstars;
+	private JTextField Rreview;
+	private JTextField Rmovie_code;
+	private JTextField Ruser_no;
+	//table stuff under reviews
+	private JScrollPane scrollerReviewTable;
+	private JTable tableReviewTable;
+	private DefaultTableModel tableModelReview;
+	//review table JButton south panel
+	private JButton btnUpdateReviewTable;
+	private JButton btnDeleteInReviewTable;
+	private JButton btnAddInReviewTable;
+
 	
 	//admin table
 	private JScrollPane scrollerAdminTable;
@@ -76,15 +105,21 @@ public class GUI extends JFrame{
 	private JTable tableGenreTable;
 	private DefaultTableModel tableModelGenre;
 		
-	
+	//media table
 	private JScrollPane scrollerMediaTable;
 	private JTable tableMediaTable;
 	private DefaultTableModel tableModelMedia;
 	
+	//movies table
+	private JScrollPane scrollerMoviesTable;
+	private JTable tableMoviesTable;
+	private DefaultTableModel tableModelMovies;
 	
-	public GUI() {
+	public static Connection connection;
+	public GUI(Connection connections) {
 		super("DB APP"); //frame name
 		
+		connection = connections;
 		setContentPane(MainMenu);
 		MainMenu.setLayout(new BorderLayout());
 		setSize(900,700);//size of window
@@ -113,9 +148,11 @@ public class GUI extends JFrame{
 		Movie_reqTablePanel();
 		
 		MoviesTable.setLayout(new BorderLayout());
+		showMoviesTable();
 		MoviesTablePanel();
 		
 		ReviewTable.setLayout(new BorderLayout());
+		showReviewTable();
 		ReviewTablePanel();
 		
 		TransactionsTable.setLayout(new BorderLayout());
@@ -480,12 +517,12 @@ public class GUI extends JFrame{
 
 		//getting data from db
 	public Object[][] getAdmin() {
-//			String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//			String username = "user";
-//			String password= "12345";
-		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-	    String username = "root";
-	    String password = "dl_MySQL_su";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//	    String username = "root";
+//	    String password = "dl_MySQL_su";
 
 	    ArrayList<Object[]> list = new ArrayList<>();
 
@@ -494,7 +531,7 @@ public class GUI extends JFrame{
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 	        // Establish connection
-	        try (Connection connection = DriverManager.getConnection(url, username, password);
+	        try (
 	             Statement statement = connection.createStatement();
 	             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
 
@@ -646,12 +683,12 @@ public class GUI extends JFrame{
 
 	//getting data from db
 	public Object[][] getGenre() {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "dl_MySQL_su";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+ //   String username = "root";
+ //   String password = "dl_MySQL_su";
 
     ArrayList<Object[]> list = new ArrayList<>();
 
@@ -660,7 +697,7 @@ public class GUI extends JFrame{
 		Class.forName("com.mysql.cj.jdbc.Driver");
 
         // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM genre_type")) {
 
@@ -877,12 +914,12 @@ public class GUI extends JFrame{
 
 	//getting data from db
 	public Object[][] getMedia() {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "dl_MySQL_su";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//    String username = "root";
+//    String password = "dl_MySQL_su";
 
     ArrayList<Object[]> list = new ArrayList<>();
 
@@ -891,7 +928,7 @@ public class GUI extends JFrame{
 		Class.forName("com.mysql.cj.jdbc.Driver");
 
         // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM media_type")) {
 
@@ -900,7 +937,14 @@ public class GUI extends JFrame{
                 Object[] row = new Object[7];
                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
-                row[2] = resultSet.getString(3); // Assuming column 3 is int
+				
+				String transmute = "NO";
+				if(resultSet.getString(3).equals("1") )
+				{ transmute = "YES" ;
+				}
+				
+                row[2] = transmute; // Assuming column 3 is int
+
                 row[3] = resultSet.getString(4); // Assuming column 4 is String
                 row[4] = resultSet.getString(5); // Assuming column 5 is String
                 row[5] = resultSet.getInt(6); // Assuming column 6 is String
@@ -924,12 +968,6 @@ public class GUI extends JFrame{
     }
 
 
-
-
-
-
-
-
 	public void Movie_reqTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -944,34 +982,214 @@ public class GUI extends JFrame{
 	        Movie_reqTable.add(panelNorth, BorderLayout.NORTH);
 
 		}
+
+		public Object[][] getMovies() {
+			String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+			String username = "user";
+			String password= "12345";
+	//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+	//    String username = "root";
+	//    String password = "dl_MySQL_su";
 	
-	public void MoviesTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
+		ArrayList<Object[]> list = new ArrayList<>();
+	
+		try {
+			// Load the JDBC driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+	
+			// Establish connection
+			try (
+				 Statement statement = connection.createStatement();
+				 ResultSet resultSet = statement.executeQuery("SELECT * FROM movies")) {
+	
+				// Process the ResultSet
+				while (resultSet.next()) {
+					Object[] row = new Object[7];
+					row[0] = resultSet.getInt(1); // Assuming column 1 is int
+					row[1] = resultSet.getString(2); // Assuming column 2 is String
+					row[2] = resultSet.getInt(3); // Assuming column 3 is int
+					row[3] = resultSet.getString(4); // Assuming column 4 is String
+					row[4] = resultSet.getString(5); // Assuming column 5 is String
+					row[5] = resultSet.getInt(6); // Assuming column 6 is String     
+					list.add(row);
+				}
+			}
+	
+			// Convert the list to a 2D array
+			return list.toArray(new Object[0][7]);
+	
+		} catch (Exception e) {
+			e.printStackTrace(); // Print stack trace for debugging
+			return null;
+		}
+	}
 
-	        JLabel label = new JLabel("MOVIES TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        MoviesTable.add(panelNorth, BorderLayout.NORTH);
+	public void showMoviesTable() {
+		String[] col = {"movie_code", "movie_name", "year","rating","language","genre_id"};
+		tableModelMovies = new DefaultTableModel(getMovies(), col);
+		refreshAdminTable();
+		tableMoviesTable = new JTable(tableModelMovies);
+		tableMoviesTable.setEnabled(true); // Enable selection
+		
+		// Add a mouse click listener to the table
+		tableMoviesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+		   
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				int row = tableMoviesTable.getSelectedRow(); // Get selected row index
+			   
+				
+				if (row != -1) { // Ensure a valid cell is selected
+					int movie_code = (int)tableMoviesTable.getValueAt(row,0);
+					String movie_name = (String)tableMoviesTable.getValueAt(row,1);
+					int year = (int)tableMoviesTable.getValueAt(row,2);
+					String rating = (String)tableMoviesTable.getValueAt(row,3);
+					String language = (String)tableMoviesTable.getValueAt(row,4);             
+					int genre_id = (int)tableMoviesTable.getValueAt(row,5); 
+					
+					Mmovie_code.setText(String.valueOf(movie_code));
+					Mmovie_name.setText(movie_name);
+					Myear.setText(String.valueOf(year));
+					Mrating.setText(rating);
+					Mlanguage.setText(language);
+					Mgenre_id.setText(String.valueOf(genre_id));	               
+				}
+			}
+		});
+		
+		scrollerMoviesTable = new JScrollPane(tableMoviesTable);
+		scrollerMoviesTable.setPreferredSize(new Dimension(500, 200)); // Set preferred size
+		
+		// Center panel
+		JPanel moreCenter = new JPanel(new BorderLayout());
+		
+		// CENTER PANEL center panel
+		JPanel panelCenter = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		gbc.insets = new Insets(10, 10, 10, 10);
+		panelCenter.add(scrollerMoviesTable, gbc);
+		moreCenter.add(panelCenter, BorderLayout.CENTER);
+		
+		MoviesTable.add(moreCenter, BorderLayout.WEST);
+		MoviesTable.revalidate(); // Refresh the UI
+		MoviesTable.repaint(); // Ensure it's redrawn
+	}
 
+	public void refreshMoviesTable() {
+		tableModelMovies.setDataVector(getMovies(), new String[]{"movie_code", "movie_name", "year","rating","language","genre_id"});
 		}
 
-	public void ReviewTablePanel() {
+	public void MoviesTablePanel() {
 	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
+		 JPanel panelNorth = new JPanel();
+		 panelNorth.setLayout(new FlowLayout());
+		 panelNorth.setBackground(Color.decode("#0A285f"));
 
-	        JLabel label = new JLabel("REVIEW TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        ReviewTable.add(panelNorth, BorderLayout.NORTH);
+		 JLabel label = new JLabel("MOVIES TABLE");
+		 label.setForeground(Color.WHITE);
+		 label.setFont(new Font("Gaegu", Font.BOLD, 18));
+		 panelNorth.add(label);
+		 
+		 MoviesTable.add(panelNorth, BorderLayout.NORTH);
+		 
+		 //center panel
+		 JPanel centerPanel = new JPanel();
+		 centerPanel.setLayout(new GridBagLayout());
+		 GridBagConstraints gbc = new GridBagConstraints();
+
+		 gbc.insets = new Insets(6, 6, 6, 6);
+		 gbc.anchor = GridBagConstraints.WEST;
+
+		 JLabel movieCode = new JLabel("Movie Code");
+		 movieCode.setForeground(Color.BLACK);
+		 movieCode.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 1;
+		 centerPanel.add(movieCode, gbc);
+		 Mmovie_code = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 1;
+		 centerPanel.add(Mmovie_code, gbc);
+		 
+		 JLabel movieName = new JLabel("Movie Name");
+		 movieName.setForeground(Color.BLACK);
+		 movieName.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 2;
+		 centerPanel.add(movieName, gbc);
+		 Mmovie_name = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 2;
+		 centerPanel.add(Mmovie_name,gbc);
+		 
+		 JLabel releaseDate = new JLabel("Year");
+		 releaseDate.setForeground(Color.BLACK);
+		 releaseDate.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 3;
+		 centerPanel.add(releaseDate,gbc);
+		 Myear = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 3;
+		 centerPanel.add(Myear, gbc);
+		 
+		 JLabel rating = new JLabel("Rating");
+		 rating.setForeground(Color.BLACK);
+		 rating.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 4;
+		 centerPanel.add(rating , gbc);
+		 Mrating = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 4;
+		 centerPanel.add(Mrating, gbc);
+		 
+		 JLabel language = new JLabel("Language");
+		 language.setForeground(Color.BLACK);
+		 language.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 5;
+		 centerPanel.add(language , gbc);
+		 Mlanguage = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 5;
+		 centerPanel.add(Mlanguage, gbc);
+		 
+		 JLabel genre = new JLabel("Genre");
+		 genre.setForeground(Color.BLACK);
+		 genre.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 6;
+		 centerPanel.add(genre, gbc);
+		 Mgenre_id = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 6;
+		 centerPanel.add(Mgenre_id, gbc);
+		 
+		 MoviesTable.add(centerPanel , BorderLayout.EAST);
+		 
+		 //SOUTH PANEL
+		 JPanel panelSouth = new JPanel();
+		 panelSouth.setLayout(new FlowLayout());
+		 panelSouth.setBackground(Color.decode("#fdfdfd"));
+		 
+		 btnAddInMoviesTable = new JButton("Add");
+		 btnUpdateMoviesTable = new JButton("Update");
+		 btnDeleteInMoviesTable = new JButton("Delete");
+		 panelSouth.add(btnAddInMoviesTable);
+		 panelSouth.add(btnUpdateMoviesTable);
+		 panelSouth.add(btnDeleteInMoviesTable);
+		 
+		 btnUpdateMoviesTable.setActionCommand("UpdateMoviesTable");
+		 btnDeleteInMoviesTable.setActionCommand("DeleteInMoviesTable");
+		 btnAddInMoviesTable.setActionCommand("AddInMoviesTable");
+		 
+		 MoviesTable.add(panelSouth, BorderLayout.SOUTH);
 
 		}
 
@@ -1004,7 +1222,198 @@ public class GUI extends JFrame{
 	        UsersTable.add(panelNorth, BorderLayout.NORTH);
 
 		}
+
+///////////////////////////////////////////////////THIS CONCERNS THE REVIEW TABLE///////////
+
+public Object[][] getReview() {
+
+ArrayList<Object[]> list = new ArrayList<>();
+
+try {
+	// Establish connection
+	try (
+		 Statement statement = connection.createStatement();
+		 ResultSet resultSet = statement.executeQuery("SELECT * FROM review")) {
+
+		// Process the ResultSet
+		while (resultSet.next()) {
+			Object[] row = new Object[5];
+			row[0] = resultSet.getInt(1); // Assuming column 1 is int
+			row[1] = resultSet.getInt(2); // Assuming column 2 is String
+			row[2] = resultSet.getString(3); // Assuming column 3 is int
+			row[3] = resultSet.getInt(4); // Assuming column 4 is String
+			row[4] = resultSet.getInt(5); // Assuming column 5 is String
+			list.add(row);
+		}
+	}
+
+	// Convert the list to a 2D array
+	return list.toArray(new Object[0][5]);
+
+} catch (Exception e) {
+	e.printStackTrace(); // Print stack trace for debugging
+	return null;
+}
+}
+
+public void showReviewTable() {
+	String[] col = {"review_no", "stars", "review","movie_code","user_no"};
+	tableModelReview = new DefaultTableModel(getReview(), col);
+	refreshAdminTable();
+	tableReviewTable = new JTable(tableModelReview);
+	tableReviewTable.setEnabled(true); // Enable selection
 	
+	// Add a mouse click listener to the table
+	tableReviewTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	   
+		@Override
+		public void mouseClicked(java.awt.event.MouseEvent evt) {
+			int row = tableReviewTable.getSelectedRow(); // Get selected row index
+		   
+			
+			if (row != -1) { // Ensure a valid cell is selected
+				int review_no = (int)tableReviewTable.getValueAt(row,0);
+				int stars = (int)tableReviewTable.getValueAt(row,1);
+				String review = (String)tableReviewTable.getValueAt(row,2);
+				int movie_code = (int)tableReviewTable.getValueAt(row,3);
+				int user_no = (int)tableReviewTable.getValueAt(row,4);             
+				
+				Rreview.setText(String.valueOf(review_no));
+				Rstars.setText(String.valueOf(stars));
+				Rreview.setText(review);
+				Rmovie_code.setText(String.valueOf(movie_code));
+				Ruser_no.setText(String.valueOf(user_no));               
+			}
+		}
+	});
+
+		scrollerReviewTable = new JScrollPane(tableReviewTable);
+		scrollerReviewTable.setPreferredSize(new Dimension(500, 200)); // Set preferred size
+		
+		// Center panel
+		JPanel moreCenter = new JPanel(new BorderLayout());
+		
+		// CENTER PANEL center panel
+		JPanel panelCenter = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		gbc.insets = new Insets(10, 10, 10, 10);
+		panelCenter.add(scrollerReviewTable, gbc);
+		moreCenter.add(panelCenter, BorderLayout.CENTER);
+		
+		ReviewTable.add(moreCenter, BorderLayout.WEST);
+		ReviewTable.revalidate(); // Refresh the UI
+		ReviewTable.repaint(); // Ensure it's redrawn
+}
+
+public void refreshReviewTable() {
+	tableModelMovies.setDataVector(getReview(), new String[]{"review_no", "stars", "review","movie_code","user_no"});
+	}
+
+public void ReviewTablePanel() {
+	 // NORTH PANEL
+	 JPanel panelNorth = new JPanel();
+	 panelNorth.setLayout(new FlowLayout());
+	 panelNorth.setBackground(Color.decode("#0A285f"));
+
+	 JLabel label = new JLabel("REVIEWS TABLE");
+	 label.setForeground(Color.WHITE);
+	 label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	 panelNorth.add(label);
+	 
+	 ReviewTable.add(panelNorth, BorderLayout.NORTH);
+	 
+	 //center panel
+	 JPanel centerPanel = new JPanel();
+	 centerPanel.setLayout(new GridBagLayout());
+	 GridBagConstraints gbc = new GridBagConstraints();
+
+	 gbc.insets = new Insets(6, 6, 6, 6);
+	 gbc.anchor = GridBagConstraints.WEST;
+
+	 JLabel review_no = new JLabel("Review #");
+	 review_no.setForeground(Color.BLACK);
+	 review_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	 gbc.gridx = 1;
+	 gbc.gridy = 1;
+	 centerPanel.add(review_no, gbc);
+	 Rreview_no = new JTextField(15);
+	 gbc.gridx = 2;
+	 gbc.gridy = 1;
+	 centerPanel.add(Rreview_no, gbc);
+	 
+	 JLabel stars = new JLabel("Movie Name");
+	 stars.setForeground(Color.BLACK);
+	 stars.setFont(new Font("Verdana", Font.BOLD, 19));
+	 gbc.gridx = 1;
+	 gbc.gridy = 2;
+	 centerPanel.add(stars, gbc);
+	 Rstars = new JTextField(15);
+	 gbc.gridx = 2;
+	 gbc.gridy = 2;
+	 centerPanel.add(Rstars,gbc);
+	 
+	 JLabel review = new JLabel("Year");
+	 review.setForeground(Color.BLACK);
+	 review.setFont(new Font("Verdana", Font.BOLD, 19));
+	 gbc.gridx = 1;
+	 gbc.gridy = 3;
+	 centerPanel.add(review,gbc);
+	 Rreview = new JTextField(15);
+	 gbc.gridx = 2;
+	 gbc.gridy = 3;
+	 centerPanel.add(Rreview, gbc);
+	 
+	 JLabel movie_code = new JLabel("Rating");
+	 movie_code.setForeground(Color.BLACK);
+	 movie_code.setFont(new Font("Verdana", Font.BOLD, 19));
+	 gbc.gridx = 1;
+	 gbc.gridy = 4;
+	 centerPanel.add(movie_code, gbc);
+	 Rmovie_code = new JTextField(15);
+	 gbc.gridx = 2;
+	 gbc.gridy = 4;
+	 centerPanel.add(Rmovie_code, gbc);
+	 
+	 //user number 
+	 JLabel user_no = new JLabel("Language");
+	 user_no.setForeground(Color.BLACK);
+	 user_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	 gbc.gridx = 1;
+	 gbc.gridy = 5;
+	 centerPanel.add(user_no , gbc);
+	 Ruser_no = new JTextField(15);
+	 gbc.gridx = 2;
+	 gbc.gridy = 5;
+	 centerPanel.add(Ruser_no, gbc);
+	 
+	 ReviewTable.add(centerPanel , BorderLayout.EAST);
+	 
+	 //SOUTH PANEL
+	 JPanel panelSouth = new JPanel();
+	 panelSouth.setLayout(new FlowLayout());
+	 panelSouth.setBackground(Color.decode("#fdfdfd"));
+	 
+	 btnAddInReviewTable = new JButton("Add");
+	 btnUpdateReviewTable = new JButton("Update");
+	 btnDeleteInReviewTable = new JButton("Delete");
+	 panelSouth.add(btnAddInReviewTable);
+	 panelSouth.add(btnUpdateReviewTable);
+	 panelSouth.add(btnDeleteInReviewTable);
+	 
+	 btnUpdateReviewTable.setActionCommand("UpdateReviewTable");
+	 btnDeleteInReviewTable.setActionCommand("DeleteInReviewTable");
+	 btnAddInReviewTable.setActionCommand("AddInReviewTable");
+	 
+	 ReviewTable.add(panelSouth, BorderLayout.SOUTH);
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);

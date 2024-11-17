@@ -1,14 +1,14 @@
 import java.sql.*;
-import java.util.Scanner;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 public class transactionTest {
 
     public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-        String username = "root";
-        String password = "password";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
         PreparedStatement pstmt;
         int choice; // for condition
 

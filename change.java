@@ -4,9 +4,12 @@ import java.util.Scanner;
 public class change {
 
 	public static void main(String[] args) {
-		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-		String username = "root";
-		String password= "dl_MySQL_su";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//		String username = "root";
+//		String password= "dl_MySQL_su";
 		
 		Scanner sc = new Scanner(System.in);
 		try {
