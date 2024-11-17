@@ -21,6 +21,10 @@ public class GUI extends JFrame{
 	private JButton btnUpdateGenreTable, btnDeleteInGenreTable, btnAddInGenreTable;
 	//media type table
    	private JButton btnUpdateMediaTable, btnDeleteInMediaTable, btnAddInMediaTable;
+	//transaction table
+   	private JButton btnUpdateTransactionTable, btnDeleteInTransactionTable, btnAddInTransactionTable;
+   	//user table
+   	private JButton btnUpdateUserTable, btnDeleteInUserTable, btnAddInUserTable;
    	//movie req table
 	private JButton btnUpdateMovieReqTable,  btnDeleteInMovieReqTable, btnAddInMovieReqTable;
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
@@ -56,7 +60,17 @@ public class GUI extends JFrame{
 	private JScrollPane scrollerMovieReqTable;
 	private JTable tableMovieReqTable;
 	private DefaultTableModel tableModelMovieReq;
-		
+	
+	private JTextField Uuser_no, Ufirst_name, Ulast_name, Uemail, Ubirthday, Upassword;
+	private JScrollPane scrollerUserTable;
+	private JTable tableUserTable;
+	private DefaultTableModel tableModelUser;
+	
+	
+	private JTextField Ttransaction_no, Tmovie_code, Tuser_no, Tdate_borrowed, Tdate_toreturn, Tdate_returned,Tpayment, Tadmin_no;
+	private JScrollPane scrollerTransactionTable;
+	private JTable tableTransactionTable;
+	private DefaultTableModel tableModelTransaction;
 	
 	public GUI() {
 		super("DB APP"); //frame name
@@ -99,9 +113,11 @@ public class GUI extends JFrame{
 		ReviewTablePanel();
 		
 		TransactionsTable.setLayout(new BorderLayout());
+		showTransactionTable();
 		TransactionsTablePanel();
 		
 		UsersTable.setLayout(new BorderLayout());
+		showUserTable();
 		UsersTablePanel();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1281,7 +1297,9 @@ public class GUI extends JFrame{
 	        ReviewTable.add(panelNorth, BorderLayout.NORTH);
 
 		}
+	
 
+	
 	public void TransactionsTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -1295,8 +1313,251 @@ public class GUI extends JFrame{
 	        
 	        TransactionsTable.add(panelNorth, BorderLayout.NORTH);
 
+
+		      //center panel
+	    		JPanel centerPanel = new JPanel();
+	    		centerPanel.setLayout(new GridBagLayout());
+	    		GridBagConstraints gbc = new GridBagConstraints();
+
+	            gbc.insets = new Insets(6, 6, 6, 6);
+	            gbc.anchor = GridBagConstraints.WEST;
+	        	
+	         
+	    		JLabel trans_no = new JLabel("Transaction no.");
+	    		trans_no.setForeground(Color.BLACK);
+	    		trans_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 1;
+	            centerPanel.add(trans_no, gbc);
+	            Ttransaction_no = new JTextField(20);
+	    		gbc.gridx = 2;
+	            gbc.gridy = 1;
+	            centerPanel.add(Ttransaction_no, gbc);
+	    		
+	    		JLabel movcode = new JLabel("Movie Code");
+	    		movcode.setForeground(Color.BLACK);
+	    		movcode.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 2;
+	            centerPanel.add(movcode, gbc);
+	            Tmovie_code = new JTextField(20);
+	    		gbc.gridx = 2;
+	            gbc.gridy = 2;
+	            centerPanel.add(Tmovie_code,gbc);
+	    		
+	    		JLabel user_no = new JLabel("User No.");
+	    		user_no.setForeground(Color.BLACK);
+	    		user_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 3;
+	            centerPanel.add(user_no,gbc);
+	            Tuser_no = new JTextField(20);
+	    		gbc.gridx = 2;
+	            gbc.gridy = 3;
+	            centerPanel.add(Tuser_no, gbc);
+	    		
+	    		JLabel date_borrowed = new JLabel("Date Borrowed");
+	    		date_borrowed.setForeground(Color.BLACK);
+	    		date_borrowed.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 4;
+	            centerPanel.add(date_borrowed , gbc);
+	            Tdate_borrowed = new JTextField(20);
+	    		gbc.gridx = 2;
+	            gbc.gridy = 4;
+	            centerPanel.add(Tdate_borrowed, gbc);
+	            
+	            JLabel date_toreturn = new JLabel("Date to Return");
+	            date_toreturn.setForeground(Color.BLACK);
+	            date_toreturn.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 5;
+	            centerPanel.add(date_toreturn , gbc);
+	            Tdate_toreturn = new JTextField(20);
+	    		gbc.gridx = 2;
+	            gbc.gridy = 5;
+	            centerPanel.add(Tdate_toreturn, gbc);
+	            
+	        
+	            JLabel date_returned = new JLabel("Date Returned");
+	            date_returned.setForeground(Color.BLACK);
+	            date_returned.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 6;
+	            centerPanel.add(date_returned , gbc);
+	            String[] isInStock = {"", "YES", "NO"};
+	            Tdate_returned = new JTextField(20);
+	    		gbc.gridx = 2;
+	            gbc.gridy = 6;
+	            centerPanel.add(Tdate_returned, gbc);
+	            
+	            JLabel payment = new JLabel("Payment");
+	            payment.setForeground(Color.BLACK);
+	            payment.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 7;
+	            centerPanel.add(payment , gbc);
+	            Tpayment =  new JTextField(20);
+	            gbc.gridx = 2;
+	            gbc.gridy = 7;
+	            centerPanel.add(Tpayment, gbc);
+	            
+	            JLabel admin_no = new JLabel("Admin no.");
+	            admin_no.setForeground(Color.BLACK);
+	            admin_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	    		gbc.gridx = 1;
+	            gbc.gridy = 8;
+	            centerPanel.add(admin_no , gbc);
+	            Tadmin_no =  new JTextField(20);
+	            gbc.gridx = 2;
+	            gbc.gridy = 8;
+	            centerPanel.add(Tadmin_no, gbc);
+	            
+	            TransactionsTable.add(centerPanel , BorderLayout.EAST);
+
+	    		//SOUTH PANEL
+	    		JPanel panelSouth = new JPanel();
+	    		panelSouth.setLayout(new FlowLayout());
+	    		panelSouth.setBackground(Color.decode("#fdfdfd"));
+	    		
+	    		btnAddInTransactionTable = new JButton("Add");
+	    		btnUpdateTransactionTable = new JButton("Update");
+	    		btnDeleteInTransactionTable = new JButton("Delete");
+	       		panelSouth.add(btnAddInTransactionTable);
+	    		panelSouth.add(btnUpdateTransactionTable);
+	    		panelSouth.add(btnDeleteInTransactionTable);
+	    		
+	    		btnUpdateTransactionTable.setActionCommand("UpdateTransactionTable");
+	    		btnDeleteInTransactionTable.setActionCommand("DeleteInTransactionTable");
+	    		btnAddInTransactionTable.setActionCommand("AddInTransactionTable");
+	    		
+	    		TransactionsTable.add(panelSouth, BorderLayout.SOUTH);
 		}
 
+	
+	public void showTransactionTable() {
+	    String[] col = {"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"};
+	    tableModelTransaction = new DefaultTableModel(getTransaction(), col){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
+        
+	    refreshAdminTable();
+	    tableTransactionTable = new JTable(tableModelTransaction);
+	    tableTransactionTable.setEnabled(true); // Enable selection
+	    
+	   
+	    // Add a mouse click listener to the table
+	    tableTransactionTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	       
+	        public void mouseClicked(java.awt.event.MouseEvent evt) {
+	            int row = tableTransactionTable.getSelectedRow(); // Get selected row index
+	           
+	            
+	            if (row != -1) { // Ensure a valid cell is selected
+	                int transaction_no = (int)tableTransactionTable.getValueAt(row,0);
+	                int movie_code = (int)tableTransactionTable.getValueAt(row,1);
+	                int user_no = (int)tableTransactionTable.getValueAt(row,2);
+	                String date_borrowed = (String)tableTransactionTable.getValueAt(row,3);
+	                String date_toreturn = (String)tableTransactionTable.getValueAt(row,4);             
+	                String date_returned = (String)tableTransactionTable.getValueAt(row,5); 
+	                String payment = (String)tableTransactionTable.getValueAt(row,6);             
+	                int admin_no = (int)tableTransactionTable.getValueAt(row,7); 
+            
+	        		Ttransaction_no.setText(String.valueOf(transaction_no));
+	        		Tmovie_code.setText(String.valueOf(movie_code));
+	        		Tuser_no.setText(String.valueOf(user_no));
+	        		Tdate_borrowed.setText(date_borrowed);
+	        		Tdate_toreturn.setText(date_toreturn);
+	        		Tdate_returned.setText(date_returned);
+	        		Tpayment.setText(payment);
+	        		Tadmin_no.setText(String.valueOf(admin_no));
+	            	               
+	            }
+	        }
+	    });
+	    
+	    scrollerTransactionTable = new JScrollPane(tableTransactionTable);
+	    scrollerTransactionTable.setPreferredSize(new Dimension(425, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerTransactionTable, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    TransactionsTable.add(moreCenter, BorderLayout.WEST);
+	    TransactionsTable.revalidate(); // Refresh the UI
+	    TransactionsTable.repaint(); // Ensure it's redrawn
+	}
+
+	//getting data from db
+	public Object[][] getTransaction() {
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
+
+    ArrayList<Object[]> list = new ArrayList<>();
+
+    try {
+        // Load the JDBC driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Establish connection
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM transactions")) {
+
+            // Process the ResultSet
+        	
+            
+            while (resultSet.next()) {
+                Object[] row = new Object[8];
+                row[0] = resultSet.getInt(1); 
+                row[1] = resultSet.getInt(2);            
+                row[2] = resultSet.getInt(3);
+                row[3] = resultSet.getString(4);
+                row[4] = resultSet.getString(5);
+                row[5] = resultSet.getString(6); 
+                row[6] = resultSet.getString(7);
+                row[7] = resultSet.getInt(8);          
+                list.add(row);
+            }
+        }
+
+        // Convert the list to a 2D array
+        return list.toArray(new Object[0][8]);
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Print stack trace for debugging
+        return null;
+    }
+}
+
+	//refreshing admin table
+	public void refreshTransactionTable() {
+		tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"});
+    }
+
+
+	
+	
+
+	
 	public void UsersTablePanel() {
 	     // NORTH PANEL
 	        JPanel panelNorth = new JPanel();
@@ -1310,7 +1571,219 @@ public class GUI extends JFrame{
 	        
 	        UsersTable.add(panelNorth, BorderLayout.NORTH);
 
+	        //center panel
+    		JPanel centerPanel = new JPanel();
+    		centerPanel.setLayout(new GridBagLayout());
+    		GridBagConstraints gbc = new GridBagConstraints();
+
+            gbc.insets = new Insets(6, 6, 6, 6);
+            gbc.anchor = GridBagConstraints.WEST;
+
+            
+    		JLabel uuserno = new JLabel("User no.");
+    		uuserno.setForeground(Color.BLACK);
+    		uuserno.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 1;
+            centerPanel.add(uuserno, gbc);
+            Uuser_no = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 1;
+            centerPanel.add(Uuser_no, gbc);
+    		
+    		JLabel firstname = new JLabel("First Name");
+    		firstname.setForeground(Color.BLACK);
+    		firstname.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 2;
+            centerPanel.add(firstname, gbc);
+            Ufirst_name = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 2;
+            centerPanel.add(Ufirst_name,gbc);
+    		
+    		JLabel lastname = new JLabel("Last Name");
+    		lastname.setForeground(Color.BLACK);
+    		lastname.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 3;
+            centerPanel.add(lastname,gbc);
+            Ulast_name = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 3;
+            centerPanel.add(Ulast_name, gbc);
+    		
+    		JLabel email = new JLabel("Email");
+    		email.setForeground(Color.BLACK);
+    		email.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 4;
+            centerPanel.add(email , gbc);
+            Uemail = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 4;
+            centerPanel.add(Uemail, gbc);
+            
+            JLabel bday = new JLabel("Birthday");
+            bday.setForeground(Color.BLACK);
+            bday.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 5;
+            centerPanel.add(bday , gbc);
+            Ubirthday = new JTextField(20);
+    		gbc.gridx = 2;
+            gbc.gridy = 5;
+            centerPanel.add(Ubirthday, gbc);
+            
+            JLabel pass = new JLabel("Password");
+            pass.setForeground(Color.BLACK);
+            pass.setFont(new Font("Verdana", Font.BOLD, 19));
+    		gbc.gridx = 1;
+            gbc.gridy = 6;
+            centerPanel.add(pass , gbc);
+            Upassword = new JTextField(20);
+            gbc.gridx = 2;
+            gbc.gridy = 6;
+            centerPanel.add(Upassword, gbc);
+            
+           
+            UsersTable.add(centerPanel , BorderLayout.EAST);
+
+    		//SOUTH PANEL
+    		JPanel panelSouth = new JPanel();
+    		panelSouth.setLayout(new FlowLayout());
+    		panelSouth.setBackground(Color.decode("#fdfdfd"));
+    		
+    		btnAddInUserTable = new JButton("Add");
+    		btnUpdateUserTable = new JButton("Update");
+    		btnDeleteInUserTable = new JButton("Delete");
+       		panelSouth.add(btnAddInUserTable);
+    		panelSouth.add(btnUpdateUserTable);
+    		panelSouth.add(btnDeleteInUserTable);
+    		
+    		
+    		btnUpdateUserTable.setActionCommand("UpdateUserTable");
+    		btnDeleteInUserTable.setActionCommand("DeleteInUserTable");
+    		btnAddInUserTable.setActionCommand("AddInUserTable");
+    		
+    		UsersTable.add(panelSouth, BorderLayout.SOUTH);
 		}
+	
+	
+	public void showUserTable() {
+	    String[] col = {"user_no", "first_name","last_name", "email", "birthday","password"};
+	    tableModelUser = new DefaultTableModel(getUser(), col){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
+        
+	    refreshAdminTable();
+	    tableUserTable = new JTable(tableModelUser);
+	    tableUserTable.setEnabled(true); // Enable selection
+	    
+	   
+	    // Add a mouse click listener to the table
+	    tableUserTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	       
+	        public void mouseClicked(java.awt.event.MouseEvent evt) {
+	            int row = tableUserTable.getSelectedRow(); // Get selected row index
+	           
+	            
+	            if (row != -1) { // Ensure a valid cell is selected
+	                int user_no = (int)tableUserTable.getValueAt(row,0);
+	                String first_name = (String)tableUserTable.getValueAt(row,1);
+	                String last_name = (String)tableUserTable.getValueAt(row,2);
+	                String email = (String)tableUserTable.getValueAt(row,3);
+	                String birthday = (String)tableUserTable.getValueAt(row,4);             
+	                String password = (String)tableUserTable.getValueAt(row,5); 
+            
+	                Uuser_no.setText(String.valueOf(user_no));
+	                Ufirst_name.setText(first_name);
+	                Ulast_name.setText(last_name);
+	                Uemail.setText(email);
+	                Ubirthday.setText(birthday);
+	                Upassword.setText(password);
+	            	               
+	            }
+	        }
+	    });
+	    
+	    scrollerUserTable = new JScrollPane(tableUserTable);
+	    scrollerUserTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerUserTable, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    UsersTable.add(moreCenter, BorderLayout.WEST);
+	    UsersTable.revalidate(); // Refresh the UI
+	    UsersTable.repaint(); // Ensure it's redrawn
+	}
+
+	//getting data from db
+	public Object[][] getUser() {
+//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
+//		String username = "user";
+//		String password= "12345";
+	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+    String username = "root";
+    String password = "dl_MySQL_su";
+
+    ArrayList<Object[]> list = new ArrayList<>();
+
+    try {
+        // Load the JDBC driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Establish connection
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM users")) {
+
+            // Process the ResultSet
+        	
+            
+            while (resultSet.next()) {
+                Object[] row = new Object[6];
+                row[0] = resultSet.getInt(1); 
+                row[1] = resultSet.getString(2);            
+                row[2] = resultSet.getString(3);
+                row[3] = resultSet.getString(4);
+                row[4] = resultSet.getString(5);
+                row[5] = resultSet.getString(6);          
+                list.add(row);
+            }
+        }
+
+        // Convert the list to a 2D array
+        return list.toArray(new Object[0][6]);
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Print stack trace for debugging
+        return null;
+    }
+}
+
+	//refreshing admin table
+	public void refreshUserTable() {
+		tableModelUser.setDataVector(getUser(), new String[]{"user_no", "first_name","last_name", "email", "birthday","password"});
+    }
+
+
+	
 	
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
@@ -1340,6 +1813,16 @@ public class GUI extends JFrame{
     	btnAdminRecord.addActionListener(listener);;
     	btnMediaTypeRecord.addActionListener(listener);
     	btnReturntoMain.addActionListener(listener);
+    	
+    	btnUpdateUserTable.addActionListener(listener);
+    	btnDeleteInUserTable.addActionListener(listener);
+    	btnAddInUserTable.addActionListener(listener);
+    	
+    	btnUpdateTransactionTable.addActionListener(listener);
+    	btnDeleteInTransactionTable.addActionListener(listener);
+    	btnAddInTransactionTable.addActionListener(listener);
+ 
+
 	}
 	
 
@@ -1517,6 +2000,118 @@ public class GUI extends JFrame{
 	
 	public void setMRapproved(String num) {
 		MRapproved.setSelectedItem(num);
+	}
+	
+	public int getUuser_no() {
+	    return Integer.parseInt(Uuser_no.getText());
+	}
+	
+	public void setUuser_no(String num) {
+		Uuser_no.setText(num);
+	}
+
+	public String getUfirst_name() {
+	    return Ufirst_name.getText();
+	}
+	
+	public void setUfirst_name(String num) {
+		Ufirst_name.setText(num);
+	}
+	
+	public String getUlast_name() {
+	    return Ulast_name.getText();
+	}
+	
+	public void setUlast_name(String num) {
+		Ulast_name.setText(num);
+	}
+	
+	public String getUemail() {
+	    return Uemail.getText();
+	}
+	
+	public void setUemail(String num) {
+		Uemail.setText(num);
+	}
+	
+	public String getUbirthday() {
+	    return Ubirthday.getText();
+	}
+	
+	public void setUbirthday(String num) {
+		Ubirthday.setText(num);
+	}
+
+	public String getUpassword() {
+	    return Upassword.getText();
+	}
+	
+	public void setUpassword(String num) {
+		Upassword.setText(num);
+	}
+
+	public int getTtransaction_no() {
+	    return Integer.parseInt(Ttransaction_no.getText());
+	}
+	
+	public void setTtransaction_no(String num) {
+		Ttransaction_no.setText(num);
+	}
+	
+	public int getTmovie_code() {
+	    return Integer.parseInt(Tmovie_code.getText());
+	}
+	
+	public void setTmovie_code(String num) {
+		Tmovie_code.setText(num);
+	}
+	
+	public int getTuser_no() {
+	    return Integer.parseInt(Tuser_no.getText());
+	}
+	
+	public void setTuser_no(String num) {
+		Tuser_no.setText(num);
+	}
+
+	public String getTdate_borrowed() {
+	    return Tdate_borrowed.getText();
+	}
+	
+	public void setTdate_borrowed(String num) {
+		Tdate_borrowed.setText(num);
+	}
+
+	public String getTdate_toreturn() {
+	    return Tdate_toreturn.getText();
+	}
+	
+	public void setTdate_toreturn(String num) {
+		Tdate_toreturn.setText(num);
+	}
+
+	public String getTdate_returned() {
+	    return Tdate_returned.getText();
+	}
+	
+	public void setTdate_returned(String num) {
+		Tdate_returned.setText(num);
+	}
+	
+	public float getTpayment() {
+	    return Float.parseFloat(Tpayment.getText());
+	}
+	
+	public void setTpayment(String num) {
+		Tpayment.setText(num);
+	}
+	
+	public int getTadmin_no() {
+	    return Integer.parseInt(Tadmin_no.getText());
+	}
+	
+	public void setTadmin_no(String num) {
+		Tadmin_no.setText(num);
 	}
 	
 	public void ClearAllTableInputs() {
