@@ -8,91 +8,50 @@ import java.util.ArrayList;
 public class GUI extends JFrame{
 	
 	//main menu
-	private JButton btnTableInput;
-	private JButton btnRecordManagement;
-	private JButton btnReports;
-	private JButton btnEXIT;
-	
+	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
+	//records
+	private JButton btnMovieRecord,btnUserRecord,btnAdminRecord, btnMediaTypeRecord, btnReturntoMain;
 	//table input
-	private JButton btnAdminsTable;
-	private JButton btnGenre_TypeTable;
-	private JButton btnMedia_TypeTable;
-	private JButton btnMovie_reqTable;
-	private JButton btnMoviesTable;
-	private JButton btnReviewTable;
-	private JButton btnTransactionsTable;
-	private JButton btnUsersTable;
-	private JButton btnHome;
+	private JButton btnAdminsTable, btnGenre_TypeTable, btnMedia_TypeTable, 
+					btnMovie_reqTable, btnMoviesTable, btnReviewTable, btnTransactionsTable, 
+					btnUsersTable, btnHome;
 	//admin table
-	private JButton btnUpdateAdminTable;
-	private JButton btnDeleteInAdminTable;
-	private JButton btnAddInAdminTable;
-	
-	private JButton btnUpdateGenreTable;
-   	private JButton btnDeleteInGenreTable;
-   	private JButton btnAddInGenreTable;
-   	
-   	private JButton btnUpdateMediaTable;
-   	private JButton btnDeleteInMediaTable;
-   	private JButton btnAddInMediaTable;
-   	
-	private JButton btnUpdateMovieReqTable;
-   	private JButton btnDeleteInMovieReqTable;
-   	private JButton btnAddInMovieReqTable;
-   	
-	private JPanel MainMenu = new JPanel();
+	private JButton btnUpdateAdminTable, btnDeleteInAdminTable, btnAddInAdminTable;
+	//genre table
+	private JButton btnUpdateGenreTable, btnDeleteInGenreTable, btnAddInGenreTable;
+	//media type table
+   	private JButton btnUpdateMediaTable, btnDeleteInMediaTable, btnAddInMediaTable;
+   	//movie req table
+	private JButton btnUpdateMovieReqTable,  btnDeleteInMovieReqTable, btnAddInMovieReqTable;
+	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
-	private JPanel AdminTable = new JPanel();
-	private JPanel GenreTypeTable = new JPanel();
-	private JPanel Media_TypeTable = new JPanel();
-	private JPanel Movie_reqTable = new JPanel();
-	private JPanel MoviesTable = new JPanel();
-	private JPanel ReviewTable = new JPanel();
-	private JPanel TransactionsTable = new JPanel();
-	private JPanel UsersTable = new JPanel();
-	
-	private JTextField ATAdminNo;
-	private JTextField ATFirst_Name;
-	private JTextField ATLast_Name;
-	private JTextField ATPass;
-	private JTextField ATAdminLevel;
-
+	//tables
+	private JPanel 	AdminTable = new JPanel(), GenreTypeTable = new JPanel(), 
+					Media_TypeTable = new JPanel(), Movie_reqTable = new JPanel(),	
+					MoviesTable = new JPanel(), ReviewTable = new JPanel(), TransactionsTable = new JPanel(), UsersTable = new JPanel();
+	// admin table text fields
+	private JTextField ATAdminNo, ATFirst_Name, ATLast_Name, ATPass, ATAdminLevel;
+	//genre table 
 	private JTextField GTGenre_Num;
 	private JTextArea GTDesc;
-	
-	private JTextField MTproduct_id;
-	private JTextField MTmovie_code;
-	private JTextField MTrelease;
-	private JTextField MTcopies;
-	private JTextField MTrentprice;
-	
-	private JComboBox MTmedia_type;
-	private JComboBox MTavailability;
-	
-	private JTextField MRrequest_no;
-	private JTextField MRmovie_name;
-	private JTextField MRdate_filled;
-	private JTextField MRuser_no;
-	
-	private JComboBox MRmedia_type;
-	private JComboBox MRin_stock;
-	private JComboBox MRapproved;
-	
+	//media type
+	private JTextField MTproduct_id, MTmovie_code, MTrelease, MTcopies, MTrentprice;
+	private JComboBox MTmedia_type, MTavailability;
+	//movie req
+	private JTextField MRrequest_no, MRmovie_name, MRdate_filled, MRuser_no;
+	private JComboBox MRmedia_type, MRin_stock, MRapproved;
 	//admin table
 	private JScrollPane scrollerAdminTable;
 	private JTable tableAdminTable;
 	private DefaultTableModel tableModelAdmin;
-		
 	//genre type table
 	private JScrollPane scrollerGenreTable;
 	private JTable tableGenreTable;
 	private DefaultTableModel tableModelGenre;
-		
 	//mediatype table
 	private JScrollPane scrollerMediaTable;
 	private JTable tableMediaTable;
 	private DefaultTableModel tableModelMedia;
-	
 	//movie req table
 	private JScrollPane scrollerMovieReqTable;
 	private JTable tableMovieReqTable;
@@ -113,6 +72,9 @@ public class GUI extends JFrame{
 		
 		TableInput.setLayout(new BorderLayout());
 		TableInput();
+		
+		RecordManagement.setLayout(new BorderLayout());
+		recordmanagement();
 		
 		AdminTable.setLayout(new BorderLayout());
 		showAdminTable();
@@ -215,6 +177,86 @@ public class GUI extends JFrame{
         MainMenu.add(panelCenter, BorderLayout.CENTER);
 	}
 
+	public void createRecordmanagementPanel() {		
+		setContentPane(RecordManagement);
+        revalidate();
+        repaint();
+	}
+	
+	public void recordmanagement() {
+		
+        // NORTH PANEL
+        JPanel panelNorth = new JPanel();
+        panelNorth.setLayout(new FlowLayout());
+        panelNorth.setBackground(Color.decode("#0A285f"));
+
+        JLabel label = new JLabel("Welcome To Record Management");
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+        panelNorth.add(label);
+
+        RecordManagement.add(panelNorth, BorderLayout.NORTH);
+
+        // SOUTH PANEL
+        JPanel panelSouth = new JPanel();
+        panelSouth.setBackground(Color.BLACK);
+        RecordManagement.add(panelSouth, BorderLayout.SOUTH);
+ 	
+        // CENTER PANEL
+        JPanel panelCenter = new JPanel();
+        panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.Y_AXIS));
+        panelCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Button size
+        Dimension buttonSize = new Dimension(350, 100);
+
+        btnMovieRecord = new JButton("Movie Record");
+        btnMovieRecord.setPreferredSize(buttonSize);
+        btnMovieRecord.setMaximumSize(buttonSize);
+        btnMovieRecord.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnMovieRecord);
+
+        btnUserRecord = new JButton("User Record");
+        btnUserRecord.setPreferredSize(buttonSize);
+        btnUserRecord.setMaximumSize(buttonSize);
+        btnUserRecord.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnUserRecord);
+
+        btnAdminRecord = new JButton("Admin Record");
+        btnAdminRecord.setPreferredSize(buttonSize);
+        btnAdminRecord.setMaximumSize(buttonSize);
+        btnAdminRecord.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnAdminRecord);
+        
+        btnMediaTypeRecord = new JButton("Media Type Record");
+        btnMediaTypeRecord.setPreferredSize(buttonSize);
+        btnMediaTypeRecord.setMaximumSize(buttonSize);
+        btnMediaTypeRecord.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnMediaTypeRecord);
+
+
+        btnReturntoMain = new JButton("Home");
+        btnReturntoMain.setPreferredSize(buttonSize);
+        btnReturntoMain.setMaximumSize(buttonSize);
+        btnReturntoMain.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnReturntoMain);
+        panelCenter.add(Box.createVerticalGlue());
+
+        btnMovieRecord.setActionCommand("MovieRecord");
+        btnUserRecord.setActionCommand("UserRecord");
+        btnAdminRecord.setActionCommand("AdminRecord");
+        btnMediaTypeRecord.setActionCommand("MediaTypeRecord");
+        btnReturntoMain.setActionCommand("Home");
+        
+        RecordManagement.add(panelCenter, BorderLayout.CENTER);
+	}
+
+	
 	public void createTableInputPanel() {		
 		setContentPane(TableInput);
         revalidate();
@@ -479,7 +521,7 @@ public class GUI extends JFrame{
 		    });
 		    
 		    scrollerAdminTable = new JScrollPane(tableAdminTable);
-		    scrollerAdminTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+		    scrollerAdminTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
 		    
 		    // Center panel
 		    JPanel moreCenter = new JPanel(new BorderLayout());
@@ -645,7 +687,7 @@ public class GUI extends JFrame{
 	    });
 	    
 	    scrollerGenreTable = new JScrollPane(tableGenreTable);
-	    scrollerGenreTable.setPreferredSize(new Dimension(400, 200)); // Set preferred size
+	    scrollerGenreTable.setPreferredSize(new Dimension(450,200)); // Set preferred size
 	    
 	    // Center panel
 	    JPanel moreCenter = new JPanel(new BorderLayout());
@@ -881,7 +923,7 @@ public class GUI extends JFrame{
 	    });
 	    
 	    scrollerMediaTable = new JScrollPane(tableMediaTable);
-	    scrollerMediaTable.setPreferredSize(new Dimension(500, 200)); // Set preferred size
+	    scrollerMediaTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
 	    
 	    // Center panel
 	    JPanel moreCenter = new JPanel(new BorderLayout());
@@ -1292,6 +1334,12 @@ public class GUI extends JFrame{
        	btnUpdateMovieReqTable.addActionListener(listener);
        	btnDeleteInMovieReqTable.addActionListener(listener);
        	btnAddInMovieReqTable.addActionListener(listener);
+       	
+    	btnMovieRecord.addActionListener(listener);;
+    	btnUserRecord.addActionListener(listener);;
+    	btnAdminRecord.addActionListener(listener);;
+    	btnMediaTypeRecord.addActionListener(listener);
+    	btnReturntoMain.addActionListener(listener);
 	}
 	
 
@@ -1358,9 +1406,6 @@ public class GUI extends JFrame{
 	public void setGenreDesc(String desc) {
 		GTDesc.setText(desc);
 	}
-	
-
-	
 	
 	public int getMProductID() {
 	    return Integer.parseInt(MTproduct_id.getText());
