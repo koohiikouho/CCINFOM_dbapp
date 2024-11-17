@@ -90,11 +90,6 @@ public class Controller implements ActionListener, DocumentListener{
 		case "DeleteInAdminTable":
 			
 			admin_no1 = gui.getAdminNumber();
-//			first_name1 = gui.getAdminFirstName();
-//			last_name1 = gui.getAdminLastName();
-//			admin_password1 = gui.getAdminPassword();
-//			admin_level1 = gui.getAdminLevel();
-			
 			String DeleteAdmin = " DELETE FROM admins WHERE admin_no = " + admin_no1 ;
 			pstmt = connections.prepareStatement(DeleteAdmin);
 			pstmt.execute();
