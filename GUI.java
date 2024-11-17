@@ -2137,6 +2137,24 @@ public class GUI extends JFrame{
 		setMRMovieReqNo("");
 		setMRUserno("");
 		setMediaRelease("");
+		
+		setTadmin_no("");
+		setTdate_borrowed("");
+		setTdate_returned("");
+		setTdate_toreturn("");
+		setTmovie_code("");
+		setTpayment("");
+		setTtransaction_no("");
+		setTuser_no("");
+
+		setUbirthday("");
+		setUemail("");
+		setUfirst_name("");
+		setUlast_name("");
+		setUpassword("");
+		setUuser_no("");
+		
+		
 	}
 	
 	
