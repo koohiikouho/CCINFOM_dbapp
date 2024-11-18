@@ -60,6 +60,8 @@ public class Controller implements ActionListener, DocumentListener{
 			
 		case"UserRecord":
 			System.out.println("UserRecord");
+			gui.refreshUserRecord();
+			gui.createUserRecordPanel();
 			break;
 			
 		case "AdminRecord" :
@@ -370,8 +372,6 @@ public class Controller implements ActionListener, DocumentListener{
 			date_toreturn7 = gui.getTdate_toreturn();
 			date_returned7 =  gui.getTdate_returned();
 			payment7 = gui.getTpayment();
-
-			
 			pstmt.setInt(1,transaction_no7);
 			pstmt.setInt(2,movie_code7);
 			pstmt.setInt(3,user_no7);
@@ -621,7 +621,15 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.refreshReviewTable();
 			gui.ClearAllTableInputs();
 			break;
-				}
+		case "ReturnUserRecordManagement":
+			gui.createUserRecordPanel();
+			break;
+		case "SelectUserRecord":
+			gui.refreshUserProfileTable();
+			gui.createUserProfilePanel();
+			break;
+			
+		}
 
 	}
 	catch (Exception ex) {
