@@ -1,5 +1,8 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 public class Model {
 
@@ -8,6 +11,32 @@ public class Model {
 	public Model(Connection connection){
 		connections = connection;
 	}
+	
+	public int checkAdminPassCorrect(String adminname, String pass) {
+	    ArrayList<Object[]> list = new ArrayList<>();
+		try {
+		Statement statement = connections.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT first_name, password FROM admins");
+		
+		while(resultSet.next()) {
+			 Object[] row = new Object[3];
+             row[0] = resultSet.getString(1);   // Movie Code
+             row[1] = resultSet.getString(2);   // Movie Name
+             list.add(row); // Add the row to the list
+
+            if(pass.equals(row[1]) && adminname.equals(row[0])){
+            	return 1;
+            }
+//             System.out.println("first_name: " + row[0]);
+//             System.out.println("password: " + row[1]);
+       }
+		}
+		catch (Exception e) {
+			System.out.println(e);
+		}
+		return 0;
+	}
+	
 	public static void main(String[] args) {
 		PreparedStatement pstmt;
 		int choice;//for condition
