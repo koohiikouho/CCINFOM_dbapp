@@ -753,7 +753,7 @@ public class newGUI extends JFrame{
 					int lateFees= rs.getInt("Late and Additional Fees");
 
 	                report.append(year).append("\t").append(month).append("\t").append(firstName).append("\t").append(lastName).append("\t")
-					.append(totalPayments).append("\t").append(rentalFees).append("\t").append(lateFees).append("\t");
+					.append(totalPayments).append("\t").append(rentalFees).append("\t").append(lateFees).append("\t\n");
 	                
 	            }
 	        } else if (choice.equals("Year")) {
@@ -767,7 +767,7 @@ public class newGUI extends JFrame{
 					int lateFees= rs.getInt("Late and Additional Fees");
 
 	                report.append(year).append("\t").append(firstName).append("\t").append(lastName).append("\t")
-					.append(totalPayments).append("\t").append(rentalFees).append("\t").append(lateFees).append("\t");
+					.append(totalPayments).append("\t").append(rentalFees).append("\t").append(lateFees).append("\t\n");
 	            }
 	        }
 
@@ -795,6 +795,116 @@ public class newGUI extends JFrame{
 	    }
 	}
 
+	private void generateRevenueReport() {
+	    String[] options = {"Month", "Year"};
+
+	    String choice = (String) JOptionPane.showInputDialog(
+	            null,
+	            "Choose Fiscal Timespan",
+	            "Revenue from Movie Rentals",
+	            JOptionPane.PLAIN_MESSAGE,
+	            null,
+	            options,
+	            options[0]);
+
+				if (choice == null) {
+					return; // User cancelled
+				}
+				
+				String query = "";
+
+				switch (choice) {
+					case "Month":
+						query = """
+								SELECT 
+									YEAR(t.date_returned) AS `Year`,
+									MONTH(t.date_returned) AS `Month`,
+									SUM(t.payment) AS `Total Revenue`
+								FROM
+									transactions t
+								WHERE 
+									YEAR(t.date_returned) = ? AND 
+									MONTH(t.date_returned) = ? AND 
+									t.date_returned IS NOT NULL
+								GROUP BY 
+									`Year`,
+									`Month`;
+								""";
+						break;
+					case "Year":
+						query = """
+								SELECT 
+									YEAR(t.date_returned) AS `Year`,
+									SUM(t.payment) AS `Total Revenue`
+								FROM 
+									transactions t
+								WHERE 
+									YEAR(t.date_returned) = ?
+								GROUP BY 
+									`Year`;
+								""";
+						break;
+					default:
+						JOptionPane.showMessageDialog(null, "Invalid option selected.");
+						return;
+				}
+		try (
+	         PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        // Prompt user for the month and/or year
+	        if (choice.equals("Month")) {
+	            String month = JOptionPane.showInputDialog("Enter the Month (1-12):");
+	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
+	            pstmt.setString(1, year);
+	            pstmt.setString(2, month);
+	        } else if (choice.equals("Year")) {
+	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
+	            pstmt.setString(1, year);
+	        }
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        // Generate the report
+	        StringBuilder report = new StringBuilder();
+	        if (choice.equals("Year")) {
+	            report.append("Year\tTotal Revenue\t\n");
+	            while (rs.next()) {
+	                int year = rs.getInt("Year");
+	                int totalRev = rs.getInt("Total Revenue");
+	                report.append(year).append("\t").append(totalRev).append(" PHP \t\n");
+	            }
+	        } else if (choice.equals("Month")) {
+	            report.append("Year\tMonth\tTotal Revenue\t\n");
+	            while (rs.next()) {
+	                int year = rs.getInt("Year");
+					int month = rs.getInt("Month");
+	                int totalRev = rs.getInt("Total Revenue");
+	                report.append(year).append("\t").append(month).append("\t").append(totalRev).append(" PHP \t\n");
+	            }
+	        }
+
+			 
+	        // Display the report
+	        JTextArea textArea = new JTextArea(report.toString());
+	        textArea.setEditable(false);
+	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
+	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
+	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        scrollPane.setPreferredSize(new Dimension(600, 400));
+			
+	        // Customize the window (Optional)
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+			JOptionPane.showMessageDialog(null, panel, "Revenue Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
+
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+	}
 
 
 	
@@ -2733,6 +2843,7 @@ public void refreshMovieReqTable() {
 
 		btnTopRevenueUsers.addActionListener(e -> generateTopRevenueUsers());
 
+		btnRevenueReport.addActionListener(e -> generateRevenueReport());
 
 	}
 	
