@@ -141,6 +141,7 @@ CASE
         WHEN mr.approved IS NULL THEN 'Processing'
     END AS `Status`
 FROM movie_req mr
+JOIN users u ON u.user_no = mr.user_no
 WHERE mr.date_filed IS NOT NULL
 ORDER BY mr.date_filed;
 
