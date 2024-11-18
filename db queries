@@ -3,7 +3,6 @@ Queries List
 View All Movies In the Database
 SELECT *
 FROM movies m
-WHERE m.movie_code = '?'
 ORDER BY m.movie_code;
 
 View How Many Times Each Movie has been borrowed
