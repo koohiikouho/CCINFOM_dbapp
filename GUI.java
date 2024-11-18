@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 public class GUI extends JFrame{
 	
 	//main menu
-	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
+	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT, btnTransactions;
 	//records
 	private JButton btnMovieRecord,btnUserRecord,btnAdminRecord, btnMediaTypeRecord, btnReturntoMain;
 	
@@ -252,6 +252,16 @@ public class GUI extends JFrame{
         panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
         panelCenter.add(btnReports);
 
+        
+        btnTransactions = new JButton("Transactions");
+        btnTransactions.setPreferredSize(buttonSize);
+        btnTransactions.setMaximumSize(buttonSize);
+        btnTransactions.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCenter.add(btnTransactions);
+        panelCenter.add(Box.createVerticalGlue());
+
+        
         btnEXIT = new JButton("EXIT");
         btnEXIT.setPreferredSize(buttonSize);
         btnEXIT.setMaximumSize(buttonSize);
@@ -263,6 +273,7 @@ public class GUI extends JFrame{
         btnTableInput.setActionCommand("TableInput");
         btnRecordManagement.setActionCommand("RecordManagement");
         btnReports.setActionCommand("Reports");
+        btnTransactions.setActionCommand("Transactions");
         btnEXIT.setActionCommand("EXIT");
         
         MainMenu.add(panelCenter, BorderLayout.CENTER);
@@ -2841,6 +2852,7 @@ try {
 		btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
 		btnReports.addActionListener(listener);
+		btnTransactions.addActionListener(listener);
 		btnEXIT.addActionListener(listener);
 		btnHome.addActionListener(listener);
 		
