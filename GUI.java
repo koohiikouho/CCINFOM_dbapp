@@ -11,6 +11,14 @@ public class GUI extends JFrame{
 	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
 	//records
 	private JButton btnMovieRecord,btnUserRecord,btnAdminRecord, btnMediaTypeRecord, btnReturntoMain;
+	
+	// reports
+	// Declare buttons as instance variables
+	private JButton btnMoviesBorrowed,btnMostBorrowedMovies, btnPopularGenres;
+	private JButton btnApprovedRequests, btnMostRequestedMovies, btnRentalHistory;
+	private JButton btnPolicyViolations, btnRevenueReport, btnTopRevenueUsers,btnReturntoMainFromReport;
+	
+	
 	//table input
 	private JButton btnAdminsTable, btnGenre_TypeTable, btnMedia_TypeTable, 
 					btnMovie_reqTable, btnMoviesTable, btnReviewTable, btnTransactionsTable, 
@@ -32,8 +40,10 @@ public class GUI extends JFrame{
 	//review table
 	private JButton btnUpdateReviewTable, btnDeleteInReviewTable, btnAddInReviewTable;
 
+	
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
+	private JPanel ReportManagement = new JPanel();
 	//tables
 	private JPanel 	AdminTable = new JPanel(), GenreTypeTable = new JPanel(), 
 					Media_TypeTable = new JPanel(), Movie_reqTable = new JPanel(),	
@@ -111,6 +121,9 @@ public class GUI extends JFrame{
 		
 		RecordManagement.setLayout(new BorderLayout());
 		recordmanagement();
+		
+		ReportManagement.setLayout(new BorderLayout());
+		reportmanagement();
 		
 		AdminTable.setLayout(new BorderLayout());
 		showAdminTable();
@@ -294,6 +307,131 @@ public class GUI extends JFrame{
         btnReturntoMain.setActionCommand("Home");
         
         RecordManagement.add(panelCenter, BorderLayout.CENTER);
+	}
+
+	public void createReportmanagementPanel() {
+		// TODO Auto-generated method stub
+		setContentPane(ReportManagement);
+        revalidate();
+        repaint();
+		
+	}
+	
+	
+	public void reportmanagement() {
+	    // NORTH PANEL
+	    JPanel panelNorth = new JPanel();
+	    panelNorth.setLayout(new FlowLayout());
+	    panelNorth.setBackground(Color.decode("#0A285f"));
+
+	    JLabel label = new JLabel("Welcome To Report Management");
+	    label.setForeground(Color.WHITE);
+	    label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	    panelNorth.add(label);
+
+	    ReportManagement.add(panelNorth, BorderLayout.NORTH);
+
+	    // SOUTH PANEL
+	    JPanel panelSouth = new JPanel();
+	    panelSouth.setBackground(Color.BLACK);
+	    ReportManagement.add(panelSouth, BorderLayout.SOUTH);
+
+	    // CENTER PANEL
+	    JPanel panelCenter = new JPanel();
+	    panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.Y_AXIS));
+	    panelCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+	    // Button size
+	    Dimension buttonSize = new Dimension(350, 100);
+
+	    // Buttons for Movies Borrowed Reports
+	    btnMoviesBorrowed = new JButton("Movies Borrowed Report");
+	    btnMoviesBorrowed.setPreferredSize(buttonSize);
+	    btnMoviesBorrowed.setMaximumSize(buttonSize);
+	    btnMoviesBorrowed.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnMoviesBorrowed);
+
+	    btnMostBorrowedMovies = new JButton("Most Borrowed Movies");
+	    btnMostBorrowedMovies.setPreferredSize(buttonSize);
+	    btnMostBorrowedMovies.setMaximumSize(buttonSize);
+	    btnMostBorrowedMovies.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnMostBorrowedMovies);
+
+	    btnPopularGenres = new JButton("Popular Genres Report");
+	    btnPopularGenres.setPreferredSize(buttonSize);
+	    btnPopularGenres.setMaximumSize(buttonSize);
+	    btnPopularGenres.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnPopularGenres);
+
+	    // Buttons for Movie Request Reports
+	    btnApprovedRequests = new JButton("Approved/Disapproved Requests");
+	    btnApprovedRequests.setPreferredSize(buttonSize);
+	    btnApprovedRequests.setMaximumSize(buttonSize);
+	    btnApprovedRequests.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnApprovedRequests);
+
+	    btnMostRequestedMovies = new JButton("Most Requested Movies");
+	    btnMostRequestedMovies.setPreferredSize(buttonSize);
+	    btnMostRequestedMovies.setMaximumSize(buttonSize);
+	    btnMostRequestedMovies.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnMostRequestedMovies);
+
+	    // Buttons for User Rentals Reports
+	    btnRentalHistory = new JButton("Rental History Report");
+	    btnRentalHistory.setPreferredSize(buttonSize);
+	    btnRentalHistory.setMaximumSize(buttonSize);
+	    btnRentalHistory.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnRentalHistory);
+
+	    btnPolicyViolations = new JButton("Policy Violations Report");
+	    btnPolicyViolations.setPreferredSize(buttonSize);
+	    btnPolicyViolations.setMaximumSize(buttonSize);
+	    btnPolicyViolations.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnPolicyViolations);
+
+	    // Buttons for Sales Reports
+	    btnRevenueReport = new JButton("Revenue Report");
+	    btnRevenueReport.setPreferredSize(buttonSize);
+	    btnRevenueReport.setMaximumSize(buttonSize);
+	    btnRevenueReport.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnRevenueReport);
+
+	    btnTopRevenueUsers = new JButton("Top Revenue Users");
+	    btnTopRevenueUsers.setPreferredSize(buttonSize);
+	    btnTopRevenueUsers.setMaximumSize(buttonSize);
+	    btnTopRevenueUsers.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnTopRevenueUsers);
+
+	    btnReturntoMainFromReport = new JButton("Home");
+	    btnReturntoMainFromReport.setPreferredSize(buttonSize);
+	    btnReturntoMainFromReport.setMaximumSize(buttonSize);
+	    btnReturntoMainFromReport.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnReturntoMainFromReport);
+	    panelCenter.add(Box.createVerticalGlue());
+
+	    // Set Action Commands
+	    btnMoviesBorrowed.setActionCommand("MoviesBorrowedReport");
+	    btnMostBorrowedMovies.setActionCommand("MostBorrowedMoviesReport");
+	    btnPopularGenres.setActionCommand("PopularGenresReport");
+	    btnApprovedRequests.setActionCommand("ApprovedRequestsReport");
+	    btnMostRequestedMovies.setActionCommand("MostRequestedMoviesReport");
+	    btnRentalHistory.setActionCommand("RentalHistoryReport");
+	    btnPolicyViolations.setActionCommand("PolicyViolationsReport");
+	    btnRevenueReport.setActionCommand("RevenueReport");
+	    btnTopRevenueUsers.setActionCommand("TopRevenueUsersReport");
+	    btnReturntoMainFromReport.setActionCommand("Home");
+
+	    ReportManagement.add(panelCenter, BorderLayout.CENTER);
 	}
 
 	
@@ -2190,7 +2328,16 @@ public void refreshMovieReqTable() {
     	btnDeleteInTransactionTable.addActionListener(listener);
     	btnAddInTransactionTable.addActionListener(listener);
  
-
+    	btnMoviesBorrowed.addActionListener(listener);
+	    btnMostBorrowedMovies.addActionListener(listener);
+	    btnPopularGenres.addActionListener(listener);
+	    btnApprovedRequests.addActionListener(listener);
+	    btnMostRequestedMovies.addActionListener(listener);
+	    btnRentalHistory.addActionListener(listener);
+	    btnPolicyViolations.addActionListener(listener);
+	    btnRevenueReport.addActionListener(listener);
+	    btnTopRevenueUsers.addActionListener(listener);
+	    btnReturntoMainFromReport.addActionListener(listener);
 	}
 	
 
