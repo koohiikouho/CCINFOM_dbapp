@@ -33,12 +33,12 @@ public class Controller implements ActionListener, DocumentListener{
 
 		switch(command) {
 		
-		case "TableInput":
-			System.out.println("You clicked TableInput");
-			gui.createTableInputPanel();
-			gui.refreshAdminTable();
-			gui.ClearAllTableInputs();
-			break;
+//		case "TableInput":
+//			System.out.println("You clicked TableInput");
+//			gui.createTableInputPanel();
+//			gui.refreshAdminTable();
+//			gui.ClearAllTableInputs();
+//			break;
 			
 		case "RecordManagement":
 			System.out.println("You clicked TableManagement");
@@ -139,6 +139,9 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 			
 		case "AdminRecord" :
+			gui.createTableInputPanel();
+			gui.refreshAdminTable();
+			gui.ClearAllTableInputs();
 			System.out.println("AdminRecord");
 			break;
 			
