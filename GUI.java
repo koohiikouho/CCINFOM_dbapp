@@ -117,6 +117,8 @@ public class GUI extends JFrame{
 	private JTable tableUserProfile;
 	private DefaultTableModel tableModelUserProfile;
 	
+	JLabel UPuserno ,UPfirstname, UPlastName;
+
 	
 	public static Connection connection;
 
@@ -2518,6 +2520,8 @@ try {
 	    revalidate();
 	    repaint();
 	}
+	
+	
 	public void UserProfilePanel() {
 		// NORTH PANEL
 		   JPanel panelNorth = new JPanel();
@@ -2540,6 +2544,38 @@ try {
 		   panelSouth.add(btnReturnToUserRecord);
 		   btnReturnToUserRecord.setActionCommand("ReturnUserRecordManagement");
 		   UserProfile.add(panelSouth, BorderLayout.SOUTH);
+		   
+		   JPanel centerPanel = new JPanel();
+		   centerPanel.setLayout(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
+
+		   gbc.insets = new Insets(6, 6, 6, 6);
+		   gbc.anchor = GridBagConstraints.WEST;
+		   
+		   UPuserno = new JLabel("User no.");
+		   UPuserno.setForeground(Color.BLACK);
+		   UPuserno.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 1;
+		   centerPanel.add(UPuserno, gbc);
+		   
+		   UPfirstname = new JLabel("First Name");
+		   UPfirstname.setForeground(Color.BLACK);
+		   UPfirstname.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 2;
+		   centerPanel.add(UPfirstname, gbc);
+		   
+		   
+		   UPlastName = new JLabel("Last Name");
+		   UPlastName.setForeground(Color.BLACK);
+		   UPlastName.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 3;
+		   centerPanel.add(UPlastName,gbc);
+		  
+		   
+		   UserProfile.add(centerPanel , BorderLayout.CENTER);
 	}
 	public void showUserProfile() {
 		   String[] col = {"movie_name", "date_borrowed", "date_returned"};
@@ -3084,6 +3120,18 @@ try {
 		URlast_name.setText(num);
 	}
 	
+	 public void setUPfirstname(String name) {
+		   UPfirstname.setText("   First Name: " + name);
+		}
+
+	 public void setUPuserno(int name) {
+		 UPuserno.setText("   User No: " + name);
+		}
+	 
+	 public void setUPlastName(String name) {
+		 UPlastName.setText("   Last Name: " + name);
+		}
+
 	public void ClearAllTableInputs() {
 		setAdminFirstName("");
 		setAdminLastName("");
