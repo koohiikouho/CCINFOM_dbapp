@@ -1,11 +1,19 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class newGUI extends JFrame{
+import java.util.List;
+
+
+
+public class GUI extends JFrame{
 	
 	//main menu
 	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
@@ -44,6 +52,7 @@ public class newGUI extends JFrame{
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
 	private JPanel ReportManagement = new JPanel();
+	
 	//tables
 	private JPanel 	AdminTable = new JPanel(), GenreTypeTable = new JPanel(), 
 					Media_TypeTable = new JPanel(), Movie_reqTable = new JPanel(),	
@@ -105,7 +114,7 @@ public class newGUI extends JFrame{
 	
 	public static Connection connection;
 
-	public newGUI(Connection connections) {
+	public GUI(Connection connections) {
 		super("DB APP"); //frame name
 		
 		connection = connections;
@@ -312,7 +321,7 @@ public class newGUI extends JFrame{
 	}
 
 	public void createReportmanagementPanel() {
-		// TODO Auto-generated method stub
+		
 		setContentPane(ReportManagement);
         revalidate();
         repaint();
@@ -556,6 +565,143 @@ public class newGUI extends JFrame{
 	
 	
 	
+	private void generateMostBorrowedMovies() {
+	    String[] options = {"Monthly", "Yearly", "In General"};
+	    String choice = (String) JOptionPane.showInputDialog(
+	            null,
+	            "Select report type:",
+	            "Most Borrowed Movies",
+	            JOptionPane.PLAIN_MESSAGE,
+	            null,
+	            options,
+	            options[0]);
+
+	    if (choice == null) {
+	        return;
+	    }
+
+	    String query = "";
+	    switch (choice) {
+	        case "Monthly":
+	            query = """
+	                    SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, 
+	                           m.movie_code, m.movie_name, gt.description AS `Genre`, 
+	                           COUNT(t.movie_code) AS `Times Borrowed`
+	                    FROM transactions t
+	                    JOIN movies m ON m.movie_code = t.movie_code
+	                    JOIN genre_type gt ON gt.genre_id = m.genre_id
+	                    WHERE YEAR(t.date_borrowed) = ? AND MONTH(t.date_borrowed) = ? AND gt.genre_id = ?
+	                    GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), m.movie_code
+	                    ORDER BY `Times Borrowed` DESC;
+	                    """;
+	            break;
+	        case "Yearly":
+	            query = """
+	                    SELECT YEAR(t.date_borrowed) AS `Year`, 
+	                           m.movie_code, m.movie_name, gt.description AS `Genre`, 
+	                           COUNT(t.movie_code) AS `Times Borrowed`
+	                    FROM transactions t
+	                    JOIN movies m ON m.movie_code = t.movie_code
+	                    JOIN genre_type gt ON gt.genre_id = m.genre_id
+	                    WHERE YEAR(t.date_borrowed) = ? AND gt.genre_id = ?
+	                    GROUP BY YEAR(t.date_borrowed), m.movie_code
+	                    ORDER BY `Times Borrowed` DESC;
+	                    """;
+	            break;
+	        case "In General":
+	            query = """
+	                    SELECT m.movie_code, m.movie_name, gt.description AS `Genre`, 
+	                           COUNT(t.movie_code) AS `Times Borrowed`
+	                    FROM transactions t
+	                    JOIN movies m ON m.movie_code = t.movie_code
+	                    JOIN genre_type gt ON gt.genre_id = m.genre_id
+	                    GROUP BY m.movie_code
+	                    ORDER BY `Times Borrowed` DESC;
+	                    """;
+	            break;
+	    }
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        if (!choice.equals("In General")) {
+	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
+	            pstmt.setString(1, year);
+
+	            if (choice.equals("Monthly")) {
+	                String month = JOptionPane.showInputDialog("Enter the Month (1-12):");
+	                pstmt.setString(2, month);
+	            }
+
+	            String genreId = JOptionPane.showInputDialog("Enter the Genre ID:");
+	            pstmt.setString(choice.equals("Monthly") ? 3 : 2, genreId);
+	        }
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        String[] columnNames = choice.equals("In General")
+	                ? new String[]{"Movie Code", "Movie Name", "Genre", "Times Borrowed"}
+	                : choice.equals("Monthly")
+	                ? new String[]{"Year", "Month", "Movie Code", "Movie Name", "Genre", "Times Borrowed"}
+	                : new String[]{"Year", "Movie Code", "Movie Name", "Genre", "Times Borrowed"};
+	        
+	        List<Object[]> rows = new ArrayList<>();
+
+	        while (rs.next()) {
+	            if (choice.equals("Monthly")) {
+	                rows.add(new Object[]{
+	                        rs.getInt("Year"),
+	                        rs.getInt("Month"),
+	                        rs.getString("movie_code"),
+	                        rs.getString("movie_name"),
+	                        rs.getString("Genre"),
+	                        rs.getInt("Times Borrowed")
+	                });
+	            } else if (choice.equals("Yearly")) {
+	                rows.add(new Object[]{
+	                        rs.getInt("Year"),
+	                        rs.getString("movie_code"),
+	                        rs.getString("movie_name"),
+	                        rs.getString("Genre"),
+	                        rs.getInt("Times Borrowed")
+	                });
+	            } else {
+	                rows.add(new Object[]{
+	                        rs.getString("movie_code"),
+	                        rs.getString("movie_name"),
+	                        rs.getString("Genre"),
+	                        rs.getInt("Times Borrowed")
+	                });
+	            }
+	        }
+
+	        displayResultsInTable(columnNames, rows, "Most Borrowed Movies (" + choice + ")");
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+	}
+
+	
+	
+	private void displayResultsInTable(String[] columnNames, List<Object[]> rows, String title) {
+	    DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
+	        @Override
+	        public boolean isCellEditable(int row, int column) {
+	            return false;
+	        }
+	    };
+
+	    JTable table = new JTable(tableModel);
+	    JScrollPane scrollPane = new JScrollPane(table);
+
+	    JPanel panel = new JPanel(new BorderLayout());
+	    panel.add(scrollPane, BorderLayout.CENTER);
+
+	    JOptionPane.showMessageDialog(null, panel, title, JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	
+	
+	
 	
 	private void generatePopularGenresReport() {
 	    // Options to choose the type of report, removing "Day" option
@@ -608,7 +754,7 @@ public class newGUI extends JFrame{
 	    // Database Connection and Execution
 	    try (
 	         PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        
+
 	        // Prompt user for the month and/or year
 	        if (choice.equals("Month")) {
 	            String month = JOptionPane.showInputDialog("Enter the Month (1-12):");
@@ -622,47 +768,51 @@ public class newGUI extends JFrame{
 
 	        ResultSet rs = pstmt.executeQuery();
 
-	        // Generate the report
-	        StringBuilder report = new StringBuilder();
-	        if (choice.equals("Month")) {
-	            report.append("Year\tMonth\tGenre\t\tTimes Borrowed\n");
-	            while (rs.next()) {
-	                int year = rs.getInt("Year");
-	                int month = rs.getInt("Month");
-	                String genre = rs.getString("Genre");
-	                int timesBorrowed = rs.getInt("Times Borrowed");
+	        // Define column names for the table
+	        String[] columnNames = (choice.equals("Month"))
+	            ? new String[]{"Year", "Month", "Genre", "Times Borrowed"}
+	            : new String[]{"Year", "Genre", "Times Borrowed"};
 
-	                if (timesBorrowed > 0) {
-	                    report.append(year).append("\t").append(month).append("\t").append(genre).append("\t\t").append(timesBorrowed).append("\n");
-	                }
-	            }
-	        } else if (choice.equals("Year")) {
-	            report.append("Year\tGenre\t\tTimes Borrowed\n");
-	            while (rs.next()) {
-	                int year = rs.getInt("Year");
-	                String genre = rs.getString("Genre");
-	                int timesBorrowed = rs.getInt("Times Borrowed");
+	        // Collect the rows for the table
+	        List<Object[]> rows = new ArrayList<>();
+	        while (rs.next()) {
+	            int year = rs.getInt("Year");
+	            String genre = rs.getString("Genre");
+	            int timesBorrowed = rs.getInt("Times Borrowed");
 
-	                if (timesBorrowed > 0) {
-	                    report.append(year).append("\t").append(genre).append("\t\t").append(timesBorrowed).append("\n");
+	            if (timesBorrowed > 0) {
+	                if (choice.equals("Month")) {
+	                    int month = rs.getInt("Month");
+	                    rows.add(new Object[]{year, month, genre, timesBorrowed});
+	                } else {
+	                    rows.add(new Object[]{year, genre, timesBorrowed});
 	                }
 	            }
 	        }
 
-	        // Display the report
-	        JTextArea textArea = new JTextArea(report.toString());
-	        textArea.setEditable(false);
-	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
-	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
-	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
-	        JScrollPane scrollPane = new JScrollPane(textArea);
-	        scrollPane.setPreferredSize(new Dimension(600, 400));
+	        // Create the DefaultTableModel with the fetched data
+	        DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Make all cells non-editable
+	            }
+	        };
 
-	        // Customize the window (Optional)
+	        // Create the JTable using the DefaultTableModel
+	        JTable table = new JTable(tableModel);
+	        table.setEnabled(true); // Enable row selection
+	        table.setFont(new Font("Serif", Font.PLAIN, 14)); // Set font for readability
+
+	        // Set up the JScrollPane for the table
+	        JScrollPane scrollPane = new JScrollPane(table);
+	        scrollPane.setPreferredSize(new Dimension(600, 300)); // Set preferred size
+
+	        // Panel to contain the JScrollPane
 	        JPanel panel = new JPanel(new BorderLayout());
-	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
+	        panel.setBackground(new Color(240, 240, 240)); // Soft background color
 	        panel.add(scrollPane, BorderLayout.CENTER);
 
+	        // Show the table in a message dialog
 	        JOptionPane.showMessageDialog(null, panel, "Movies Borrowed Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
 
 	    } catch (SQLException ex) {
@@ -671,123 +821,204 @@ public class newGUI extends JFrame{
 	    }
 	}
 
+	
+	
+	
+	private void generateMovieRequestsReport() {
+	    // Query for fetching the movie requests and their approval statuses
+	    String query = """
+	            SELECT mr.date_filed,mr.movie_name,mr.media_type,
+	    		CASE 
+			        WHEN mr.approved = 1 THEN 'Approved'
+			        WHEN mr.approved = 0 THEN 'Rejected'
+			        WHEN mr.approved IS NULL THEN 'Processing'
+			    END AS `Status`
+				FROM movie_req mr
+				JOIN users u ON u.user_no = mr.user_no
+				WHERE mr.date_filed IS NOT NULL
+				ORDER BY mr.date_filed;
+	            """;
+
+	    // Database Connection and Execution
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        // Column names for the table
+	        String[] columnNames = {"Date Filed", "Movie Name", "Media Type", "Status"};
+
+	        // Collect the rows for the table
+	        List<Object[]> rows = new ArrayList<>();
+	        while (rs.next()) {
+	            String dateFiled = rs.getString("date_filed");
+	            String movieName = rs.getString("movie_name");
+	            String mediaType = rs.getString("media_type");
+	            String status = rs.getString("Status");
+
+	            // Add the row to the list
+	            rows.add(new Object[]{dateFiled, movieName, mediaType, status});
+	        }
+
+	        // Create a DefaultTableModel with the fetched data
+	        DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Make all cells non-editable
+	            }
+	        };
+
+	        // Create the JTable using the DefaultTableModel
+	        JTable table = new JTable(tableModel);
+	        table.setEnabled(true); // Enable row selection
+	        table.setFont(new Font("Serif", Font.PLAIN, 14)); // Set font for readability
+
+	        // Set up the JScrollPane for the table
+	        JScrollPane scrollPane = new JScrollPane(table);
+	        scrollPane.setPreferredSize(new Dimension(600, 300)); // Set preferred size
+
+	        // Panel to contain the JScrollPane
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240)); // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+	        // Show the table in a message dialog
+	        JOptionPane.showMessageDialog(null, panel, "Movie Requests Report", JOptionPane.INFORMATION_MESSAGE);
+
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+	}
 
 
-	private void generateTopRevenueUsers() {
-	    String[] options = {"Month", "Year"};
 
+
+	
+	
+	
+	private void generateMostRequestedMoviesReport() {
+	    // Options to choose the type of report
+	    String[] options = {"General", "Monthly", "Yearly"};
 	    String choice = (String) JOptionPane.showInputDialog(
 	            null,
-	            "Choose Top Revenue Timespan",
-	            "Top Revenue Users",
+	            "Select the type of report:",
+	            "Most Requested Movies Report",
 	            JOptionPane.PLAIN_MESSAGE,
 	            null,
 	            options,
 	            options[0]);
 
-				if (choice == null) {
-					return; // User cancelled
-				}
-				
-				String query = "";
+	    if (choice == null) {
+	        return; // User cancelled
+	    }
 
-				switch (choice) {
-					case "Month":
-						query = """
-								SELECT YEAR(t.date_returned) 
-										AS `YEAR`,MONTH(t.date_returned) AS `MONTH`,u.first_name,u.last_name,SUM(t.payment) 
-										AS `Total Payments`,SUM(TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price)
-										AS `Rental Fees`,SUM(t.payment - (TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price)) 
-										AS `Late and Additional Fees`
-								FROM users u
-								JOIN transactions t ON u.user_no = t.user_no
-								JOIN media_type mt ON t.product_id = mt.product_id
-								WHERE t.date_returned IS NOT NULL AND YEAR(t.date_returned) = ? AND MONTH(t.date_returned) = ?
-								GROUP BY u.user_no,`YEAR`,`MONTH`
-								ORDER BY `Total Payments` DESC;
-								""";
-						break;
-					case "Year":
-						query = """
-								SELECT YEAR(t.date_borrowed) AS `Year`, gt.genre_id, gt.description AS `Genre`, 
-									   COUNT(t.movie_code) AS `Times Borrowed`
-								FROM transactions t
-								JOIN movies m ON m.movie_code = t.movie_code
-								JOIN genre_type gt ON gt.genre_id = m.genre_id
-								WHERE YEAR(t.date_borrowed) = ?
-								GROUP BY YEAR(t.date_borrowed), gt.genre_id
-								ORDER BY `Times Borrowed` DESC;
-								""";
-						break;
-					default:
-						JOptionPane.showMessageDialog(null, "Invalid option selected.");
-						return;
-				}
-		try (
+	    // SQL queries based on the choice
+	    String query = "";
+	    switch (choice) {
+	        case "General":
+	            query = """
+	                    SELECT mr.movie_name, COUNT(mr.movie_name) AS `Number of Requests`
+	                    FROM movie_req mr
+	                    JOIN users u ON u.user_no = mr.user_no
+	                    GROUP BY mr.movie_name
+	                    ORDER BY `Number of Requests` DESC;
+	                    """;
+	            break;
+	        case "Monthly":
+	            query = """
+	                    SELECT YEAR(mr.date_filed) AS `Year`, MONTH(mr.date_filed) AS `Month`,
+	                           mr.movie_name, COUNT(mr.movie_name) AS `Number of Requests`
+	                    FROM movie_req mr
+	                    JOIN users u ON u.user_no = mr.user_no
+	                    WHERE YEAR(mr.date_filed) = ? AND MONTH(mr.date_filed) = ?
+	                    GROUP BY YEAR(mr.date_filed), MONTH(mr.date_filed), mr.movie_name
+	                    ORDER BY `Number of Requests` DESC;
+	                    """;
+	            break;
+	        case "Yearly":
+	            query = """
+	                    SELECT YEAR(mr.date_filed) AS `Year`, mr.movie_name, COUNT(mr.movie_name) AS `Number of Requests`
+	                    FROM movie_req mr
+	                    JOIN users u ON u.user_no = mr.user_no
+	                    WHERE YEAR(mr.date_filed) = ?
+	                    GROUP BY YEAR(mr.date_filed), mr.movie_name
+	                    ORDER BY `Number of Requests` DESC;
+	                    """;
+	            break;
+	        default:
+	            JOptionPane.showMessageDialog(null, "Invalid option selected.");
+	            return;
+	    }
+
+	    // Database Connection and Execution
+	    try (
 	         PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        
-	        // Prompt user for the month and/or year
-	        if (choice.equals("Month")) {
+
+	        // Prompt user for the month and/or year if necessary
+	        if (choice.equals("Monthly")) {
 	            String month = JOptionPane.showInputDialog("Enter the Month (1-12):");
 	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
 	            pstmt.setString(1, year);
 	            pstmt.setString(2, month);
-	        } else if (choice.equals("Year")) {
+	        } else if (choice.equals("Yearly")) {
 	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
 	            pstmt.setString(1, year);
 	        }
 
 	        ResultSet rs = pstmt.executeQuery();
 
-	        // Generate the report
-	        StringBuilder report = new StringBuilder();
-	        if (choice.equals("Month")) {
-	            report.append("Year\tMonth\tFirst Name\tLast Name\tTotal Payments\tRental Fees\tLate and Additional Fees\n");
-	            while (rs.next()) {
+	        // Define column names for the table
+	        String[] columnNames = switch (choice) {
+	            case "General" -> new String[]{"Movie Name", "Number of Requests"};
+	            case "Monthly" -> new String[]{"Year", "Month", "Movie Name", "Number of Requests"};
+	            case "Yearly" -> new String[]{"Year", "Movie Name", "Number of Requests"};
+	            default -> throw new IllegalStateException("Unexpected value: " + choice);
+	        };
+
+	        // Collect the rows for the table
+	        List<Object[]> rows = new ArrayList<>();
+	        while (rs.next()) {
+	            if (choice.equals("General")) {
+	                String movieName = rs.getString("movie_name");
+	                int numberOfRequests = rs.getInt("Number of Requests");
+	                rows.add(new Object[]{movieName, numberOfRequests});
+	            } else if (choice.equals("Monthly")) {
 	                int year = rs.getInt("Year");
 	                int month = rs.getInt("Month");
-					String firstName = rs.getString("first_Name");
-	            	String lastName = rs.getString("last_Name");
-	                int totalPayments = rs.getInt("Total Payments");
-					int rentalFees = rs.getInt("Rental fees");
-					int lateFees= rs.getInt("Late and Additional Fees");
-
-	                report.append(year).append("\t").append(month).append("\t").append(firstName).append("\t").append(lastName).append("\t")
-					.append(totalPayments).append("\t").append(rentalFees).append("\t").append(lateFees).append("\t\n");
-	                
-	            }
-	        } else if (choice.equals("Year")) {
-	            report.append("Month\tFirst Name\tLast Name\tTotal Payments\tRental Fees\tLate and Additional Fees\n");
-	            while (rs.next()) {
-	                int year = rs.getInt("year");
-					String firstName = rs.getString("first_name");
-	            	String lastName = rs.getString("last_name");
-	                int totalPayments = rs.getInt("Times Borrowed");
-					int rentalFees = rs.getInt("Total Payments");
-					int lateFees= rs.getInt("Late and Additional Fees");
-
-	                report.append(year).append("\t").append(firstName).append("\t").append(lastName).append("\t")
-					.append(totalPayments).append("\t").append(rentalFees).append("\t").append(lateFees).append("\t\n");
+	                String movieName = rs.getString("movie_name");
+	                int numberOfRequests = rs.getInt("Number of Requests");
+	                rows.add(new Object[]{year, month, movieName, numberOfRequests});
+	            } else if (choice.equals("Yearly")) {
+	                int year = rs.getInt("Year");
+	                String movieName = rs.getString("movie_name");
+	                int numberOfRequests = rs.getInt("Number of Requests");
+	                rows.add(new Object[]{year, movieName, numberOfRequests});
 	            }
 	        }
 
-			 
-	        // Display the report
-	        JTextArea textArea = new JTextArea(report.toString());
-	        textArea.setEditable(false);
-	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
-	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
-	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
-	        JScrollPane scrollPane = new JScrollPane(textArea);
-	        scrollPane.setPreferredSize(new Dimension(600, 400));
-			
-	        // Customize the window (Optional)
+	        // Create the DefaultTableModel with the fetched data
+	        DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Make all cells non-editable
+	            }
+	        };
+
+	        // Create the JTable using the DefaultTableModel
+	        JTable table = new JTable(tableModel);
+	        table.setFont(new Font("Serif", Font.PLAIN, 14)); // Set font for readability
+
+	        // Set up the JScrollPane for the table
+	        JScrollPane scrollPane = new JScrollPane(table);
+	        scrollPane.setPreferredSize(new Dimension(600, 300)); // Set preferred size
+
+	        // Panel to contain the JScrollPane
 	        JPanel panel = new JPanel(new BorderLayout());
-	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
+	        panel.setBackground(new Color(240, 240, 240)); // Soft background color
 	        panel.add(scrollPane, BorderLayout.CENTER);
 
-	        JOptionPane.showMessageDialog(null, panel, "Most Profitable Users Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
-			
+	        // Show the table in a message dialog
+	        JOptionPane.showMessageDialog(null, panel, "Most Requested Movies Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
 
 	    } catch (SQLException ex) {
 	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -795,116 +1026,16 @@ public class newGUI extends JFrame{
 	    }
 	}
 
-	private void generateRevenueReport() {
-	    String[] options = {"Month", "Year"};
+	
+	
 
-	    String choice = (String) JOptionPane.showInputDialog(
-	            null,
-	            "Choose Fiscal Timespan",
-	            "Revenue from Movie Rentals",
-	            JOptionPane.PLAIN_MESSAGE,
-	            null,
-	            options,
-	            options[0]);
 
-				if (choice == null) {
-					return; // User cancelled
-				}
-				
-				String query = "";
+	
+	
+	
+	
 
-				switch (choice) {
-					case "Month":
-						query = """
-								SELECT 
-									YEAR(t.date_returned) AS `Year`,
-									MONTH(t.date_returned) AS `Month`,
-									SUM(t.payment) AS `Total Revenue`
-								FROM
-									transactions t
-								WHERE 
-									YEAR(t.date_returned) = ? AND 
-									MONTH(t.date_returned) = ? AND 
-									t.date_returned IS NOT NULL
-								GROUP BY 
-									`Year`,
-									`Month`;
-								""";
-						break;
-					case "Year":
-						query = """
-								SELECT 
-									YEAR(t.date_returned) AS `Year`,
-									SUM(t.payment) AS `Total Revenue`
-								FROM 
-									transactions t
-								WHERE 
-									YEAR(t.date_returned) = ?
-								GROUP BY 
-									`Year`;
-								""";
-						break;
-					default:
-						JOptionPane.showMessageDialog(null, "Invalid option selected.");
-						return;
-				}
-		try (
-	         PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        
-	        // Prompt user for the month and/or year
-	        if (choice.equals("Month")) {
-	            String month = JOptionPane.showInputDialog("Enter the Month (1-12):");
-	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
-	            pstmt.setString(1, year);
-	            pstmt.setString(2, month);
-	        } else if (choice.equals("Year")) {
-	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
-	            pstmt.setString(1, year);
-	        }
 
-	        ResultSet rs = pstmt.executeQuery();
-
-	        // Generate the report
-	        StringBuilder report = new StringBuilder();
-	        if (choice.equals("Year")) {
-	            report.append("Year\tTotal Revenue\t\n");
-	            while (rs.next()) {
-	                int year = rs.getInt("Year");
-	                int totalRev = rs.getInt("Total Revenue");
-	                report.append(year).append("\t").append(totalRev).append(" PHP \t\n");
-	            }
-	        } else if (choice.equals("Month")) {
-	            report.append("Year\tMonth\tTotal Revenue\t\n");
-	            while (rs.next()) {
-	                int year = rs.getInt("Year");
-					int month = rs.getInt("Month");
-	                int totalRev = rs.getInt("Total Revenue");
-	                report.append(year).append("\t").append(month).append("\t").append(totalRev).append(" PHP \t\n");
-	            }
-	        }
-
-			 
-	        // Display the report
-	        JTextArea textArea = new JTextArea(report.toString());
-	        textArea.setEditable(false);
-	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
-	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
-	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
-	        JScrollPane scrollPane = new JScrollPane(textArea);
-	        scrollPane.setPreferredSize(new Dimension(600, 400));
-			
-	        // Customize the window (Optional)
-	        JPanel panel = new JPanel(new BorderLayout());
-	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
-	        panel.add(scrollPane, BorderLayout.CENTER);
-
-			JOptionPane.showMessageDialog(null, panel, "Revenue Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
-
-	    } catch (SQLException ex) {
-	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	        ex.printStackTrace();
-	    }
-	}
 
 
 	
@@ -2838,12 +2969,12 @@ public void refreshMovieReqTable() {
 	    btnReturntoMainFromReport.addActionListener(listener);
 	    
 	    btnMoviesBorrowed.addActionListener(e -> generateMoviesBorrowedReport());
-	    
+	    btnMostBorrowedMovies.addActionListener(e -> generateMostBorrowedMovies());
 	    btnPopularGenres.addActionListener(e -> generatePopularGenresReport());
+	    btnApprovedRequests.addActionListener(e -> generateMovieRequestsReport());
+	    btnMostRequestedMovies.addActionListener(e -> generateMostRequestedMoviesReport());
+	    
 
-		btnTopRevenueUsers.addActionListener(e -> generateTopRevenueUsers());
-
-		btnRevenueReport.addActionListener(e -> generateRevenueReport());
 
 	}
 	
