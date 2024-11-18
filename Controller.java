@@ -52,6 +52,9 @@ public class Controller implements ActionListener, DocumentListener{
 			System.out.println("You clicked Reports");
 			gui.createReportmanagementPanel();
 			break;
+		case "Transactions":
+			System.out.println("Transactions");
+			break;
 			
 		case "EXIT":
 			System.exit(0);
