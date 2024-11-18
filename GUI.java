@@ -1450,7 +1450,7 @@ public Object[][] getReview() {
 					int movie_code = (int)tableReviewTable.getValueAt(row,3);
 					int user_no = (int)tableReviewTable.getValueAt(row,4);             
 					
-					Rreview.setText(String.valueOf(review_no));
+					Rreview_no.setText(String.valueOf(review_no));
 					Rstars.setSelectedItem(Integer.toString(stars));
 					Rreview.setText(review);
 					Rmovie_code.setText(String.valueOf(movie_code));
@@ -2048,7 +2048,7 @@ public void refreshTransactionTable() {
    }
 }
 
-   //refreshing admin table
+   //refreshing user table
    public void refreshUserTable() {
 	   tableModelUser.setDataVector(getUser(), new String[]{"user_no", "first_name","last_name", "email", "birthday","password"});
    }
@@ -2331,6 +2331,15 @@ public void refreshMovieReqTable() {
        	btnUpdateMovieReqTable.addActionListener(listener);
        	btnDeleteInMovieReqTable.addActionListener(listener);
        	btnAddInMovieReqTable.addActionListener(listener);
+       	
+       	btnUpdateMoviesTable.addActionListener(listener);
+       	btnDeleteInMoviesTable.addActionListener(listener); 
+       	btnAddInMoviesTable.addActionListener(listener);
+    	//review table
+    	btnUpdateReviewTable.addActionListener(listener); 
+    	btnDeleteInReviewTable.addActionListener(listener);
+    	btnAddInReviewTable.addActionListener(listener);
+
        	
     	btnMovieRecord.addActionListener(listener);;
     	btnUserRecord.addActionListener(listener);;
@@ -2647,6 +2656,95 @@ public void refreshMovieReqTable() {
 		Tadmin_no.setText(num);
 	}
 	
+	public int getMmovie_code() {
+	    return Integer.parseInt(Mmovie_code.getText());
+	}
+	
+	public void setMmovie_code(String num) {
+		Mmovie_code.setText(num);
+	}
+
+	public int getMyear() {
+	    return Integer.parseInt(Myear.getText());
+	}
+	
+	public void setMyear(String num) {
+		Myear.setText(num);
+	}
+	
+	public int getMgenre_id() {
+	    return Integer.parseInt(Mgenre_id.getText());
+	}
+	
+	public void setMgenre_id(String num) {
+		Mgenre_id.setText(num);
+	}
+
+	public String getMmovie_name() {
+	    return Mmovie_name.getText();
+	}
+	
+	public void setMmovie_name(String num) {
+		Mmovie_name.setText(num);
+	}
+	
+	public String getMlanguage() {
+	    return Mlanguage.getText();
+	}
+	
+	public void setMlanguage(String num) {
+		Mlanguage.setText(num);
+	}
+
+	public String getMrating() {
+	    return Mrating.getSelectedItem().toString();
+	}
+	
+	public void setMrating(String num) {
+		Mrating.setSelectedItem(num);
+	}
+	
+	public int getRreview_no() {
+	    return Integer.parseInt(Rreview_no.getText());
+	}
+	
+	public void setRreview_no(String num) {
+		Rreview_no.setText(num);
+	}
+
+	public int getRmovie_code() {
+	    return Integer.parseInt(Rmovie_code.getText());
+	}
+	
+	public void setRmovie_code(String num) {
+		Rmovie_code.setText(num);
+	}
+
+	public int getRuser_no() {
+	    return Integer.parseInt(Ruser_no.getText());
+	}
+	
+	public void setRuser_no(String num) {
+		Ruser_no.setText(num);
+	}
+
+	public String getRreview() {
+	    return Rreview.getText();
+	}
+	
+	public void setRreview(String num) {
+		Rreview.setText(num);
+	}
+
+	public int getRstars() {
+	    return Integer.parseInt(Rstars.getSelectedItem().toString());
+	}
+	
+	public void setRstars(String num) {
+		Rstars.setSelectedItem(num);
+	}
+	
+	
 	public void ClearAllTableInputs() {
 		setAdminFirstName("");
 		setAdminLastName("");
@@ -2687,6 +2785,18 @@ public void refreshMovieReqTable() {
 		setUpassword("");
 		setUuser_no("");
 		
+		setMmovie_code("");
+		setMmovie_name("");
+		setMyear("");
+		setMrating("");
+		setMlanguage("");
+		setMgenre_id("");
+		
+		setRmovie_code("");
+		setRreview("");
+		setRstars("");
+		setRreview_no("");
+		setRuser_no("");
 		
 	}
 	
