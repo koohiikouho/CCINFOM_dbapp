@@ -60,6 +60,7 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 		case "Transactions":
 			System.out.println("Transactions");
+			gui.createTransactionsPanel();
 			break;
 			
 		case "EXIT":

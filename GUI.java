@@ -20,6 +20,12 @@ public class GUI extends JFrame{
 	private JButton btnApprovedRequests, btnMostRequestedMovies, btnRentalHistory;
 	private JButton btnPolicyViolations, btnRevenueReport, btnTopRevenueUsers,btnReturntoMainFromReport;
 	
+	// Declare buttons for Transaction Management
+	private JButton btnBorrowMovie;
+	private JButton btnReturnMovie;
+	private JButton btnReviewMovieRequests;
+	private JButton btnFormalizeMovieRequests;
+	private JButton btnReturntoMainFromTransaction;
 	
 	//table input
 	private JButton btnAdminsTable, btnGenre_TypeTable, btnMedia_TypeTable, 
@@ -48,6 +54,7 @@ public class GUI extends JFrame{
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
 	private JPanel ReportManagement = new JPanel();
+	private JPanel Transactions = new JPanel();
 	//tables
 	private JPanel 	AdminTable = new JPanel(), GenreTypeTable = new JPanel(), 
 					Media_TypeTable = new JPanel(), Movie_reqTable = new JPanel(),	
@@ -152,6 +159,9 @@ public class GUI extends JFrame{
 		
 		ReportManagement.setLayout(new BorderLayout());
 		reportmanagement();
+
+		Transactions.setLayout(new BorderLayout());
+		transactionmanagement();
 		
 		AdminTable.setLayout(new BorderLayout());
 		showAdminTable();
@@ -3759,7 +3769,235 @@ try {
 	    }
 	}
 	//END OF REPORTS
+
+	private void borrowMovieGUI() {
+	    // Step 1: Get User ID from the user
+	    String userIdInput = JOptionPane.showInputDialog(null, "Enter User ID to borrow movie:", "Borrow Movie", JOptionPane.PLAIN_MESSAGE);
+	    if (userIdInput == null || userIdInput.trim().isEmpty()) {
+	        return; // If user cancels or doesn't enter a user ID
+	    }
+
+	    // Convert the user input to the correct type
+	    int userId;
+	    try {
+	        userId = Integer.parseInt(userIdInput);
+	    } catch (NumberFormatException e) {
+	        JOptionPane.showMessageDialog(null, "Invalid User ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    // Step 2: Check if the user is currently borrowing a movie (except for User ID 1)
+	    String checkUserQuery = """
+	        SELECT 
+	            u.first_name,
+	            u.last_name,
+	            CASE 
+	                WHEN COUNT(t.transaction_no) > 0 THEN 'Currently Borrowing'
+	                ELSE 'Not Currently Borrowing'
+	            END AS `Status`
+	        FROM 
+	            users u
+	        LEFT JOIN 
+	            transactions t 
+	            ON u.user_no = t.user_no 
+	            AND t.date_returned IS NULL  -- Only consider transactions that are still ongoing (not returned)
+	        WHERE 
+	            u.user_no = ?  -- Placeholder for user_id parameter
+	        GROUP BY 
+	            u.user_no, u.first_name, u.last_name;
+	    """;
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(checkUserQuery)) {
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            // If the user is not ID 1 and is already borrowing, show a warning
+	            if (userId != 1 && rs.getString("Status").equals("Currently Borrowing")) {
+	                JOptionPane.showMessageDialog(null, "You are already borrowing a movie. Please return the current movie first.", "Error", JOptionPane.ERROR_MESSAGE);
+	                return; // Prevent borrowing if already borrowing
+	            }
+	        }
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Error checking user borrowing status: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    // Step 3: Ask the user for the movie name they want to borrow
+	    String movieNameInput = JOptionPane.showInputDialog(null, "Enter Movie Name to borrow:", "Borrow Movie", JOptionPane.PLAIN_MESSAGE);
+	    if (movieNameInput == null || movieNameInput.trim().isEmpty()) {
+	        return; // If user cancels or doesn't enter a movie name
+	    }
+
+	    // Step 4: Check the movie's availability and other details using the updated SQL query with movie name
+	    String checkMovieQuery = """
+	        SELECT m.movie_code, m.movie_name, m.year, m.rating, gt.description AS `Genre`, mt.media_type, mt.rental_price, 
+	            mt.availability,
+	            CASE 
+	                WHEN mt.availability = 1 THEN 'Available'
+	                ELSE 'Unavailable'
+	            END AS `Movie Availability`
+	        FROM movies m
+	        JOIN media_type mt ON mt.movie_code = m.movie_code
+	        JOIN genre_type gt ON gt.genre_id = m.genre_id
+	        WHERE m.movie_name LIKE ?;  -- Search for movie name
+	    """;
+
+	    List<String> availableMediaTypesWithPrice = new ArrayList<>();
+	    List<String> unavailableMediaTypes = new ArrayList<>();
+	    String movieCode = null; // We'll capture the movie code for later use if needed
+	    try (PreparedStatement pstmt = connection.prepareStatement(checkMovieQuery)) {
+	        pstmt.setString(1, "%" + movieNameInput.trim() + "%");  // Using LIKE for partial match
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            // Display the movie details
+	            movieCode = rs.getString("movie_code");
+	            String movieDetails = String.format("Movie: %s\nYear: %d\nRating: %s\nGenre: %s\nAvailability: %s",
+	                    rs.getString("movie_name"), rs.getInt("year"), rs.getString("rating"),
+	                    rs.getString("Genre"), rs.getString("Movie Availability"));
+	            JOptionPane.showMessageDialog(null, movieDetails, "Movie Details", JOptionPane.INFORMATION_MESSAGE);
+
+	            // Step 5: Collect available and unavailable media types
+	            do {
+	                String mediaType = rs.getString("media_type");
+	                double price = rs.getDouble("mt.rental_price");
+	                String availability = rs.getString("Movie Availability");
+
+	                if ("Available".equals(availability)) {
+	                    availableMediaTypesWithPrice.add(mediaType + " - ₱" + price);  // Combine media type and price
+	                } else {
+	                    unavailableMediaTypes.add(mediaType + " - ₱" + price); // Store unavailable media types separately
+	                }
+	            } while (rs.next());
+
+	            // If no available media types, show an error message
+	            if (availableMediaTypesWithPrice.isEmpty()) {
+	                JOptionPane.showMessageDialog(null, "All media types for this movie are currently unavailable.", "Error", JOptionPane.ERROR_MESSAGE);
+	                return;
+	            }
+	        } else {
+	            JOptionPane.showMessageDialog(null, "Movie not found.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Error checking movie details: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    // Step 6: Ask the user to select an available media type from the list
+	    String[] availableMediaTypeArray = availableMediaTypesWithPrice.toArray(new String[0]);
+	    String selectedMediaType = (String) JOptionPane.showInputDialog(null, "Select the media type and price to borrow:",
+	            "Select Media Type", JOptionPane.QUESTION_MESSAGE, null, availableMediaTypeArray, availableMediaTypeArray[0]);
+
+	    if (selectedMediaType == null) {
+	        return; // If the user cancels the selection
+	    }
+
+	    // Step 7: Confirm borrowing the movie with the selected media type and price
+	    String confirmBorrow = JOptionPane.showInputDialog(null, "Do you want to borrow this movie? (yes/no)", "Confirm Borrow", JOptionPane.PLAIN_MESSAGE);
+	    if (confirmBorrow == null || !confirmBorrow.equalsIgnoreCase("yes")) {
+	        return; // If the user cancels or doesn't want to borrow
+	    }
+
+	    // Step 8: Record the borrowing transaction (Commenting out the database update for now)
+	    // String insertTransactionQuery = """
+	    //     INSERT INTO transactions (user_no, movie_code, media_type, date_borrowed, date_returned)
+	    //     VALUES (?, ?, ?, CURDATE(), NULL);
+	    // """;
+	    // try (PreparedStatement pstmt = connection.prepareStatement(insertTransactionQuery)) {
+	    //     pstmt.setInt(1, userId);
+	    //     pstmt.setString(2, movieCode);  // You would pass the movie_code here
+	    //     pstmt.setString(3, selectedMediaType);
+	    //     pstmt.executeUpdate();
+	    // } catch (SQLException e) {
+	    //     JOptionPane.showMessageDialog(null, "Error recording the transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    //     return;
+	    // }
+
+	    // Step 9: Show success message (without database update for now)
+	    JOptionPane.showMessageDialog(null, "Movie borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	public void transactionmanagement() {
+	    // NORTH PANEL
+	    JPanel panelNorth = new JPanel();
+	    panelNorth.setLayout(new FlowLayout());
+	    panelNorth.setBackground(Color.decode("#0A285f"));
+
+	    JLabel label = new JLabel("Welcome To Transaction Management");
+	    label.setForeground(Color.WHITE);
+	    label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	    panelNorth.add(label);
+
+	    Transactions.add(panelNorth, BorderLayout.NORTH);
+
+	    // SOUTH PANEL
+	    JPanel panelSouth = new JPanel();
+	    panelSouth.setBackground(Color.BLACK);
+	    Transactions.add(panelSouth, BorderLayout.SOUTH);
+
+	    // CENTER PANEL
+	    JPanel panelCenter = new JPanel();
+	    panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.Y_AXIS));
+	    panelCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+	    // Button size
+	    Dimension buttonSize = new Dimension(350, 100);
+
+	    // Buttons for Transactions
+	    btnBorrowMovie = new JButton("Borrow Movie");
+	    btnBorrowMovie.setPreferredSize(buttonSize);
+	    btnBorrowMovie.setMaximumSize(buttonSize);
+	    btnBorrowMovie.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnBorrowMovie);
+
+	    btnReturnMovie = new JButton("Return Movie");
+	    btnReturnMovie.setPreferredSize(buttonSize);
+	    btnReturnMovie.setMaximumSize(buttonSize);
+	    btnReturnMovie.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnReturnMovie);
+
+	    btnReviewMovieRequests = new JButton("Review Movie Requests");
+	    btnReviewMovieRequests.setPreferredSize(buttonSize);
+	    btnReviewMovieRequests.setMaximumSize(buttonSize);
+	    btnReviewMovieRequests.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnReviewMovieRequests);
+
+	    btnFormalizeMovieRequests = new JButton("Formalize Movie Requests");
+	    btnFormalizeMovieRequests.setPreferredSize(buttonSize);
+	    btnFormalizeMovieRequests.setMaximumSize(buttonSize);
+	    btnFormalizeMovieRequests.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnFormalizeMovieRequests);
+
+	    btnReturntoMainFromTransaction = new JButton("Home");
+	    btnReturntoMainFromTransaction.setPreferredSize(buttonSize);
+	    btnReturntoMainFromTransaction.setMaximumSize(buttonSize);
+	    btnReturntoMainFromTransaction.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+	    panelCenter.add(btnReturntoMainFromTransaction);
+	    panelCenter.add(Box.createVerticalGlue());
+
+	    // Set Action Commands
+	    btnBorrowMovie.setActionCommand("BorrowMovie");
+	    btnReturnMovie.setActionCommand("ReturnMovie");
+	    btnReviewMovieRequests.setActionCommand("ReviewMovieRequests");
+	    btnFormalizeMovieRequests.setActionCommand("FormalizeMovieRequests");
+	    btnReturntoMainFromTransaction.setActionCommand("Home");
+
+	    Transactions.add(panelCenter, BorderLayout.CENTER);
+	}
 	
+	public void createTransactionsPanel() {
+		setContentPane(Transactions);
+        revalidate();
+        repaint();
+		
+	}
+
+
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
@@ -3834,6 +4072,11 @@ try {
 		btnRentalHistory.addActionListener(e-> generateRentalHistoryReport());
 		btnRevenueReport.addActionListener(e -> generateRevenueReport());
 		btnTopRevenueUsers.addActionListener(e -> generateTopRevenueUsers());
+
+		btnTransactions.addActionListener(listener);
+		btnReturntoMainFromTransaction.addActionListener(listener);
+
+		btnBorrowMovie.addActionListener(e -> borrowMovieGUI());
 	}
 	
 	
