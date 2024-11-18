@@ -12,7 +12,7 @@ public class Model {
 		connections = connection;
 	}
 	
-	public int checkAdminPassCorrect(String adminname, String pass) {
+	public boolean checkAdminPassCorrect(String adminname, String pass) {
 	    ArrayList<Object[]> list = new ArrayList<>();
 		try {
 		Statement statement = connections.createStatement();
@@ -25,7 +25,7 @@ public class Model {
              list.add(row); // Add the row to the list
 
             if(pass.equals(row[1]) && adminname.equals(row[0])){
-            	return 1;
+            	return true;
             }
 //             System.out.println("first_name: " + row[0]);
 //             System.out.println("password: " + row[1]);
@@ -34,7 +34,7 @@ public class Model {
 		catch (Exception e) {
 			System.out.println(e);
 		}
-		return 0;
+		return false;
 	}
 	
 	public static void main(String[] args) {

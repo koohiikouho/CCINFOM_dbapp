@@ -3760,6 +3760,10 @@ try {
 	}
 	//END OF REPORTS
 	
+
+	public void loginPrompt(){
+		
+	}
 	
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
@@ -3794,9 +3798,9 @@ try {
     	btnAddInReviewTable.addActionListener(listener);
 
        	
-    	btnMovieRecord.addActionListener(listener);;
-    	btnUserRecord.addActionListener(listener);;
-    	btnAdminRecord.addActionListener(listener);;
+    	btnMovieRecord.addActionListener(listener);
+    	btnUserRecord.addActionListener(listener);
+    	btnAdminRecord.addActionListener(listener);
     	btnMediaTypeRecord.addActionListener(listener);
     	btnReturntoMain.addActionListener(listener);
     	
@@ -3826,6 +3830,8 @@ try {
 		btnMRMreturn.addActionListener(listener);
 		btnMRMselect.addActionListener(listener);
 	    
+		btnUserRecord.addActionListener(e -> loginPrompt());
+
 	    btnMoviesBorrowed.addActionListener(e -> generateMoviesBorrowedReport());
 	    btnMostBorrowedMovies.addActionListener(e -> generateMostBorrowedMovies());
 	    btnPopularGenres.addActionListener(e -> generatePopularGenresReport());

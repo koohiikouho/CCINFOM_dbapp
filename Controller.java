@@ -6,7 +6,13 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.Box;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -139,11 +145,15 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 			
 		case "AdminRecord" :
+			if(loginHandlerAdmin()){
 			gui.createTableInputPanel();
 			gui.refreshAdminTable();
 			gui.ClearAllTableInputs();
 			System.out.println("AdminRecord");
 			break;
+			}
+			else
+				break;
 			
 		case "MediaTypeRecord" :
 			System.out.println("MediaTypeRecord");
@@ -718,6 +728,29 @@ public class Controller implements ActionListener, DocumentListener{
 	}
 	}
 	
+
+	private boolean loginHandlerAdmin(){
+		JTextField user = new JTextField();
+		JTextField pass = new JPasswordField();
+		Object[] message = {
+			"Username:", user,
+			"Password:", pass
+		};
+	if(JOptionPane.showConfirmDialog(null, message, "Enter Credentials", JOptionPane.OK_CANCEL_OPTION) == 0){
+		if(model.checkAdminPassCorrect(user.getText(), pass.getText()))
+			return true;
+		else{
+			JOptionPane.showMessageDialog(new JFrame(), "Wrong Credentials", "ERROR!",JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+	}else{
+		JOptionPane.showMessageDialog(new JFrame(), "User Cancelled", "ERROR!",JOptionPane.ERROR_MESSAGE);
+		return false;
+	}
+			
+
+	}
+
 	public void ClearUserManagementnputs() {
 		gui.setURfirst_name("");
 		gui.setURlast_name("");
