@@ -39,7 +39,9 @@ public class GUI extends JFrame{
 	private JButton btnUpdateMoviesTable, btnDeleteInMoviesTable, btnAddInMoviesTable;
 	//review table
 	private JButton btnUpdateReviewTable, btnDeleteInReviewTable, btnAddInReviewTable;
+	private JButton btnSelectuserRecord, btnReturnRecordManagementfromUR;
 
+	private JButton btnReturnToUserRecord;
 	
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
@@ -48,6 +50,10 @@ public class GUI extends JFrame{
 	private JPanel 	AdminTable = new JPanel(), GenreTypeTable = new JPanel(), 
 					Media_TypeTable = new JPanel(), Movie_reqTable = new JPanel(),	
 					MoviesTable = new JPanel(), ReviewTable = new JPanel(), TransactionsTable = new JPanel(), UsersTable = new JPanel();
+	
+	private JPanel UserRecord = new JPanel();
+	private JPanel UserProfile = new JPanel();
+	
 	// admin table text fields
 	private JTextField ATAdminNo, ATFirst_Name, ATLast_Name, ATPass, ATAdminLevel;
 	//genre table 
@@ -66,7 +72,7 @@ public class GUI extends JFrame{
 	private JTextField Rreview_no, Rmovie_code, Ruser_no;
 	private JComboBox Rstars;
 	private JTextArea Rreview;
-	
+	private JTextField URuser_no, URfirst_name, URlast_name;
 	//review table
 	private JScrollPane scrollerReviewTable;
 	private JTable tableReviewTable;
@@ -92,6 +98,10 @@ public class GUI extends JFrame{
 	private JTable tableMovieReqTable;
 	private DefaultTableModel tableModelMovieReq;
 	
+	private JScrollPane scrollerUserRecord;
+	private JTable tableUserRecord;
+	private DefaultTableModel tableModelUserRecord;
+	
 	private JTextField Uuser_no, Ufirst_name, Ulast_name, Uemail, Ubirthday, Upassword;
 	private JScrollPane scrollerUserTable;
 	private JTable tableUserTable;
@@ -102,6 +112,11 @@ public class GUI extends JFrame{
 	private JScrollPane scrollerTransactionTable;
 	private JTable tableTransactionTable;
 	private DefaultTableModel tableModelTransaction;
+	
+	private JScrollPane scrollerUserProfile;
+	private JTable tableUserProfile;
+	private DefaultTableModel tableModelUserProfile;
+	
 	
 	public static Connection connection;
 
@@ -158,6 +173,18 @@ public class GUI extends JFrame{
 		UsersTable.setLayout(new BorderLayout());
 		showUserTable();
 		UsersTablePanel();
+		
+		UserRecord.setLayout(new BorderLayout());
+		showUserRecord();
+		UserRecordPanel();
+		
+		UserProfile.setLayout(new BorderLayout());
+		try {
+		showUserProfile();
+		}catch(Exception ex) {
+			
+		}
+		UserProfilePanel();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -312,7 +339,6 @@ public class GUI extends JFrame{
 	}
 
 	public void createReportmanagementPanel() {
-		// TODO Auto-generated method stub
 		setContentPane(ReportManagement);
         revalidate();
         repaint();
@@ -916,10 +942,6 @@ public class GUI extends JFrame{
                 row[1] = resultSet.getString(2); // Assuming column 2 is String           
                 list.add(row);
 
-                // Debug print
-//                System.out.println(
-//                    row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4]
-              //  );
             }
         }
 
@@ -1392,7 +1414,7 @@ public class GUI extends JFrame{
 
 ///////////////////////////////////////////////////THIS CONCERNS THE REVIEW TABLE///////////
 
-public Object[][] getReview() {
+	public Object[][] getReview() {
 
 	ArrayList<Object[]> list = new ArrayList<>();
 	
@@ -1590,7 +1612,7 @@ public Object[][] getReview() {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// START OF TRANSACTIONS
-public void TransactionsTablePanel() {
+	public void TransactionsTablePanel() {
 	// NORTH PANEL
 	   JPanel panelNorth = new JPanel();
 	   panelNorth.setLayout(new FlowLayout());
@@ -1725,7 +1747,7 @@ public void TransactionsTablePanel() {
    }
 
 
-public void showTransactionTable() {
+	public void showTransactionTable() {
    String[] col = {"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"};
    tableModelTransaction = new DefaultTableModel(getTransaction(), col){
 	   @Override
@@ -1793,7 +1815,7 @@ public void showTransactionTable() {
 }
 
 //getting data from db
-public Object[][] getTransaction() {
+	public Object[][] getTransaction() {
 
 ArrayList<Object[]> list = new ArrayList<>();
 
@@ -2060,7 +2082,7 @@ public void refreshTransactionTable() {
 /// START OF MOVIE REQ
 /// 
 
-public void Movie_reqTablePanel() {
+   public void Movie_reqTablePanel() {
 	// NORTH PANEL
 	   JPanel panelNorth = new JPanel();
 	   panelNorth.setLayout(new FlowLayout());
@@ -2183,8 +2205,8 @@ public void Movie_reqTablePanel() {
 	   
 	   Movie_reqTable.add(panelSouth, BorderLayout.SOUTH);
    }
-
-public void showMovieReqTable() {
+   
+   public void showMovieReqTable() {
    String[] col = {"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"};
    tableModelMovieReq = new DefaultTableModel(getMovieReq(), col){
 	   @Override
@@ -2250,7 +2272,7 @@ public void showMovieReqTable() {
 }
 
 //getting data from db
-public Object[][] getMovieReq() {
+	public Object[][] getMovieReq() {
 //		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
 //		String username = "user";
 //		String password= "12345";
@@ -2303,11 +2325,307 @@ try {
 }
 
 //refreshing admin table
-public void refreshMovieReqTable() {
+	public void refreshMovieReqTable() {
    tableModelMovieReq.setDataVector(getMovieReq(), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"});
 }
 
 //END OF MOVIE REQ
+	
+	public void createUserRecordPanel() {		
+	setContentPane(UserRecord);
+    revalidate();
+    repaint();
+}
+
+	//user record
+	public void UserRecordPanel() {
+	// NORTH PANEL
+	   JPanel panelNorth = new JPanel();
+	   panelNorth.setLayout(new FlowLayout());
+	   panelNorth.setBackground(Color.decode("#0A285f"));
+
+	   JLabel label = new JLabel("USER RECORD MANAGEMENT");
+	   label.setForeground(Color.WHITE);
+	   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	   panelNorth.add(label);
+	   
+	   UserRecord.add(panelNorth, BorderLayout.NORTH);
+
+	// SOUTH PANEL
+	   JPanel panelSouth = new JPanel();
+	   panelSouth.setLayout(new FlowLayout());
+	   panelSouth.setBackground(Color.decode("#fdfdfd"));
+	   
+	   btnReturnRecordManagementfromUR = new JButton("Return");
+	   panelSouth.add(btnReturnRecordManagementfromUR);
+	   btnReturnRecordManagementfromUR.setActionCommand("RecordManagement");
+       UserRecord.add(panelSouth, BorderLayout.SOUTH);
+       
+     //center panel
+	   JPanel centerPanel = new JPanel();
+	   centerPanel.setLayout(new GridBagLayout());
+	   GridBagConstraints gbc = new GridBagConstraints();
+
+	   gbc.insets = new Insets(6, 6, 6, 6);
+	   gbc.anchor = GridBagConstraints.WEST;
+	   
+	   JLabel user_no = new JLabel("User no.");
+	   user_no.setForeground(Color.BLACK);
+	   user_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 1;
+	   centerPanel.add(user_no, gbc);
+	   URuser_no = new JTextField(20);
+	   gbc.gridx = 2;
+	   gbc.gridy = 1;
+	   centerPanel.add(URuser_no, gbc);
+	   
+	   JLabel firstname = new JLabel("First Name");
+	   firstname.setForeground(Color.BLACK);
+	   firstname.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 2;
+	   centerPanel.add(firstname, gbc);
+	   URfirst_name = new JTextField(20);
+	   gbc.gridx = 2;
+	   gbc.gridy = 2;
+	   centerPanel.add(URfirst_name,gbc);
+	   
+	   JLabel lastname = new JLabel("Last Name");
+	   lastname.setForeground(Color.BLACK);
+	   lastname.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 3;
+	   centerPanel.add(lastname,gbc);
+	   URlast_name = new JTextField(20);
+	   gbc.gridx = 2;
+	   gbc.gridy = 3;
+	   centerPanel.add(URlast_name, gbc);
+	   
+	   btnSelectuserRecord = new JButton("Select");
+	   gbc.gridx = 1;
+	   gbc.gridy = 4;
+	   gbc.gridwidth = 2; // Make the button span across two columns
+	   gbc.anchor = GridBagConstraints.CENTER; // Center-align the button
+	   centerPanel.add(btnSelectuserRecord,gbc);
+	   btnSelectuserRecord.setActionCommand("SelectUserRecord");
+
+	   UserRecord.add(centerPanel , BorderLayout.EAST);
+}
+
+	
+	public void showUserRecord() {
+		   String[] col = {"user_no", "first_name", "last_name"};
+		   tableModelUserRecord = new DefaultTableModel(getUserRecord(), col){
+			   @Override
+			   public boolean isCellEditable(int row, int column) {
+				   return false; // Disable editing for all cells
+			   }
+		   };
+		   
+		   tableUserRecord = new JTable(tableModelUserRecord);
+		   tableUserRecord.setEnabled(true); // Enable selection
+		   
+		  
+		   // Add a mouse click listener to the table
+		   tableUserRecord.addMouseListener(new java.awt.event.MouseAdapter() {
+			  
+			   public void mouseClicked(java.awt.event.MouseEvent evt) {
+				   int row = tableUserRecord.getSelectedRow(); // Get selected row index
+				  
+				   
+				   if (row != -1) { // Ensure a valid cell is selected
+					   int user_no = (int)tableUserRecord.getValueAt(row,0);
+					   String first_name = (String)tableUserRecord.getValueAt(row,1);
+					   String last_name = (String)tableUserRecord.getValueAt(row,2);
+					   
+					   URuser_no.setText(String.valueOf(user_no));
+					   URfirst_name.setText(first_name);
+					   URlast_name.setText(last_name);
+					 
+										  
+				   }
+			   }
+		   });
+		   
+		   scrollerUserRecord = new JScrollPane(tableUserRecord);
+		   scrollerUserRecord.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+		   
+		   // Center panel
+		   JPanel moreCenter = new JPanel(new BorderLayout());
+		   
+		   // CENTER PANEL center panel
+		   JPanel panelCenter = new JPanel(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
+		   gbc.gridx = 0;
+		   gbc.gridy = 0;
+		   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		   gbc.insets = new Insets(10, 10, 10, 10);
+		   panelCenter.add(scrollerUserRecord, gbc);
+		   moreCenter.add(panelCenter, BorderLayout.CENTER);
+		   
+		   UserRecord.add(moreCenter, BorderLayout.WEST);
+		   UserRecord.revalidate(); // Refresh the UI
+		   UserRecord.repaint(); // Ensure it's redrawn
+		}
+
+		//getting data from db
+	public Object[][] getUserRecord() {
+
+		ArrayList<Object[]> list = new ArrayList<>();
+
+		try {
+		   // Load the JDBC driver
+		   Class.forName("com.mysql.cj.jdbc.Driver");
+
+		   // Establish connection
+		   try (
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT DISTINCT u.user_no,u.first_name,u.last_name\n"
+						+ "FROM users u \n"
+						+ "ORDER BY u.user_no;")) {
+
+			   // Process the ResultSet
+			   
+			   
+			   while (resultSet.next()) {
+				   Object[] row = new Object[3];
+				   row[0] = resultSet.getInt(1); 
+				   row[1] = resultSet.getString(2);            
+				   row[2] = resultSet.getString(3);
+				   list.add(row);
+			   }
+		   }
+
+		   // Convert the list to a 2D array
+		   return list.toArray(new Object[0][3]);
+
+		} catch (Exception e) {
+		   e.printStackTrace(); // Print stack trace for debugging
+		   return null;
+		}
+		}
+
+		//refreshing admin table
+	public void refreshUserRecord() {
+			tableModelUserRecord.setDataVector(getUserRecord(), new String[]{"user_no", "first_name", "last_name"});
+		}
+
+	public void createUserProfilePanel() {		
+		setContentPane(UserProfile);
+	    revalidate();
+	    repaint();
+	}
+	public void UserProfilePanel() {
+		// NORTH PANEL
+		   JPanel panelNorth = new JPanel();
+		   panelNorth.setLayout(new FlowLayout());
+		   panelNorth.setBackground(Color.decode("#0A285f"));
+
+		   JLabel label = new JLabel("USER PROFILE");
+		   label.setForeground(Color.WHITE);
+		   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+		   panelNorth.add(label);
+		   
+		   UserProfile.add(panelNorth, BorderLayout.NORTH);
+
+		// SOUTH PANEL
+		   JPanel panelSouth = new JPanel();
+		   panelSouth.setLayout(new FlowLayout());
+		   panelSouth.setBackground(Color.decode("#fdfdfd"));
+		   
+		   btnReturnToUserRecord = new JButton("Return");
+		   panelSouth.add(btnReturnToUserRecord);
+		   btnReturnToUserRecord.setActionCommand("ReturnUserRecordManagement");
+		   UserProfile.add(panelSouth, BorderLayout.SOUTH);
+	}
+	public void showUserProfile() {
+		   String[] col = {"movie_name", "date_borrowed", "date_returned"};
+		   tableModelUserProfile = new DefaultTableModel(getUserProfileTable(), col){
+			   @Override
+			   public boolean isCellEditable(int row, int column) {
+				   return false; // Disable editing for all cells
+			   }
+		   };
+		   
+		   tableUserProfile = new JTable(tableModelUserProfile);
+		   tableUserProfile.setEnabled(true); // Enable selection
+		   scrollerUserProfile = new JScrollPane(tableUserProfile);
+		   scrollerUserProfile.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+		   
+		   // Center panel
+		   JPanel moreCenter = new JPanel(new BorderLayout());
+		   
+		   // CENTER PANEL center panel
+		   JPanel panelCenter = new JPanel(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
+		   gbc.gridx = 0;
+		   gbc.gridy = 0;
+		   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		   gbc.insets = new Insets(10, 10, 10, 10);
+		   panelCenter.add(scrollerUserProfile, gbc);
+		   moreCenter.add(panelCenter, BorderLayout.CENTER);
+		   
+		   UserProfile.add(moreCenter, BorderLayout.WEST);
+		   UserProfile.revalidate(); // Refresh the UI
+		   UserProfile.repaint(); // Ensure it's redrawn
+		}
+
+		//getting data from db
+	
+	public Object[][] getUserProfileTable() {
+	    ArrayList<Object[]> list = new ArrayList<>();
+
+	    try {
+	        // Load the JDBC driver
+	        Class.forName("com.mysql.cj.jdbc.Driver");
+
+	        // Establish connection
+	        try (
+	            PreparedStatement pstmt = connection.prepareStatement(
+	                "SELECT m.movie_name, t.date_borrowed, t.date_returned " +
+	                "FROM transactions t " +
+	                "JOIN users u ON u.user_no = t.user_no " +
+	                "JOIN movies m ON m.movie_code = t.movie_code " +
+	                "WHERE u.user_no = ? " +
+	                "ORDER BY t.date_borrowed");
+	        ) {
+	            // Set the user number parameter
+	            pstmt.setString(1, getURuser_no());
+
+	            // Execute the query
+	            try (ResultSet resultSet = pstmt.executeQuery()) {
+	                while (resultSet.next()) {
+	                    Object[] row = new Object[3];
+	                    row[0] = resultSet.getString(1); // movie_name (String)
+	                    row[1] = resultSet.getDate(2);  // date_borrowed (Date)
+	                    row[2] = resultSet.getDate(3);  // date_returned (Date)
+	                    list.add(row);
+	                }
+	            }
+	        }
+
+	        // Convert the list to a 2D array
+	        return list.toArray(new Object[0][3]);
+
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Print stack trace for debugging
+	        return null;
+	    }
+	}
+
+	
+	//refreshing admin table
+	public void refreshUserProfileTable() {
+		tableModelUserProfile.setDataVector(getUserProfileTable(), new String[]{"movie_name", "date_borrowed", "date_returned"});
+		}
+
+	
+	
 	
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
@@ -2365,14 +2683,12 @@ public void refreshMovieReqTable() {
 	    btnRevenueReport.addActionListener(listener);
 	    btnTopRevenueUsers.addActionListener(listener);
 	    btnReturntoMainFromReport.addActionListener(listener);
+	    
+	    btnReturnRecordManagementfromUR.addActionListener(listener);
+		btnSelectuserRecord.addActionListener(listener);
+		
+		btnReturnToUserRecord.addActionListener(listener);
 	}
-	
-
-	
-//	public void setDocumentListener(DocumentListener listener) {
-//		tfName.getDocument().addDocumentListener(listener);
-//		taDesc.getDocument().addDocumentListener(listener);
-//	}
 	
 	
 	 // Retrieves the text from the JTextField.
@@ -2744,6 +3060,29 @@ public void refreshMovieReqTable() {
 		Rstars.setSelectedItem(num);
 	}
 	
+	public String getURuser_no() {
+	    return URuser_no.getText();
+	}
+	
+	public void setURuser_no(String num) {
+		URuser_no.setText(num);
+	}
+	
+	public String getURfirst_name() {
+	    return URfirst_name.getText();
+	}
+	
+	public void setURfirst_name(String num) {
+		URfirst_name.setText(num);
+	}
+
+	public String getURlast_name() {
+	    return URlast_name.getText();
+	}
+	
+	public void setURlast_name(String num) {
+		URlast_name.setText(num);
+	}
 	
 	public void ClearAllTableInputs() {
 		setAdminFirstName("");
