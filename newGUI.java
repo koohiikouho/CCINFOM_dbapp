@@ -1,19 +1,14 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import java.util.List;
 
 
-
-public class GUI extends JFrame{
+public class newGUI extends JFrame{
 	
 	//main menu
 	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
@@ -114,7 +109,7 @@ public class GUI extends JFrame{
 	
 	public static Connection connection;
 
-	public GUI(Connection connections) {
+	public newGUI(Connection connections) {
 		super("DB APP"); //frame name
 		
 		connection = connections;
@@ -891,11 +886,6 @@ public class GUI extends JFrame{
 	}
 
 
-
-
-	
-	
-	
 	private void generateMostRequestedMoviesReport() {
 	    // Options to choose the type of report
 	    String[] options = {"General", "Monthly", "Yearly"};
@@ -1027,17 +1017,141 @@ public class GUI extends JFrame{
 	}
 
 	
+	private void generatePolicyViolationReport(){
+
+		String query = """
+			SELECT u.user_no,u.first_name,u.last_name,m.movie_name,t.date_borrowed,t.date_toreturn,t.date_returned,t.payment,IF(t.date_returned IS NOT NULL, 'Resolved', 'Unresolved') AS `Status`
+			FROM transactions t
+			JOIN users u ON t.user_no = u.user_no
+			JOIN movies m ON t.movie_code = m.movie_code
+			WHERE t.date_toreturn < t.date_returned OR (t.date_toreturn < CURDATE() AND t.date_returned IS NULL)
+			ORDER BY t.transaction_no;
+
+		""";
+
+		
+
+		try (
+	         PreparedStatement pstmt = connection.prepareStatement(query)) {
+
+	        ResultSet rs = pstmt.executeQuery();
+
+			String[] columnNames = new String[]{"User Number", "First Name", "Last Name", "Movie Name", "Date Borrowed", "Set Return Date", "Actual Return Date", "Payment", "Status"};
+
+	        // Collect the rows for the table
+	        List<Object[]> rows = new ArrayList<>();
+	        while (rs.next()) {
+
+				Integer userNum = rs.getInt("user_no"),
+						payment = rs.getInt("payment");
+				String 	firstName = rs.getString("first_name"),
+						lastName  = rs.getString("last_name"),
+						movie_name = rs.getString("movie_name"),
+						status = rs.getString("Status");
+				Date dateBorrowed = rs.getDate("date_borrowed"),
+					dateToReturn = rs.getDate("date_toreturn"),
+					dateReturned = rs.getDate("date_returned");
+					rows.add(new Object[]{userNum, firstName, lastName, movie_name, dateBorrowed, dateToReturn, dateReturned, payment, status});
+
+	        }
+
+	        // Create the DefaultTableModel with the fetched data
+	        DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Make all cells non-editable
+	            }
+	        };
+
+	        // Create the JTable using the DefaultTableModel
+	        JTable table = new JTable(tableModel);
+	        table.setFont(new Font("Serif", Font.PLAIN, 14)); // Set font for readability
+
+	        // Set up the JScrollPane for the table
+	        JScrollPane scrollPane = new JScrollPane(table);
+	        scrollPane.setPreferredSize(new Dimension(1000, 300)); // Set preferred size
+
+	        // Panel to contain the JScrollPane
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240)); // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+	        // Show the table in a message dialog
+	        JOptionPane.showMessageDialog(null, panel, "Policy Violators", JOptionPane.INFORMATION_MESSAGE);
+
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+
+	}
 	
+	private void generateRentalHistoryReport(){
+		String query = """
+			SELECT m.movie_code,m.movie_name,u.user_no,CONCAT(u.first_name,' ',u.last_name) AS `Borrower Name`,t.date_borrowed,t.date_toreturn,t.date_returned
+			FROM transactions t
+			JOIN users u ON t.user_no = u.user_no
+			JOIN movies m ON m.movie_code = t.movie_code
+			WHERE m.movie_code = ?
+			ORDER BY m.movie_code;
+
+		""";
 
 
+		try (
+	         PreparedStatement pstmt = connection.prepareStatement(query)) {
+
+			String movieCodeInput = JOptionPane.showInputDialog("Enter Movie Code");
+	        pstmt.setString(1, movieCodeInput);
+	        ResultSet rs = pstmt.executeQuery();
+
+			String[] columnNames = new String[]{"Movie Code", "Movie Name", "User Number", "Borrower Name", "Date Borrowed", "Set Return Date", "Actual Return Date"};
+
+	        // Collect the rows for the table
+	        List<Object[]> rows = new ArrayList<>();
+	        while (rs.next()) {
+
+				Integer userNum = rs.getInt("user_no"),
+						movieCode = rs.getInt("movie_code");
+				String 	borrowerName = rs.getString("Borrower Name"),
+						movie_name = rs.getString("movie_name");
+				Date dateBorrowed = rs.getDate("date_borrowed"),
+					dateToReturn = rs.getDate("date_toreturn"),
+					dateReturned = rs.getDate("date_returned");
+					rows.add(new Object[]{movieCode, movie_name, userNum, borrowerName, dateBorrowed, dateToReturn, dateReturned});
+
+	        }
+
+	        // Create the DefaultTableModel with the fetched data
+	        DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Make all cells non-editable
+	            }
+	        };
+
+	        // Create the JTable using the DefaultTableModel
+	        JTable table = new JTable(tableModel);
+	        table.setFont(new Font("Serif", Font.PLAIN, 14)); // Set font for readability
+
+	        // Set up the JScrollPane for the table
+	        JScrollPane scrollPane = new JScrollPane(table);
+	        scrollPane.setPreferredSize(new Dimension(1000, 300)); // Set preferred size
+
+	        // Panel to contain the JScrollPane
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240)); // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+	        // Show the table in a message dialog
+	        JOptionPane.showMessageDialog(null, panel, "Policy Violators", JOptionPane.INFORMATION_MESSAGE);
+
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+	}
 	
-	
-	
-	
-
-
-
-
 	
 	public void createTableInputPanel() {		
 		setContentPane(TableInput);
@@ -2973,7 +3087,8 @@ public void refreshMovieReqTable() {
 	    btnPopularGenres.addActionListener(e -> generatePopularGenresReport());
 	    btnApprovedRequests.addActionListener(e -> generateMovieRequestsReport());
 	    btnMostRequestedMovies.addActionListener(e -> generateMostRequestedMoviesReport());
-	    
+	    btnPolicyViolations.addActionListener(e -> generatePolicyViolationReport());
+		btnRentalHistory.addActionListener(e-> generateRentalHistoryReport());
 
 
 	}
