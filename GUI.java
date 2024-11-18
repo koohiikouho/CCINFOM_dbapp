@@ -3760,11 +3760,6 @@ try {
 	}
 	//END OF REPORTS
 	
-
-	public void loginPrompt(){
-		
-	}
-	
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
@@ -3829,8 +3824,6 @@ try {
 		btnReturnToUserRecord.addActionListener(listener);
 		btnMRMreturn.addActionListener(listener);
 		btnMRMselect.addActionListener(listener);
-	    
-		btnUserRecord.addActionListener(e -> loginPrompt());
 
 	    btnMoviesBorrowed.addActionListener(e -> generateMoviesBorrowedReport());
 	    btnMostBorrowedMovies.addActionListener(e -> generateMostBorrowedMovies());
