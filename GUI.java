@@ -53,6 +53,7 @@ public class GUI extends JFrame{
 	
 	private JPanel UserRecord = new JPanel();
 	private JPanel UserProfile = new JPanel();
+	private JPanel MovieRecord = new JPanel();
 	
 	// admin table text fields
 	private JTextField ATAdminNo, ATFirst_Name, ATLast_Name, ATPass, ATAdminLevel;
@@ -119,6 +120,12 @@ public class GUI extends JFrame{
 	
 	JLabel UPuserno ,UPfirstname, UPlastName;
 
+	//MovieRecord
+		private JScrollPane scrollerMovieRecord;
+		private JTable tableMovieRecord;
+		private DefaultTableModel tableModelMovieRecord;
+		private JTextField MRMmovie_code,MRMmovie_name;
+		private JButton btnMRMselect,btnMRMreturn;
 	
 	public static Connection connection;
 
@@ -181,12 +188,12 @@ public class GUI extends JFrame{
 		UserRecordPanel();
 		
 		UserProfile.setLayout(new BorderLayout());
-		try {
 		showUserProfile();
-		}catch(Exception ex) {
-			
-		}
 		UserProfilePanel();
+		
+		MovieRecord.setLayout(new BorderLayout());
+		showMovieRecord();
+		MovieRecordPanel();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -2333,6 +2340,174 @@ try {
 
 //END OF MOVIE REQ
 	
+	public void createMovieRecordPanel() {		
+		setContentPane(MovieRecord);
+	    revalidate();
+	    repaint();
+	}
+
+	
+		public void MovieRecordPanel() {
+		// NORTH PANEL
+		   JPanel panelNorth = new JPanel();
+		   panelNorth.setLayout(new FlowLayout());
+		   panelNorth.setBackground(Color.decode("#0A285f"));
+
+		   JLabel label = new JLabel("MOVIE RECORD MANAGEMENT");
+		   label.setForeground(Color.WHITE);
+		   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+		   panelNorth.add(label);
+		   
+		   MovieRecord.add(panelNorth, BorderLayout.NORTH);
+
+		// SOUTH PANEL
+		   JPanel panelSouth = new JPanel();
+		   panelSouth.setLayout(new FlowLayout());
+		   panelSouth.setBackground(Color.decode("#fdfdfd"));
+		   
+		   btnMRMreturn = new JButton("Return");
+		   panelSouth.add(btnMRMreturn);
+		   btnMRMreturn.setActionCommand("RecordManagement");
+		   MovieRecord.add(panelSouth, BorderLayout.SOUTH);
+	       
+	     //center panel
+		   JPanel centerPanel = new JPanel();
+		   centerPanel.setLayout(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
+
+		   gbc.insets = new Insets(6, 6, 6, 6);
+		   gbc.anchor = GridBagConstraints.WEST;
+		   
+		   
+		   JLabel movcode = new JLabel("Movie Code");
+		   movcode.setForeground(Color.BLACK);
+		   movcode.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 1;
+		   centerPanel.add(movcode, gbc);
+		   MRMmovie_code = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 1;
+		   centerPanel.add(MRMmovie_code, gbc);
+		   
+		   JLabel movname = new JLabel("Movie Name");
+		   movname.setForeground(Color.BLACK);
+		   movname.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 2;
+		   centerPanel.add(movname, gbc);
+		   MRMmovie_name = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 2;
+		   centerPanel.add(MRMmovie_name,gbc);
+		   
+		   btnMRMselect = new JButton("Select");
+		   gbc.gridx = 1;
+		   gbc.gridy = 3;
+		   gbc.gridwidth = 2; // Make the button span across two columns
+		   gbc.anchor = GridBagConstraints.CENTER; // Center-align the button
+		   centerPanel.add(btnMRMselect,gbc);
+		   btnMRMselect.setActionCommand("MRMselect");
+
+		   MovieRecord.add(centerPanel , BorderLayout.EAST);
+	}
+
+		
+		public void showMovieRecord() {
+			   String[] col = {"movie_code", "movie_name"};
+			   tableModelMovieRecord = new DefaultTableModel(getUserRecord(), col){
+				   @Override
+				   public boolean isCellEditable(int row, int column) {
+					   return false; // Disable editing for all cells
+				   }
+			   };
+			   
+			   tableMovieRecord = new JTable(tableModelMovieRecord);
+			   tableMovieRecord.setEnabled(true); // Enable selection
+			   
+			  
+			   // Add a mouse click listener to the table
+			   tableMovieRecord.addMouseListener(new java.awt.event.MouseAdapter() {
+				  
+				   public void mouseClicked(java.awt.event.MouseEvent evt) {
+					   int row = tableMovieRecord.getSelectedRow(); // Get selected row index
+					  
+					   
+					   if (row != -1) { // Ensure a valid cell is selected
+						   int movie_code = (int)tableMovieRecord.getValueAt(row,0);
+						   String movie_name = (String)tableMovieRecord.getValueAt(row,1);
+						   
+						   
+						   MRMmovie_code.setText(String.valueOf(movie_code));
+						   MRMmovie_name.setText(movie_name);				  
+					   }
+				   }
+			   });
+			   
+			   scrollerMovieRecord = new JScrollPane(tableMovieRecord);
+			   scrollerMovieRecord.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+			   
+			   // Center panel
+			   JPanel moreCenter = new JPanel(new BorderLayout());
+			   
+			   // CENTER PANEL center panel
+			   JPanel panelCenter = new JPanel(new GridBagLayout());
+			   GridBagConstraints gbc = new GridBagConstraints();
+			   gbc.gridx = 0;
+			   gbc.gridy = 0;
+			   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+			   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+			   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+			   gbc.insets = new Insets(10, 10, 10, 10);
+			   panelCenter.add(scrollerMovieRecord, gbc);
+			   moreCenter.add(panelCenter, BorderLayout.CENTER);
+			   
+			   MovieRecord.add(moreCenter, BorderLayout.WEST);
+			   MovieRecord.revalidate(); // Refresh the UI
+			   MovieRecord.repaint(); // Ensure it's redrawn
+			}
+
+			//getting data from db
+		public Object[][] getMovieRecord() {
+
+			ArrayList<Object[]> list = new ArrayList<>();
+
+			try {
+			   // Load the JDBC driver
+			   Class.forName("com.mysql.cj.jdbc.Driver");
+
+			   // Establish connection
+			   try (
+					Statement statement = connection.createStatement();
+					ResultSet resultSet = statement.executeQuery("SELECT m.movie_code, m.movie_name\n"
+							+ "FROM movies m\n"
+							+ "ORDER BY m.movie_code;")) {
+
+
+				   while (resultSet.next()) {
+					   Object[] row = new Object[2];
+					   row[0] = resultSet.getInt(1); 
+					   row[1] = resultSet.getString(2);            
+					   list.add(row);
+				   }
+			   }
+
+			   // Convert the list to a 2D array
+			   return list.toArray(new Object[0][2]);
+
+			} catch (Exception e) {
+			   e.printStackTrace(); // Print stack trace for debugging
+			   return null;
+			}
+			}
+
+			//refreshing admin table
+		public void refreshMovieRecord() {
+			tableModelMovieRecord.setDataVector(getMovieRecord(), new String[]{"movie_code", "movie_name"});
+			}
+
+		
+	
 	public void createUserRecordPanel() {		
 	setContentPane(UserRecord);
     revalidate();
@@ -2520,7 +2695,6 @@ try {
 	    revalidate();
 	    repaint();
 	}
-	
 	
 	public void UserProfilePanel() {
 		// NORTH PANEL
@@ -2724,6 +2898,8 @@ try {
 		btnSelectuserRecord.addActionListener(listener);
 		
 		btnReturnToUserRecord.addActionListener(listener);
+		btnMRMreturn.addActionListener(listener);
+		btnMRMselect.addActionListener(listener);
 	}
 	
 	
@@ -3132,6 +3308,24 @@ try {
 		 UPlastName.setText("   Last Name: " + name);
 		}
 
+	 public String getMRMmovie_code() {
+		    return MRMmovie_code.getText();
+		}
+		
+		public void setMRMmovie_code(String num) {
+			MRMmovie_code.setText(num);
+		}
+
+		
+	 public String getMRMmovie_name() {
+		    return MRMmovie_name.getText();
+		}
+		
+		public void setMRMmovie_name(String num) {
+			MRMmovie_name.setText(num);
+		}
+
+		
 	public void ClearAllTableInputs() {
 		setAdminFirstName("");
 		setAdminLastName("");
