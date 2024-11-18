@@ -60,10 +60,12 @@ public class GUI extends JFrame{
 	private JTextField MRrequest_no, MRmovie_name, MRdate_filled, MRuser_no;
 	private JComboBox MRmedia_type, MRin_stock, MRapproved;
 	//movies
-	private JTextField Mmovie_code, Mmovie_name, Myear, Mrating, Mlanguage, Mgenre_id;
+	private JTextField Mmovie_code, Mmovie_name, Myear, Mlanguage, Mgenre_id;
+	private JComboBox Mrating;
 	//reviews
-	private JTextField Rreview_no, Rstars, Rreview, Rmovie_code, Ruser_no;
-
+	private JTextField Rreview_no, Rmovie_code, Ruser_no;
+	private JComboBox Rstars;
+	private JTextArea Rreview;
 	
 	//review table
 	private JScrollPane scrollerReviewTable;
@@ -1171,9 +1173,14 @@ public class GUI extends JFrame{
 	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code","availability", "release_date", "media_type","copies_available","rental_price"});
     }
 
-		public void showMoviesTable() {
+	public void showMoviesTable() {
 			String[] col = {"movie_code", "movie_name", "year","rating","language","genre_id"};
-			tableModelMovies = new DefaultTableModel(getMovies(), col);
+			tableModelMovies = new DefaultTableModel(getMovies(), col){
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Disable editing for all cells
+	            }
+	        };
 			refreshAdminTable();
 			tableMoviesTable = new JTable(tableModelMovies);
 			tableMoviesTable.setEnabled(true); // Enable selection
@@ -1197,7 +1204,7 @@ public class GUI extends JFrame{
 						Mmovie_code.setText(String.valueOf(movie_code));
 						Mmovie_name.setText(movie_name);
 						Myear.setText(String.valueOf(year));
-						Mrating.setText(rating);
+						Mrating.setSelectedItem(rating);
 						Mlanguage.setText(language);
 						Mgenre_id.setText(String.valueOf(genre_id));	               
 					}
@@ -1227,7 +1234,7 @@ public class GUI extends JFrame{
 			MoviesTable.repaint(); // Ensure it's redrawn
 		}
 	
-		public Object[][] getMovies() {
+	public Object[][] getMovies() {
 			String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
 			String username = "user";
 			String password= "12345";
@@ -1267,11 +1274,12 @@ public class GUI extends JFrame{
 			return null;
 		}
 	}
-		public void refreshMoviesTable() {
+		
+	public void refreshMoviesTable() {
 			tableModelMovies.setDataVector(getMovies(), new String[]{"movie_code", "movie_name", "year","rating","language","genre_id"});
 			}
 	
-		public void MoviesTablePanel() {
+	public void MoviesTablePanel() {
 			 // NORTH PANEL
 			 JPanel panelNorth = new JPanel();
 			 panelNorth.setLayout(new FlowLayout());
@@ -1298,7 +1306,7 @@ public class GUI extends JFrame{
 			 gbc.gridx = 1;
 			 gbc.gridy = 1;
 			 centerPanel.add(movieCode, gbc);
-			 Mmovie_code = new JTextField(15);
+			 Mmovie_code = new JTextField(17);
 			 gbc.gridx = 2;
 			 gbc.gridy = 1;
 			 centerPanel.add(Mmovie_code, gbc);
@@ -1309,7 +1317,7 @@ public class GUI extends JFrame{
 			 gbc.gridx = 1;
 			 gbc.gridy = 2;
 			 centerPanel.add(movieName, gbc);
-			 Mmovie_name = new JTextField(15);
+			 Mmovie_name = new JTextField(17);
 			 gbc.gridx = 2;
 			 gbc.gridy = 2;
 			 centerPanel.add(Mmovie_name,gbc);
@@ -1320,7 +1328,7 @@ public class GUI extends JFrame{
 			 gbc.gridx = 1;
 			 gbc.gridy = 3;
 			 centerPanel.add(releaseDate,gbc);
-			 Myear = new JTextField(15);
+			 Myear = new JTextField(17);
 			 gbc.gridx = 2;
 			 gbc.gridy = 3;
 			 centerPanel.add(Myear, gbc);
@@ -1331,7 +1339,9 @@ public class GUI extends JFrame{
 			 gbc.gridx = 1;
 			 gbc.gridy = 4;
 			 centerPanel.add(rating , gbc);
-			 Mrating = new JTextField(15);
+			 String[] movrating = {"", "G", "PG-13", "R", "PG","A"};
+			 Mrating = new JComboBox(movrating);
+			  
 			 gbc.gridx = 2;
 			 gbc.gridy = 4;
 			 centerPanel.add(Mrating, gbc);
@@ -1342,7 +1352,7 @@ public class GUI extends JFrame{
 			 gbc.gridx = 1;
 			 gbc.gridy = 5;
 			 centerPanel.add(language , gbc);
-			 Mlanguage = new JTextField(15);
+			 Mlanguage = new JTextField(17);
 			 gbc.gridx = 2;
 			 gbc.gridy = 5;
 			 centerPanel.add(Mlanguage, gbc);
@@ -1353,7 +1363,7 @@ public class GUI extends JFrame{
 			 gbc.gridx = 1;
 			 gbc.gridy = 6;
 			 centerPanel.add(genre, gbc);
-			 Mgenre_id = new JTextField(15);
+			 Mgenre_id = new JTextField(17);
 			 gbc.gridx = 2;
 			 gbc.gridy = 6;
 			 centerPanel.add(Mgenre_id, gbc);
@@ -1415,7 +1425,12 @@ public Object[][] getReview() {
 	
 	public void showReviewTable() {
 		String[] col = {"review_no", "stars", "review","movie_code","user_no"};
-		tableModelReview = new DefaultTableModel(getReview(), col);
+		tableModelReview = new DefaultTableModel(getReview(), col){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
 		refreshAdminTable();
 		tableReviewTable = new JTable(tableModelReview);
 		tableReviewTable.setEnabled(true); // Enable selection
@@ -1436,7 +1451,7 @@ public Object[][] getReview() {
 					int user_no = (int)tableReviewTable.getValueAt(row,4);             
 					
 					Rreview.setText(String.valueOf(review_no));
-					Rstars.setText(String.valueOf(stars));
+					Rstars.setSelectedItem(Integer.toString(stars));
 					Rreview.setText(review);
 					Rmovie_code.setText(String.valueOf(movie_code));
 					Ruser_no.setText(String.valueOf(user_no));               
@@ -1503,29 +1518,32 @@ public Object[][] getReview() {
 		 gbc.gridy = 1;
 		 centerPanel.add(Rreview_no, gbc);
 		 
-		 JLabel stars = new JLabel("Movie Name");
+		 JLabel stars = new JLabel("Stars");
 		 stars.setForeground(Color.BLACK);
 		 stars.setFont(new Font("Verdana", Font.BOLD, 19));
 		 gbc.gridx = 1;
 		 gbc.gridy = 2;
 		 centerPanel.add(stars, gbc);
-		 Rstars = new JTextField(15);
+		 String[] Star = {"", "1", "2", "3", "4","5","6","7","8","9","10"};
+		 Rstars = new JComboBox(Star);
 		 gbc.gridx = 2;
 		 gbc.gridy = 2;
 		 centerPanel.add(Rstars,gbc);
 		 
-		 JLabel review = new JLabel("Year");
+		 JLabel review = new JLabel("Review");
 		 review.setForeground(Color.BLACK);
 		 review.setFont(new Font("Verdana", Font.BOLD, 19));
 		 gbc.gridx = 1;
 		 gbc.gridy = 3;
 		 centerPanel.add(review,gbc);
-		 Rreview = new JTextField(15);
+		 Rreview = new JTextArea(5, 15);
+		 Rreview.setLineWrap(true); // Enables line wrapping
+		 Rreview.setWrapStyleWord(true); // Wraps at word boundaries
 		 gbc.gridx = 2;
 		 gbc.gridy = 3;
 		 centerPanel.add(Rreview, gbc);
 		 
-		 JLabel movie_code = new JLabel("Rating");
+		 JLabel movie_code = new JLabel("Movie Code");
 		 movie_code.setForeground(Color.BLACK);
 		 movie_code.setFont(new Font("Verdana", Font.BOLD, 19));
 		 gbc.gridx = 1;
@@ -1537,7 +1555,7 @@ public Object[][] getReview() {
 		 centerPanel.add(Rmovie_code, gbc);
 		 
 		 //user number 
-		 JLabel user_no = new JLabel("Language");
+		 JLabel user_no = new JLabel("User no.");
 		 user_no.setForeground(Color.BLACK);
 		 user_no.setFont(new Font("Verdana", Font.BOLD, 19));
 		 gbc.gridx = 1;
