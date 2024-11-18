@@ -1,21 +1,21 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class newController implements ActionListener, DocumentListener{
-	private GUI gui;
+	private newGUI gui;
 	private Model model;
-	
-	public Controller(GUI gui, Model model) {
+	private static Connection connections;
+
+	public newController(newGUI gui, Model model, Connection connection) {
 		this.gui = gui;
 		this.model = model;
 		gui.setActionListener(this);
+		connections = connection;
 		//gui.setDocumentListener(this);
 	}
 	
@@ -24,14 +24,7 @@ public class newController implements ActionListener, DocumentListener{
 		PreparedStatement pstmt;
 		
 		try {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-			String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-		    String username = "root";
-		    String password = "115978HxDC!rvd";
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection connections = DriverManager.getConnection(url,username,password);
+
 		
 		switch(command) {
 		
