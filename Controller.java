@@ -622,10 +622,16 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.ClearAllTableInputs();
 			break;
 		case "ReturnUserRecordManagement":
+			gui.setURfirst_name("");
+			gui.setURlast_name("");
+			gui.setURuser_no("");
 			gui.createUserRecordPanel();
 			break;
 		case "SelectUserRecord":
 			gui.refreshUserProfileTable();
+			gui.setUPuserno(Integer.valueOf(gui.getURuser_no()));
+			gui.setUPfirstname(gui.getURfirst_name());
+			gui.setUPlastName(gui.getURlast_name());
 			gui.createUserProfilePanel();
 			break;
 			
