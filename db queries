@@ -88,25 +88,28 @@ ORDER BY `Year`;
 
 List of most borrowed movies
 Monthly
-SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, m.movie_code, m.movie_name,gt.description AS `Genre`, COUNT(t.movie_code) AS `Times Borrowed`
 FROM transactions t
 JOIN movies m ON m.movie_code = t.movie_code
-WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?'
+JOIN genre_type gt ON gt.genre_id = m.genre_id
+WHERE YEAR(t.date_borrowed) = '?' AND MONTH(t.date_borrowed) = '?' AND gt.genre_id = '?'
 GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), m.movie_code
 ORDER BY `Times Borrowed` DESC;
 
 Yearly
-SELECT YEAR(t.date_borrowed) AS `Year`, m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+SELECT YEAR(t.date_borrowed) AS `Year`, m.movie_code, m.movie_name,gt.description AS `Genre`, COUNT(t.movie_code) AS `Times Borrowed`
 FROM transactions t
 JOIN movies m ON m.movie_code = t.movie_code
-WHERE YEAR(t.date_borrowed) = '?'
+JOIN genre_type gt ON gt.genre_id = m.genre_id
+WHERE YEAR(t.date_borrowed) = '?' AND gt.genre_id = '?'
 GROUP BY YEAR(t.date_borrowed), m.movie_code
 ORDER BY `Times Borrowed` DESC;
 
 In General
-SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`
+SELECT m.movie_code, m.movie_name,gt.description AS `Genre`,COUNT(t.movie_code) AS `Times Borrowed`
 FROM transactions t
 JOIN movies m ON m.movie_code = t.movie_code
+JOIN genre_type gt ON gt.genre_id = m.genre_id
 GROUP BY m.movie_code
 ORDER BY `Times Borrowed` DESC;
 
