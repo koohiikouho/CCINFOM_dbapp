@@ -387,6 +387,7 @@ public class Controller implements ActionListener, DocumentListener{
 				JOptionPane.showMessageDialog(null, "Invalid Inputs");
 			}
 			break;
+			
 		case "UpdateTransactionTable":
 			try {
 				transaction_no7 = gui.getTtransaction_no();
@@ -491,10 +492,136 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.ClearAllTableInputs();
 			break;
 			
+		case "AddInMoviesTable":
+			int moviecode5,year5,genreid5;
+			String moviename5,rating5,language5;
+			
+			try {
+				String InsertMovie = " insert into movies (movie_code, movie_name, year,rating,language, genre_id)"
+					    + " values (?, ?, ?, ?, ?, ?)";
+				pstmt = connections.prepareStatement(InsertMovie);
+				
+				moviecode5 = gui.getMmovie_code();
+				year5 = gui.getMyear();
+				genreid5 = gui.getMgenre_id();
+				moviename5 = gui.getMmovie_name();
+				rating5 = gui.getMrating();
+				language5 = gui.getMlanguage();
+				
+				pstmt.setInt(1,moviecode5);
+				pstmt.setString(2,moviename5);
+				pstmt.setInt(3, year5);
+				pstmt.setString(4,rating5);
+				pstmt.setString(5, language5);
+				pstmt.setInt(6, genreid5);
+				pstmt.execute();
+				gui.refreshMoviesTable();
+				gui.ClearAllTableInputs();
+				}catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "Invalid Inputs");
+				}
+			break;
 		
+			
+		case "UpdateMoviesTable":
+			try {
+				moviecode5 = gui.getMmovie_code();
+				year5 = gui.getMyear();
+				genreid5 = gui.getMgenre_id();
+				moviename5 = gui.getMmovie_name();
+				rating5 = gui.getMrating();
+				language5 = gui.getMlanguage();
+				String updateMovie = "UPDATE movies SET genre_id = ?, movie_name = ?, year = ?,rating =?, language =? WHERE movie_code = ?";
+				pstmt = connections.prepareStatement(updateMovie);
+				
+				pstmt.setInt(1,genreid5);
+				pstmt.setString(2,moviename5);
+				pstmt.setInt(3, year5);
+				pstmt.setString(4,rating5);
+				pstmt.setString(5, language5);
+				pstmt.setInt(6, moviecode5);
+				
+				pstmt.execute();
+				gui.refreshMoviesTable();
+				gui.ClearAllTableInputs();
+				}catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "Invalid Inputs");
+				}
+			break;
+			
+		case "DeleteInMoviesTable":
+			moviecode5 = gui.getMmovie_code();
+			String DeleteMovie = " DELETE FROM movies WHERE movie_code = ?";
+			pstmt = connections.prepareStatement(DeleteMovie);
+			pstmt.setInt(1, moviecode5);
+			pstmt.execute();
+			gui.refreshMoviesTable();
+			gui.ClearAllTableInputs();
+			break;
+			
+		case "AddInReviewTable":
+			int review_no6,movie_code6,user_no6,stars6;
+			String review6;
+			
+			try {
+				String InsertMovie = " insert into review (review_no, stars, review,movie_code,user_no)"
+					    + " values (?, ?, ?, ?, ?)";
+				pstmt = connections.prepareStatement(InsertMovie);
+				
+				review_no6 = gui.getRreview_no();
+				stars6 = gui.getRstars();
+				movie_code6 = gui.getRmovie_code();
+				user_no6 = gui.getRuser_no();
+				review6 = gui.getRreview();
+				
+				pstmt.setInt(1,review_no6);
+				pstmt.setInt(2,stars6);
+				pstmt.setString(3, review6);
+				pstmt.setInt(4,movie_code6);
+				pstmt.setInt(5, user_no6);
+				pstmt.execute();
+				gui.refreshReviewTable();
+				gui.ClearAllTableInputs();
+				}catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "Invalid Inputs");
+				}
+			break;
 
-		
-		}
+		case "UpdateReviewTable":
+			try {
+				review_no6 = gui.getRreview_no();
+				stars6 = gui.getRstars();
+				movie_code6 = gui.getRmovie_code();
+				user_no6 = gui.getRuser_no();
+				review6 = gui.getRreview();
+				
+				
+				String updateMovie = "UPDATE review SET stars = ?, review = ?, movie_code = ?,user_no =? WHERE review_no = ?";
+				pstmt = connections.prepareStatement(updateMovie);
+				
+				pstmt.setInt(1,stars6);
+				pstmt.setString(2,review6);
+				pstmt.setInt(3, movie_code6);
+				pstmt.setInt(4,user_no6);
+				pstmt.setInt(5, review_no6);
+				pstmt.execute();
+				gui.refreshReviewTable();
+				gui.ClearAllTableInputs();
+				}catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "Invalid Inputs");
+				}
+			break;
+			
+		case "DeleteInReviewTable":
+			review_no6 = gui.getRreview_no();
+			String DeleteReview = " DELETE FROM review WHERE review_no = ?";
+			pstmt = connections.prepareStatement(DeleteReview);
+			pstmt.setInt(1, review_no6);
+			pstmt.execute();
+			gui.refreshReviewTable();
+			gui.ClearAllTableInputs();
+			break;
+				}
 
 	}
 	catch (Exception ex) {
@@ -534,7 +661,6 @@ public class Controller implements ActionListener, DocumentListener{
 		gui.setMRMovieReqNo("");
 		gui.setMRUserno("");
 		gui.setMediaRelease("");
-	
 	}
 
 	@Override
