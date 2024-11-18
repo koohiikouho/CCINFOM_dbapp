@@ -1,9 +1,13 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class newGUI extends JFrame{
 	
@@ -11,13 +15,14 @@ public class newGUI extends JFrame{
 	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT;
 	//records
 	private JButton btnMovieRecord,btnUserRecord,btnAdminRecord, btnMediaTypeRecord, btnReturntoMain;
+	
 	// reports
 	// Declare buttons as instance variables
 	private JButton btnMoviesBorrowed,btnMostBorrowedMovies, btnPopularGenres;
 	private JButton btnApprovedRequests, btnMostRequestedMovies, btnRentalHistory;
-	private JButton btnPolicyViolations, btnRevenueReport, btnTopRevenueUsers;
-
-
+	private JButton btnPolicyViolations, btnRevenueReport, btnTopRevenueUsers,btnReturntoMainFromReport;
+	
+	
 	//table input
 	private JButton btnAdminsTable, btnGenre_TypeTable, btnMedia_TypeTable, 
 					btnMovie_reqTable, btnMoviesTable, btnReviewTable, btnTransactionsTable, 
@@ -34,6 +39,12 @@ public class newGUI extends JFrame{
    	private JButton btnUpdateUserTable, btnDeleteInUserTable, btnAddInUserTable;
    	//movie req table
 	private JButton btnUpdateMovieReqTable,  btnDeleteInMovieReqTable, btnAddInMovieReqTable;
+	//movie table
+	private JButton btnUpdateMoviesTable, btnDeleteInMoviesTable, btnAddInMoviesTable;
+	//review table
+	private JButton btnUpdateReviewTable, btnDeleteInReviewTable, btnAddInReviewTable;
+
+	
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
 	private JPanel ReportManagement = new JPanel();
@@ -52,6 +63,18 @@ public class newGUI extends JFrame{
 	//movie req
 	private JTextField MRrequest_no, MRmovie_name, MRdate_filled, MRuser_no;
 	private JComboBox MRmedia_type, MRin_stock, MRapproved;
+	//movies
+	private JTextField Mmovie_code, Mmovie_name, Myear, Mlanguage, Mgenre_id;
+	private JComboBox Mrating;
+	//reviews
+	private JTextField Rreview_no, Rmovie_code, Ruser_no;
+	private JComboBox Rstars;
+	private JTextArea Rreview;
+	
+	//review table
+	private JScrollPane scrollerReviewTable;
+	private JTable tableReviewTable;
+	private DefaultTableModel tableModelReview;
 	//admin table
 	private JScrollPane scrollerAdminTable;
 	private JTable tableAdminTable;
@@ -60,7 +83,11 @@ public class newGUI extends JFrame{
 	private JScrollPane scrollerGenreTable;
 	private JTable tableGenreTable;
 	private DefaultTableModel tableModelGenre;
-	//mediatype table
+	//movie table
+	private JScrollPane scrollerMoviesTable;
+	private JTable tableMoviesTable;
+	private DefaultTableModel tableModelMovies;
+	//media table
 	private JScrollPane scrollerMediaTable;
 	private JTable tableMediaTable;
 	private DefaultTableModel tableModelMedia;
@@ -80,9 +107,12 @@ public class newGUI extends JFrame{
 	private JTable tableTransactionTable;
 	private DefaultTableModel tableModelTransaction;
 	
-	public GUI(Connection connection) {
+	public static Connection connection;
+
+	public GUI(Connection connections) {
 		super("DB APP"); //frame name
 		
+		connection = connections;
 		setContentPane(MainMenu);
 		MainMenu.setLayout(new BorderLayout());
 		setSize(900,700);//size of window
@@ -118,9 +148,11 @@ public class newGUI extends JFrame{
 		Movie_reqTablePanel();
 		
 		MoviesTable.setLayout(new BorderLayout());
+		showMoviesTable();
 		MoviesTablePanel();
 		
 		ReviewTable.setLayout(new BorderLayout());
+		showReviewTable();
 		ReviewTablePanel();
 		
 		TransactionsTable.setLayout(new BorderLayout());
@@ -210,7 +242,7 @@ public class newGUI extends JFrame{
         repaint();
 	}
 	
-public void recordmanagement() {
+	public void recordmanagement() {
 		
         // NORTH PANEL
         JPanel panelNorth = new JPanel();
@@ -283,7 +315,6 @@ public void recordmanagement() {
         RecordManagement.add(panelCenter, BorderLayout.CENTER);
 	}
 
-	
 	public void createReportmanagementPanel() {
 		// TODO Auto-generated method stub
 		setContentPane(ReportManagement);
@@ -386,12 +417,12 @@ public void recordmanagement() {
 	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
 	    panelCenter.add(btnTopRevenueUsers);
 
-	    btnReturntoMain = new JButton("Home");
-	    btnReturntoMain.setPreferredSize(buttonSize);
-	    btnReturntoMain.setMaximumSize(buttonSize);
-	    btnReturntoMain.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    btnReturntoMainFromReport = new JButton("Home");
+	    btnReturntoMainFromReport.setPreferredSize(buttonSize);
+	    btnReturntoMainFromReport.setMaximumSize(buttonSize);
+	    btnReturntoMainFromReport.setAlignmentX(Component.CENTER_ALIGNMENT);
 	    panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-	    panelCenter.add(btnReturntoMain);
+	    panelCenter.add(btnReturntoMainFromReport);
 	    panelCenter.add(Box.createVerticalGlue());
 
 	    // Set Action Commands
@@ -404,10 +435,249 @@ public void recordmanagement() {
 	    btnPolicyViolations.setActionCommand("PolicyViolationsReport");
 	    btnRevenueReport.setActionCommand("RevenueReport");
 	    btnTopRevenueUsers.setActionCommand("TopRevenueUsersReport");
-	    btnReturntoMain.setActionCommand("Home");
+	    btnReturntoMainFromReport.setActionCommand("Home");
 
 	    ReportManagement.add(panelCenter, BorderLayout.CENTER);
 	}
+	
+	
+	
+	private void generateMoviesBorrowedReport() {
+	    // Options to choose the type of report
+	    String[] options = {"Day", "Month", "Year"};
+	    String choice = (String) JOptionPane.showInputDialog(
+	            null,
+	            "Select the type of report:",
+	            "Movies Borrowed Report",
+	            JOptionPane.PLAIN_MESSAGE,
+	            null,
+	            options,
+	            options[0]);
+
+	    if (choice == null) {
+	        return; // User cancelled
+	    }
+
+	    // SQL queries based on the choice
+	    String query = "";
+	    switch (choice) {
+	        case "Day":
+	            query = """
+	                    SELECT DATE(t.date_borrowed) AS `Date Borrowed`, COUNT(t.movie_code) AS `Number of Movies Borrowed`
+	                    FROM transactions t
+	                    GROUP BY `Date Borrowed`
+	                    HAVING `Date Borrowed` IS NOT NULL
+	                    ORDER BY `Date Borrowed` ASC;  -- Sort by Date in ascending order
+	                    """;
+	            break;
+	        case "Month":
+	            query = """
+	                    SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, COUNT(t.movie_code) AS `Number of Movies Borrowed`
+	                    FROM transactions t
+	                    GROUP BY `Year`, `Month`
+	                    HAVING `Year` != 0 AND `Month` != 0
+	                    ORDER BY `Year` ASC, `Month` ASC;  -- Sort by Year and Month in ascending order
+	                    """;
+	            break;
+	        case "Year":
+	            query = """
+	                    SELECT YEAR(t.date_borrowed) AS `Year`, COUNT(t.movie_code) AS `Number of Movies Borrowed`
+	                    FROM transactions t
+	                    GROUP BY `Year`
+	                    HAVING `Year` != 0
+	                    ORDER BY `Year` ASC;  -- Sort by Year in ascending order
+	                    """;
+	            break;
+	        default:
+	            JOptionPane.showMessageDialog(null, "Invalid option selected.");
+	            return;
+	    }
+
+	    // Database Connection and Execution
+	    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmovieRental", "root", "password");
+	         PreparedStatement pstmt = conn.prepareStatement(query);
+	         ResultSet rs = pstmt.executeQuery()) {
+
+	        // Generate the report
+	        StringBuilder report = new StringBuilder();
+	        if (choice.equals("Day")) {
+	            report.append("Date Borrowed\t\tNumber of Movies Borrowed\n");
+	            while (rs.next()) {
+	                java.sql.Date dateBorrowed = rs.getDate("Date Borrowed");
+	                int numMoviesBorrowed = rs.getInt("Number of Movies Borrowed");
+
+	                // Check for valid date and valid number of movies borrowed
+	                if (dateBorrowed != null && numMoviesBorrowed > 0) {
+	                    report.append(dateBorrowed).append("\t\t").append(numMoviesBorrowed).append("\n");
+	                }
+	            }
+	        } else if (choice.equals("Month")) {
+	            report.append("Year\tMonth\tNumber of Movies Borrowed\n");
+	            while (rs.next()) {
+	                int year = rs.getInt("Year");
+	                int month = rs.getInt("Month");
+	                int numMoviesBorrowed = rs.getInt("Number of Movies Borrowed");
+
+	                // Skip rows where year or month is 0
+	                if (year != 0 && month != 0 && numMoviesBorrowed > 0) {
+	                    report.append(year).append("\t").append(month).append("\t").append(numMoviesBorrowed).append("\n");
+	                }
+	            }
+	        } else if (choice.equals("Year")) {
+	            report.append("Year\tNumber of Movies Borrowed\n");
+	            while (rs.next()) {
+	                int year = rs.getInt("Year");
+	                int numMoviesBorrowed = rs.getInt("Number of Movies Borrowed");
+
+	                // Skip rows where year is 0
+	                if (year != 0 && numMoviesBorrowed > 0) {
+	                    report.append(year).append("\t").append(numMoviesBorrowed).append("\n");
+	                }
+	            }
+	        }
+
+	        // Display the report
+	        JTextArea textArea = new JTextArea(report.toString());
+	        textArea.setEditable(false);
+	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
+	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
+	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        scrollPane.setPreferredSize(new Dimension(600, 400));
+
+	        // Customize the window (Optional)
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+	        JOptionPane.showMessageDialog(null, panel, "Movies Borrowed Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
+
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+	}
+	
+	
+	
+	
+	private void generatePopularGenresReport() {
+	    // Options to choose the type of report, removing "Day" option
+	    String[] options = {"Month", "Year"};
+	    String choice = (String) JOptionPane.showInputDialog(
+	            null,
+	            "Select the type of report:",
+	            "Movies Borrowed Report",
+	            JOptionPane.PLAIN_MESSAGE,
+	            null,
+	            options,
+	            options[0]);
+
+	    if (choice == null) {
+	        return; // User cancelled
+	    }
+
+	    // SQL queries based on the choice
+	    String query = "";
+	    switch (choice) {
+	        case "Month":
+	            query = """
+	                    SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, 
+	                           gt.genre_id, gt.description AS `Genre`, COUNT(t.movie_code) AS `Times Borrowed`
+	                    FROM transactions t
+	                    JOIN movies m ON m.movie_code = t.movie_code
+	                    JOIN genre_type gt ON gt.genre_id = m.genre_id
+	                    WHERE YEAR(t.date_borrowed) = ? AND MONTH(t.date_borrowed) = ?
+	                    GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), gt.genre_id
+	                    ORDER BY `Times Borrowed` DESC;
+	                    """;
+	            break;
+	        case "Year":
+	            query = """
+	                    SELECT YEAR(t.date_borrowed) AS `Year`, gt.genre_id, gt.description AS `Genre`, 
+	                           COUNT(t.movie_code) AS `Times Borrowed`
+	                    FROM transactions t
+	                    JOIN movies m ON m.movie_code = t.movie_code
+	                    JOIN genre_type gt ON gt.genre_id = m.genre_id
+	                    WHERE YEAR(t.date_borrowed) = ?
+	                    GROUP BY YEAR(t.date_borrowed), gt.genre_id
+	                    ORDER BY `Times Borrowed` DESC;
+	                    """;
+	            break;
+	        default:
+	            JOptionPane.showMessageDialog(null, "Invalid option selected.");
+	            return;
+	    }
+
+	    // Database Connection and Execution
+	    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmovieRental", "root", "password");
+	         PreparedStatement pstmt = conn.prepareStatement(query)) {
+	        
+	        // Prompt user for the month and/or year
+	        if (choice.equals("Month")) {
+	            String month = JOptionPane.showInputDialog("Enter the Month (1-12):");
+	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
+	            pstmt.setString(1, year);
+	            pstmt.setString(2, month);
+	        } else if (choice.equals("Year")) {
+	            String year = JOptionPane.showInputDialog("Enter the Year (YYYY):");
+	            pstmt.setString(1, year);
+	        }
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        // Generate the report
+	        StringBuilder report = new StringBuilder();
+	        if (choice.equals("Month")) {
+	            report.append("Year\tMonth\tGenre\t\tTimes Borrowed\n");
+	            while (rs.next()) {
+	                int year = rs.getInt("Year");
+	                int month = rs.getInt("Month");
+	                String genre = rs.getString("Genre");
+	                int timesBorrowed = rs.getInt("Times Borrowed");
+
+	                if (timesBorrowed > 0) {
+	                    report.append(year).append("\t").append(month).append("\t").append(genre).append("\t\t").append(timesBorrowed).append("\n");
+	                }
+	            }
+	        } else if (choice.equals("Year")) {
+	            report.append("Year\tGenre\t\tTimes Borrowed\n");
+	            while (rs.next()) {
+	                int year = rs.getInt("Year");
+	                String genre = rs.getString("Genre");
+	                int timesBorrowed = rs.getInt("Times Borrowed");
+
+	                if (timesBorrowed > 0) {
+	                    report.append(year).append("\t").append(genre).append("\t\t").append(timesBorrowed).append("\n");
+	                }
+	            }
+	        }
+
+	        // Display the report
+	        JTextArea textArea = new JTextArea(report.toString());
+	        textArea.setEditable(false);
+	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
+	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
+	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        scrollPane.setPreferredSize(new Dimension(600, 400));
+
+	        // Customize the window (Optional)
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+	        JOptionPane.showMessageDialog(null, panel, "Movies Borrowed Report (" + choice + ")", JOptionPane.INFORMATION_MESSAGE);
+
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
+	}
+
+
+
+
 
 	
 	public void createTableInputPanel() {		
@@ -698,12 +968,12 @@ public void recordmanagement() {
 
 		//getting data from db
 	public Object[][] getAdmin() {
-//			String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//			String username = "user";
-//			String password= "12345";
-		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-	    String username = "root";
-	    String password = "115978HxDC!rvd";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//	    String username = "root";
+//	    String password = "dl_MySQL_su";
 
 	    ArrayList<Object[]> list = new ArrayList<>();
 
@@ -712,7 +982,7 @@ public void recordmanagement() {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 	        // Establish connection
-	        try (Connection connection = DriverManager.getConnection(url, username, password);
+	        try (
 	             Statement statement = connection.createStatement();
 	             ResultSet resultSet = statement.executeQuery("SELECT * FROM admins")) {
 
@@ -864,12 +1134,12 @@ public void recordmanagement() {
 
 	//getting data from db
 	public Object[][] getGenre() {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "115978HxDC!rvd";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+ //   String username = "root";
+ //   String password = "dl_MySQL_su";
 
     ArrayList<Object[]> list = new ArrayList<>();
 
@@ -878,7 +1148,7 @@ public void recordmanagement() {
 		Class.forName("com.mysql.cj.jdbc.Driver");
 
         // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM genre_type")) {
 
@@ -1100,12 +1370,12 @@ public void recordmanagement() {
 
 	//getting data from db
 	public Object[][] getMedia() {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "115978HxDC!rvd";
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//    String username = "root";
+//    String password = "dl_MySQL_su";
 
     ArrayList<Object[]> list = new ArrayList<>();
 
@@ -1114,7 +1384,7 @@ public void recordmanagement() {
 		Class.forName("com.mysql.cj.jdbc.Driver");
 
         // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM media_type")) {
 
@@ -1123,11 +1393,7 @@ public void recordmanagement() {
                 Object[] row = new Object[7];
                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
-                String transmute = "NO";
-                if(resultSet.getString(3).equals("1")) {
-                	transmute = "YES";
-                }
-                row[2] = transmute;
+                row[2] = resultSet.getString(3); // Assuming column 3 is int
                 row[3] = resultSet.getString(4); // Assuming column 4 is String
                 row[4] = resultSet.getString(5); // Assuming column 5 is String
                 row[5] = resultSet.getInt(6); // Assuming column 6 is String
@@ -1149,778 +1415,1142 @@ public void recordmanagement() {
 	public void refreshMediaTable() {
 	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code","availability", "release_date", "media_type","copies_available","rental_price"});
     }
-	
-	public void Movie_reqTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
 
-	        JLabel label = new JLabel("MOVIE REQUEST TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        Movie_reqTable.add(panelNorth, BorderLayout.NORTH);
-
-
-	      //center panel
-    		JPanel centerPanel = new JPanel();
-    		centerPanel.setLayout(new GridBagLayout());
-    		GridBagConstraints gbc = new GridBagConstraints();
-
-            gbc.insets = new Insets(6, 6, 6, 6);
-            gbc.anchor = GridBagConstraints.WEST;
-
-            
-    		JLabel mrequest_no = new JLabel("Request no.");
-    		mrequest_no.setForeground(Color.BLACK);
-    		mrequest_no.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 1;
-            centerPanel.add(mrequest_no, gbc);
-            MRrequest_no = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 1;
-            centerPanel.add(MRrequest_no, gbc);
-    		
-    		JLabel movname = new JLabel("Movie Name");
-    		movname.setForeground(Color.BLACK);
-    		movname.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 2;
-            centerPanel.add(movname, gbc);
-            MRmovie_name = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 2;
-            centerPanel.add(MRmovie_name,gbc);
-    		
-    		JLabel datefilled = new JLabel("Date Filled");
-    		datefilled.setForeground(Color.BLACK);
-    		datefilled.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 3;
-            centerPanel.add(datefilled,gbc);
-            MRdate_filled = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 3;
-            centerPanel.add(MRdate_filled, gbc);
-    		
-    		JLabel userno = new JLabel("User no.");
-    		userno.setForeground(Color.BLACK);
-    		userno.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 4;
-            centerPanel.add(userno , gbc);
-            MRuser_no = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 4;
-            centerPanel.add(MRuser_no, gbc);
-            
-            JLabel mediaType = new JLabel("Media Type");
-            mediaType.setForeground(Color.BLACK);
-            mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 5;
-            centerPanel.add(mediaType , gbc);
-            String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
-            MRmedia_type = new JComboBox(mediachoice);
-    		gbc.gridx = 2;
-            gbc.gridy = 5;
-            centerPanel.add(MRmedia_type, gbc);
-            
-            JLabel stock = new JLabel("In Stock");
-            stock.setForeground(Color.BLACK);
-            stock.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 6;
-            centerPanel.add(stock , gbc);
-            String[] isInStock = {"", "YES", "NO"};
-            MRin_stock = new JComboBox(isInStock);
-    		gbc.gridx = 2;
-            gbc.gridy = 6;
-            centerPanel.add(MRin_stock, gbc);
-            
-            JLabel approve = new JLabel("Approved");
-            approve.setForeground(Color.BLACK);
-            approve.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 7;
-            centerPanel.add(approve , gbc);
-            String[] isApproved = {"", "YES", "NO"};
-            MRapproved = new JComboBox(isApproved);
-            gbc.gridx = 2;
-            gbc.gridy = 7;
-            centerPanel.add(MRapproved, gbc);
-            
-            Movie_reqTable.add(centerPanel , BorderLayout.EAST);
-
-    		//SOUTH PANEL
-    		JPanel panelSouth = new JPanel();
-    		panelSouth.setLayout(new FlowLayout());
-    		panelSouth.setBackground(Color.decode("#fdfdfd"));
-    		
-    		btnAddInMovieReqTable = new JButton("Add");
-    		btnUpdateMovieReqTable = new JButton("Update");
-    		btnDeleteInMovieReqTable = new JButton("Delete");
-       		panelSouth.add(btnAddInMovieReqTable);
-    		panelSouth.add(btnUpdateMovieReqTable);
-    		panelSouth.add(btnDeleteInMovieReqTable);
-    		
-    		btnUpdateMovieReqTable.setActionCommand("UpdateMovieReqTable");
-    		btnDeleteInMovieReqTable.setActionCommand("DeleteInMovieReqTable");
-    		btnAddInMovieReqTable.setActionCommand("AddInMovieReqTable");
-    		
-    		Movie_reqTable.add(panelSouth, BorderLayout.SOUTH);
+	public void showMoviesTable() {
+			String[] col = {"movie_code", "movie_name", "year","rating","language","genre_id"};
+			tableModelMovies = new DefaultTableModel(getMovies(), col){
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false; // Disable editing for all cells
+	            }
+	        };
+			refreshAdminTable();
+			tableMoviesTable = new JTable(tableModelMovies);
+			tableMoviesTable.setEnabled(true); // Enable selection
+			
+			// Add a mouse click listener to the table
+			tableMoviesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+			   
+				@Override
+				public void mouseClicked(java.awt.event.MouseEvent evt) {
+					int row = tableMoviesTable.getSelectedRow(); // Get selected row index
+				   
+					
+					if (row != -1) { // Ensure a valid cell is selected
+						int movie_code = (int)tableMoviesTable.getValueAt(row,0);
+						String movie_name = (String)tableMoviesTable.getValueAt(row,1);
+						int year = (int)tableMoviesTable.getValueAt(row,2);
+						String rating = (String)tableMoviesTable.getValueAt(row,3);
+						String language = (String)tableMoviesTable.getValueAt(row,4);             
+						int genre_id = (int)tableMoviesTable.getValueAt(row,5); 
+						
+						Mmovie_code.setText(String.valueOf(movie_code));
+						Mmovie_name.setText(movie_name);
+						Myear.setText(String.valueOf(year));
+						Mrating.setSelectedItem(rating);
+						Mlanguage.setText(language);
+						Mgenre_id.setText(String.valueOf(genre_id));	               
+					}
+				}
+			});
+			
+			scrollerMoviesTable = new JScrollPane(tableMoviesTable);
+			scrollerMoviesTable.setPreferredSize(new Dimension(500, 200)); // Set preferred size
+			
+			// Center panel
+			JPanel moreCenter = new JPanel(new BorderLayout());
+			
+			// CENTER PANEL center panel
+			JPanel panelCenter = new JPanel(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+			gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+			gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+			gbc.insets = new Insets(10, 10, 10, 10);
+			panelCenter.add(scrollerMoviesTable, gbc);
+			moreCenter.add(panelCenter, BorderLayout.CENTER);
+			
+			MoviesTable.add(moreCenter, BorderLayout.WEST);
+			MoviesTable.revalidate(); // Refresh the UI
+			MoviesTable.repaint(); // Ensure it's redrawn
 		}
 	
-	public void showMovieReqTable() {
-	    String[] col = {"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"};
-	    tableModelMovieReq = new DefaultTableModel(getMovieReq(), col){
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Disable editing for all cells
-            }
-        };
-        
-	    refreshAdminTable();
-	    tableMovieReqTable = new JTable(tableModelMovieReq);
-	    tableMovieReqTable.setEnabled(true); // Enable selection
-	    
-	   
-	    // Add a mouse click listener to the table
-	    tableMovieReqTable.addMouseListener(new java.awt.event.MouseAdapter() {
-	       
-	        public void mouseClicked(java.awt.event.MouseEvent evt) {
-	            int row = tableMovieReqTable.getSelectedRow(); // Get selected row index
-	           
-	            
-	            if (row != -1) { // Ensure a valid cell is selected
-	                int request_number = (int)tableMovieReqTable.getValueAt(row,0);
-	                String movie_name = (String)tableMovieReqTable.getValueAt(row,1);
-	                String date_filled = (String)tableMovieReqTable.getValueAt(row,2);
-	                int user_no = (int)tableMovieReqTable.getValueAt(row,3);
-	                String approved = (String)tableMovieReqTable.getValueAt(row,4);             
-	                String in_stock = (String)tableMovieReqTable.getValueAt(row,5); 
-	                String media_type = (String)tableMovieReqTable.getValueAt(row,6); 
-	                
-	                MRrequest_no.setText(String.valueOf(request_number));
-	            	MRmovie_name.setText(movie_name);
-	            	MRdate_filled.setText(date_filled);
-	            	MRuser_no.setText(String.valueOf(user_no));
-	            	MRapproved.setSelectedItem(approved);
-	            	MRin_stock.setSelectedItem(in_stock);
-	            	MRmedia_type.setSelectedItem(media_type);
-	            		               
-	            }
-	        }
-	    });
-	    
-	    scrollerMovieReqTable = new JScrollPane(tableMovieReqTable);
-	    scrollerMovieReqTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
-	    
-	    // Center panel
-	    JPanel moreCenter = new JPanel(new BorderLayout());
-	    
-	    // CENTER PANEL center panel
-	    JPanel panelCenter = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
-	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
-	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    panelCenter.add(scrollerMovieReqTable, gbc);
-	    moreCenter.add(panelCenter, BorderLayout.CENTER);
-	    
-	    Movie_reqTable.add(moreCenter, BorderLayout.WEST);
-	    Movie_reqTable.revalidate(); // Refresh the UI
-	    Movie_reqTable.repaint(); // Ensure it's redrawn
+	public Object[][] getMovies() {
+			String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+			String username = "user";
+			String password= "12345";
+	//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+	//    String username = "root";
+	//    String password = "dl_MySQL_su";
+	
+		ArrayList<Object[]> list = new ArrayList<>();
+	
+		try {
+			// Load the JDBC driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+	
+			// Establish connection
+			try (
+				 Statement statement = connection.createStatement();
+				 ResultSet resultSet = statement.executeQuery("SELECT * FROM movies")) {
+	
+				// Process the ResultSet
+				while (resultSet.next()) {
+					Object[] row = new Object[7];
+					row[0] = resultSet.getInt(1); // Assuming column 1 is int
+					row[1] = resultSet.getString(2); // Assuming column 2 is String
+					row[2] = resultSet.getInt(3); // Assuming column 3 is int
+					row[3] = resultSet.getString(4); // Assuming column 4 is String
+					row[4] = resultSet.getString(5); // Assuming column 5 is String
+					row[5] = resultSet.getInt(6); // Assuming column 6 is String     
+					list.add(row);
+				}
+			}
+	
+			// Convert the list to a 2D array
+			return list.toArray(new Object[0][7]);
+	
+		} catch (Exception e) {
+			e.printStackTrace(); // Print stack trace for debugging
+			return null;
+		}
 	}
-
-	//getting data from db
-	public Object[][] getMovieReq() {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "115978HxDC!rvd";
-
-    ArrayList<Object[]> list = new ArrayList<>();
-
-    try {
-        // Load the JDBC driver
-		Class.forName("com.mysql.cj.jdbc.Driver");
-
-        // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM movie_req")) {
-
-            // Process the ResultSet
-        	
-            
-            while (resultSet.next()) {
-                Object[] row = new Object[7];
-                row[0] = resultSet.getInt(1); 
-                row[1] = resultSet.getString(2);            
-                row[2] = resultSet.getString(3);
-                row[3] = resultSet.getInt(4); 
-                String transmute;
-                if(resultSet.getInt(5) == 1) {
-                	transmute = "YES";
-                }else if(resultSet.getInt(5) == 0){
-                	transmute = "NO";
-                }else transmute = "";
-                row[4] = transmute;
-                if(resultSet.getInt(6) == 1) {
-                	transmute = "YES";
-                }else if(resultSet.getInt(6) == 0){
-                	transmute = "NO";
-                }else transmute = "";
-                row[5] = transmute;
-                row[6] = resultSet.getString(7);           
-                list.add(row);
-            }
-        }
-
-        // Convert the list to a 2D array
-        return list.toArray(new Object[0][7]);
-
-    } catch (Exception e) {
-        e.printStackTrace(); // Print stack trace for debugging
-        return null;
-    }
-}
-
-	//refreshing admin table
-	public void refreshMovieReqTable() {
-		tableModelMovieReq.setDataVector(getMovieReq(), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"});
-    }
-
-
-	
-	
-	
+		
+	public void refreshMoviesTable() {
+			tableModelMovies.setDataVector(getMovies(), new String[]{"movie_code", "movie_name", "year","rating","language","genre_id"});
+			}
 	
 	public void MoviesTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
+			 // NORTH PANEL
+			 JPanel panelNorth = new JPanel();
+			 panelNorth.setLayout(new FlowLayout());
+			 panelNorth.setBackground(Color.decode("#0A285f"));
+	
+			 JLabel label = new JLabel("MOVIES TABLE");
+			 label.setForeground(Color.WHITE);
+			 label.setFont(new Font("Gaegu", Font.BOLD, 18));
+			 panelNorth.add(label);
+			 
+			 MoviesTable.add(panelNorth, BorderLayout.NORTH);
+			 
+			 //center panel
+			 JPanel centerPanel = new JPanel();
+			 centerPanel.setLayout(new GridBagLayout());
+			 GridBagConstraints gbc = new GridBagConstraints();
+	
+			 gbc.insets = new Insets(6, 6, 6, 6);
+			 gbc.anchor = GridBagConstraints.WEST;
+	
+			 JLabel movieCode = new JLabel("Movie Code");
+			 movieCode.setForeground(Color.BLACK);
+			 movieCode.setFont(new Font("Verdana", Font.BOLD, 19));
+			 gbc.gridx = 1;
+			 gbc.gridy = 1;
+			 centerPanel.add(movieCode, gbc);
+			 Mmovie_code = new JTextField(17);
+			 gbc.gridx = 2;
+			 gbc.gridy = 1;
+			 centerPanel.add(Mmovie_code, gbc);
+			 
+			 JLabel movieName = new JLabel("Movie Name");
+			 movieName.setForeground(Color.BLACK);
+			 movieName.setFont(new Font("Verdana", Font.BOLD, 19));
+			 gbc.gridx = 1;
+			 gbc.gridy = 2;
+			 centerPanel.add(movieName, gbc);
+			 Mmovie_name = new JTextField(17);
+			 gbc.gridx = 2;
+			 gbc.gridy = 2;
+			 centerPanel.add(Mmovie_name,gbc);
+			 
+			 JLabel releaseDate = new JLabel("Year");
+			 releaseDate.setForeground(Color.BLACK);
+			 releaseDate.setFont(new Font("Verdana", Font.BOLD, 19));
+			 gbc.gridx = 1;
+			 gbc.gridy = 3;
+			 centerPanel.add(releaseDate,gbc);
+			 Myear = new JTextField(17);
+			 gbc.gridx = 2;
+			 gbc.gridy = 3;
+			 centerPanel.add(Myear, gbc);
+			 
+			 JLabel rating = new JLabel("Rating");
+			 rating.setForeground(Color.BLACK);
+			 rating.setFont(new Font("Verdana", Font.BOLD, 19));
+			 gbc.gridx = 1;
+			 gbc.gridy = 4;
+			 centerPanel.add(rating , gbc);
+			 String[] movrating = {"", "G", "PG-13", "R", "PG","A"};
+			 Mrating = new JComboBox(movrating);
+			  
+			 gbc.gridx = 2;
+			 gbc.gridy = 4;
+			 centerPanel.add(Mrating, gbc);
+			 
+			 JLabel language = new JLabel("Language");
+			 language.setForeground(Color.BLACK);
+			 language.setFont(new Font("Verdana", Font.BOLD, 19));
+			 gbc.gridx = 1;
+			 gbc.gridy = 5;
+			 centerPanel.add(language , gbc);
+			 Mlanguage = new JTextField(17);
+			 gbc.gridx = 2;
+			 gbc.gridy = 5;
+			 centerPanel.add(Mlanguage, gbc);
+			 
+			 JLabel genre = new JLabel("Genre");
+			 genre.setForeground(Color.BLACK);
+			 genre.setFont(new Font("Verdana", Font.BOLD, 19));
+			 gbc.gridx = 1;
+			 gbc.gridy = 6;
+			 centerPanel.add(genre, gbc);
+			 Mgenre_id = new JTextField(17);
+			 gbc.gridx = 2;
+			 gbc.gridy = 6;
+			 centerPanel.add(Mgenre_id, gbc);
+			 
+			 MoviesTable.add(centerPanel , BorderLayout.EAST);
+			 
+			 //SOUTH PANEL
+			 JPanel panelSouth = new JPanel();
+			 panelSouth.setLayout(new FlowLayout());
+			 panelSouth.setBackground(Color.decode("#fdfdfd"));
+			 
+			 btnAddInMoviesTable = new JButton("Add");
+			 btnUpdateMoviesTable = new JButton("Update");
+			 btnDeleteInMoviesTable = new JButton("Delete");
+			 panelSouth.add(btnAddInMoviesTable);
+			 panelSouth.add(btnUpdateMoviesTable);
+			 panelSouth.add(btnDeleteInMoviesTable);
+			 
+			 btnUpdateMoviesTable.setActionCommand("UpdateMoviesTable");
+			 btnDeleteInMoviesTable.setActionCommand("DeleteInMoviesTable");
+			 btnAddInMoviesTable.setActionCommand("AddInMoviesTable");
+			 
+			 MoviesTable.add(panelSouth, BorderLayout.SOUTH);
+	
+			}
 
-	        JLabel label = new JLabel("MOVIES TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        MoviesTable.add(panelNorth, BorderLayout.NORTH);
+///////////////////////////////////////////////////THIS CONCERNS THE REVIEW TABLE///////////
 
+public Object[][] getReview() {
+
+	ArrayList<Object[]> list = new ArrayList<>();
+	
+	try {
+		// Establish connection
+		try (
+			 Statement statement = connection.createStatement();
+			 ResultSet resultSet = statement.executeQuery("SELECT * FROM review")) {
+	
+			// Process the ResultSet
+			while (resultSet.next()) {
+				Object[] row = new Object[5];
+				row[0] = resultSet.getInt(1); // Assuming column 1 is int
+				row[1] = resultSet.getInt(2); // Assuming column 2 is String
+				row[2] = resultSet.getString(3); // Assuming column 3 is int
+				row[3] = resultSet.getInt(4); // Assuming column 4 is String
+				row[4] = resultSet.getInt(5); // Assuming column 5 is String
+				list.add(row);
+			}
 		}
-
+	
+		// Convert the list to a 2D array
+		return list.toArray(new Object[0][5]);
+	
+	} catch (Exception e) {
+		e.printStackTrace(); // Print stack trace for debugging
+		return null;
+	}
+	}
+	
+	public void showReviewTable() {
+		String[] col = {"review_no", "stars", "review","movie_code","user_no"};
+		tableModelReview = new DefaultTableModel(getReview(), col){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing for all cells
+            }
+        };
+		refreshAdminTable();
+		tableReviewTable = new JTable(tableModelReview);
+		tableReviewTable.setEnabled(true); // Enable selection
+		
+		// Add a mouse click listener to the table
+		tableReviewTable.addMouseListener(new java.awt.event.MouseAdapter() {
+		   
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				int row = tableReviewTable.getSelectedRow(); // Get selected row index
+			   
+				
+				if (row != -1) { // Ensure a valid cell is selected
+					int review_no = (int)tableReviewTable.getValueAt(row,0);
+					int stars = (int)tableReviewTable.getValueAt(row,1);
+					String review = (String)tableReviewTable.getValueAt(row,2);
+					int movie_code = (int)tableReviewTable.getValueAt(row,3);
+					int user_no = (int)tableReviewTable.getValueAt(row,4);             
+					
+					Rreview_no.setText(String.valueOf(review_no));
+					Rstars.setSelectedItem(Integer.toString(stars));
+					Rreview.setText(review);
+					Rmovie_code.setText(String.valueOf(movie_code));
+					Ruser_no.setText(String.valueOf(user_no));               
+				}
+			}
+		});
+	
+			scrollerReviewTable = new JScrollPane(tableReviewTable);
+			scrollerReviewTable.setPreferredSize(new Dimension(500, 200)); // Set preferred size
+			
+			// Center panel
+			JPanel moreCenter = new JPanel(new BorderLayout());
+			
+			// CENTER PANEL center panel
+			JPanel panelCenter = new JPanel(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+			gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+			gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+			gbc.insets = new Insets(10, 10, 10, 10);
+			panelCenter.add(scrollerReviewTable, gbc);
+			moreCenter.add(panelCenter, BorderLayout.CENTER);
+			
+			ReviewTable.add(moreCenter, BorderLayout.WEST);
+			ReviewTable.revalidate(); // Refresh the UI
+			ReviewTable.repaint(); // Ensure it's redrawn
+	}
+	
+	public void refreshReviewTable() {
+		tableModelReview.setDataVector(getReview(), new String[]{"review_no", "stars", "review","movie_code","user_no"});
+		}
+	
 	public void ReviewTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
-
-	        JLabel label = new JLabel("REVIEW TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        ReviewTable.add(panelNorth, BorderLayout.NORTH);
-
+		 // NORTH PANEL
+		 JPanel panelNorth = new JPanel();
+		 panelNorth.setLayout(new FlowLayout());
+		 panelNorth.setBackground(Color.decode("#0A285f"));
+	
+		 JLabel label = new JLabel("REVIEWS TABLE");
+		 label.setForeground(Color.WHITE);
+		 label.setFont(new Font("Gaegu", Font.BOLD, 18));
+		 panelNorth.add(label);
+		 
+		 ReviewTable.add(panelNorth, BorderLayout.NORTH);
+		 
+		 //center panel
+		 JPanel centerPanel = new JPanel();
+		 centerPanel.setLayout(new GridBagLayout());
+		 GridBagConstraints gbc = new GridBagConstraints();
+	
+		 gbc.insets = new Insets(6, 6, 6, 6);
+		 gbc.anchor = GridBagConstraints.WEST;
+	
+		 JLabel review_no = new JLabel("Review #");
+		 review_no.setForeground(Color.BLACK);
+		 review_no.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 1;
+		 centerPanel.add(review_no, gbc);
+		 Rreview_no = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 1;
+		 centerPanel.add(Rreview_no, gbc);
+		 
+		 JLabel stars = new JLabel("Stars");
+		 stars.setForeground(Color.BLACK);
+		 stars.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 2;
+		 centerPanel.add(stars, gbc);
+		 String[] Star = {"", "1", "2", "3", "4","5","6","7","8","9","10"};
+		 Rstars = new JComboBox(Star);
+		 gbc.gridx = 2;
+		 gbc.gridy = 2;
+		 centerPanel.add(Rstars,gbc);
+		 
+		 JLabel review = new JLabel("Review");
+		 review.setForeground(Color.BLACK);
+		 review.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 3;
+		 centerPanel.add(review,gbc);
+		 Rreview = new JTextArea(5, 15);
+		 Rreview.setLineWrap(true); // Enables line wrapping
+		 Rreview.setWrapStyleWord(true); // Wraps at word boundaries
+		 gbc.gridx = 2;
+		 gbc.gridy = 3;
+		 centerPanel.add(Rreview, gbc);
+		 
+		 JLabel movie_code = new JLabel("Movie Code");
+		 movie_code.setForeground(Color.BLACK);
+		 movie_code.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 4;
+		 centerPanel.add(movie_code, gbc);
+		 Rmovie_code = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 4;
+		 centerPanel.add(Rmovie_code, gbc);
+		 
+		 //user number 
+		 JLabel user_no = new JLabel("User no.");
+		 user_no.setForeground(Color.BLACK);
+		 user_no.setFont(new Font("Verdana", Font.BOLD, 19));
+		 gbc.gridx = 1;
+		 gbc.gridy = 5;
+		 centerPanel.add(user_no , gbc);
+		 Ruser_no = new JTextField(15);
+		 gbc.gridx = 2;
+		 gbc.gridy = 5;
+		 centerPanel.add(Ruser_no, gbc);
+		 
+		 ReviewTable.add(centerPanel , BorderLayout.EAST);
+		 
+		 //SOUTH PANEL
+		 JPanel panelSouth = new JPanel();
+		 panelSouth.setLayout(new FlowLayout());
+		 panelSouth.setBackground(Color.decode("#fdfdfd"));
+		 
+		 btnAddInReviewTable = new JButton("Add");
+		 btnUpdateReviewTable = new JButton("Update");
+		 btnDeleteInReviewTable = new JButton("Delete");
+		 panelSouth.add(btnAddInReviewTable);
+		 panelSouth.add(btnUpdateReviewTable);
+		 panelSouth.add(btnDeleteInReviewTable);
+		 
+		 btnUpdateReviewTable.setActionCommand("UpdateReviewTable");
+		 btnDeleteInReviewTable.setActionCommand("DeleteInReviewTable");
+		 btnAddInReviewTable.setActionCommand("AddInReviewTable");
+		 
+		 ReviewTable.add(panelSouth, BorderLayout.SOUTH);
 		}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
-	public void TransactionsTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
+////////////////////////////////////////////////////////////////////////////////////////////////// START OF TRANSACTIONS
+public void TransactionsTablePanel() {
+	// NORTH PANEL
+	   JPanel panelNorth = new JPanel();
+	   panelNorth.setLayout(new FlowLayout());
+	   panelNorth.setBackground(Color.decode("#0A285f"));
 
-	        JLabel label = new JLabel("TRANSACTIONS TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        TransactionsTable.add(panelNorth, BorderLayout.NORTH);
-
-
-		      //center panel
-	    		JPanel centerPanel = new JPanel();
-	    		centerPanel.setLayout(new GridBagLayout());
-	    		GridBagConstraints gbc = new GridBagConstraints();
-
-	            gbc.insets = new Insets(6, 6, 6, 6);
-	            gbc.anchor = GridBagConstraints.WEST;
-	        	
-	         
-	    		JLabel trans_no = new JLabel("Transaction no.");
-	    		trans_no.setForeground(Color.BLACK);
-	    		trans_no.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 1;
-	            centerPanel.add(trans_no, gbc);
-	            Ttransaction_no = new JTextField(20);
-	    		gbc.gridx = 2;
-	            gbc.gridy = 1;
-	            centerPanel.add(Ttransaction_no, gbc);
-	    		
-	    		JLabel movcode = new JLabel("Movie Code");
-	    		movcode.setForeground(Color.BLACK);
-	    		movcode.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 2;
-	            centerPanel.add(movcode, gbc);
-	            Tmovie_code = new JTextField(20);
-	    		gbc.gridx = 2;
-	            gbc.gridy = 2;
-	            centerPanel.add(Tmovie_code,gbc);
-	    		
-	    		JLabel user_no = new JLabel("User No.");
-	    		user_no.setForeground(Color.BLACK);
-	    		user_no.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 3;
-	            centerPanel.add(user_no,gbc);
-	            Tuser_no = new JTextField(20);
-	    		gbc.gridx = 2;
-	            gbc.gridy = 3;
-	            centerPanel.add(Tuser_no, gbc);
-	    		
-	    		JLabel date_borrowed = new JLabel("Date Borrowed");
-	    		date_borrowed.setForeground(Color.BLACK);
-	    		date_borrowed.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 4;
-	            centerPanel.add(date_borrowed , gbc);
-	            Tdate_borrowed = new JTextField(20);
-	    		gbc.gridx = 2;
-	            gbc.gridy = 4;
-	            centerPanel.add(Tdate_borrowed, gbc);
-	            
-	            JLabel date_toreturn = new JLabel("Date to Return");
-	            date_toreturn.setForeground(Color.BLACK);
-	            date_toreturn.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 5;
-	            centerPanel.add(date_toreturn , gbc);
-	            Tdate_toreturn = new JTextField(20);
-	    		gbc.gridx = 2;
-	            gbc.gridy = 5;
-	            centerPanel.add(Tdate_toreturn, gbc);
-	            
-	        
-	            JLabel date_returned = new JLabel("Date Returned");
-	            date_returned.setForeground(Color.BLACK);
-	            date_returned.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 6;
-	            centerPanel.add(date_returned , gbc);
-	            String[] isInStock = {"", "YES", "NO"};
-	            Tdate_returned = new JTextField(20);
-	    		gbc.gridx = 2;
-	            gbc.gridy = 6;
-	            centerPanel.add(Tdate_returned, gbc);
-	            
-	            JLabel payment = new JLabel("Payment");
-	            payment.setForeground(Color.BLACK);
-	            payment.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 7;
-	            centerPanel.add(payment , gbc);
-	            Tpayment =  new JTextField(20);
-	            gbc.gridx = 2;
-	            gbc.gridy = 7;
-	            centerPanel.add(Tpayment, gbc);
-	            
-	            JLabel admin_no = new JLabel("Admin no.");
-	            admin_no.setForeground(Color.BLACK);
-	            admin_no.setFont(new Font("Verdana", Font.BOLD, 19));
-	    		gbc.gridx = 1;
-	            gbc.gridy = 8;
-	            centerPanel.add(admin_no , gbc);
-	            Tadmin_no =  new JTextField(20);
-	            gbc.gridx = 2;
-	            gbc.gridy = 8;
-	            centerPanel.add(Tadmin_no, gbc);
-	            
-	            TransactionsTable.add(centerPanel , BorderLayout.EAST);
-
-	    		//SOUTH PANEL
-	    		JPanel panelSouth = new JPanel();
-	    		panelSouth.setLayout(new FlowLayout());
-	    		panelSouth.setBackground(Color.decode("#fdfdfd"));
-	    		
-	    		btnAddInTransactionTable = new JButton("Add");
-	    		btnUpdateTransactionTable = new JButton("Update");
-	    		btnDeleteInTransactionTable = new JButton("Delete");
-	       		panelSouth.add(btnAddInTransactionTable);
-	    		panelSouth.add(btnUpdateTransactionTable);
-	    		panelSouth.add(btnDeleteInTransactionTable);
-	    		
-	    		btnUpdateTransactionTable.setActionCommand("UpdateTransactionTable");
-	    		btnDeleteInTransactionTable.setActionCommand("DeleteInTransactionTable");
-	    		btnAddInTransactionTable.setActionCommand("AddInTransactionTable");
-	    		
-	    		TransactionsTable.add(panelSouth, BorderLayout.SOUTH);
-		}
-
-	
-	public void showTransactionTable() {
-	    String[] col = {"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"};
-	    tableModelTransaction = new DefaultTableModel(getTransaction(), col){
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Disable editing for all cells
-            }
-        };
-        
-	    refreshAdminTable();
-	    tableTransactionTable = new JTable(tableModelTransaction);
-	    tableTransactionTable.setEnabled(true); // Enable selection
-	    
+	   JLabel label = new JLabel("TRANSACTIONS TABLE");
+	   label.setForeground(Color.WHITE);
+	   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	   panelNorth.add(label);
 	   
-	    // Add a mouse click listener to the table
-	    tableTransactionTable.addMouseListener(new java.awt.event.MouseAdapter() {
-	       
-	        public void mouseClicked(java.awt.event.MouseEvent evt) {
-	            int row = tableTransactionTable.getSelectedRow(); // Get selected row index
-	           
-	            
-	            if (row != -1) { // Ensure a valid cell is selected
-	                int transaction_no = (int)tableTransactionTable.getValueAt(row,0);
-	                int movie_code = (int)tableTransactionTable.getValueAt(row,1);
-	                int user_no = (int)tableTransactionTable.getValueAt(row,2);
-	                String date_borrowed = (String)tableTransactionTable.getValueAt(row,3);
-	                String date_toreturn = (String)tableTransactionTable.getValueAt(row,4);             
-	                String date_returned = (String)tableTransactionTable.getValueAt(row,5); 
-	                String payment = (String)tableTransactionTable.getValueAt(row,6);             
-	                int admin_no = (int)tableTransactionTable.getValueAt(row,7); 
-            
-	        		Ttransaction_no.setText(String.valueOf(transaction_no));
-	        		Tmovie_code.setText(String.valueOf(movie_code));
-	        		Tuser_no.setText(String.valueOf(user_no));
-	        		Tdate_borrowed.setText(date_borrowed);
-	        		Tdate_toreturn.setText(date_toreturn);
-	        		Tdate_returned.setText(date_returned);
-	        		Tpayment.setText(payment);
-	        		Tadmin_no.setText(String.valueOf(admin_no));
-	            	               
-	            }
-	        }
-	    });
-	    
-	    scrollerTransactionTable = new JScrollPane(tableTransactionTable);
-	    scrollerTransactionTable.setPreferredSize(new Dimension(425, 200)); // Set preferred size
-	    
-	    // Center panel
-	    JPanel moreCenter = new JPanel(new BorderLayout());
-	    
-	    // CENTER PANEL center panel
-	    JPanel panelCenter = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
-	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
-	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    panelCenter.add(scrollerTransactionTable, gbc);
-	    moreCenter.add(panelCenter, BorderLayout.CENTER);
-	    
-	    TransactionsTable.add(moreCenter, BorderLayout.WEST);
-	    TransactionsTable.revalidate(); // Refresh the UI
-	    TransactionsTable.repaint(); // Ensure it's redrawn
-	}
+	   TransactionsTable.add(panelNorth, BorderLayout.NORTH);
 
-	//getting data from db
-	public Object[][] getTransaction() {
-//		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
-//		String username = "user";
-//		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "115978HxDC!rvd";
 
-    ArrayList<Object[]> list = new ArrayList<>();
+		 //center panel
+		   JPanel centerPanel = new JPanel();
+		   centerPanel.setLayout(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
 
-    try {
-        // Load the JDBC driver
-		Class.forName("com.mysql.cj.jdbc.Driver");
+		   gbc.insets = new Insets(6, 6, 6, 6);
+		   gbc.anchor = GridBagConstraints.WEST;
+		   
+		
+		   JLabel trans_no = new JLabel("Transaction no.");
+		   trans_no.setForeground(Color.BLACK);
+		   trans_no.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 1;
+		   centerPanel.add(trans_no, gbc);
+		   Ttransaction_no = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 1;
+		   centerPanel.add(Ttransaction_no, gbc);
+		   
+		   JLabel movcode = new JLabel("Movie Code");
+		   movcode.setForeground(Color.BLACK);
+		   movcode.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 2;
+		   centerPanel.add(movcode, gbc);
+		   Tmovie_code = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 2;
+		   centerPanel.add(Tmovie_code,gbc);
+		   
+		   JLabel user_no = new JLabel("User No.");
+		   user_no.setForeground(Color.BLACK);
+		   user_no.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 3;
+		   centerPanel.add(user_no,gbc);
+		   Tuser_no = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 3;
+		   centerPanel.add(Tuser_no, gbc);
+		   
+		   JLabel date_borrowed = new JLabel("Date Borrowed");
+		   date_borrowed.setForeground(Color.BLACK);
+		   date_borrowed.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 4;
+		   centerPanel.add(date_borrowed , gbc);
+		   Tdate_borrowed = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 4;
+		   centerPanel.add(Tdate_borrowed, gbc);
+		   
+		   JLabel date_toreturn = new JLabel("Date to Return");
+		   date_toreturn.setForeground(Color.BLACK);
+		   date_toreturn.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 5;
+		   centerPanel.add(date_toreturn , gbc);
+		   Tdate_toreturn = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 5;
+		   centerPanel.add(Tdate_toreturn, gbc);
+		   
+	   
+		   JLabel date_returned = new JLabel("Date Returned");
+		   date_returned.setForeground(Color.BLACK);
+		   date_returned.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 6;
+		   centerPanel.add(date_returned , gbc);
+		   String[] isInStock = {"", "YES", "NO"};
+		   Tdate_returned = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 6;
+		   centerPanel.add(Tdate_returned, gbc);
+		   
+		   JLabel payment = new JLabel("Payment");
+		   payment.setForeground(Color.BLACK);
+		   payment.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 7;
+		   centerPanel.add(payment , gbc);
+		   Tpayment =  new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 7;
+		   centerPanel.add(Tpayment, gbc);
+		   
+		   JLabel admin_no = new JLabel("Admin no.");
+		   admin_no.setForeground(Color.BLACK);
+		   admin_no.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 8;
+		   centerPanel.add(admin_no , gbc);
+		   Tadmin_no =  new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 8;
+		   centerPanel.add(Tadmin_no, gbc);
+		   
+		   TransactionsTable.add(centerPanel , BorderLayout.EAST);
 
-        // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM transactions")) {
+		   //SOUTH PANEL
+		   JPanel panelSouth = new JPanel();
+		   panelSouth.setLayout(new FlowLayout());
+		   panelSouth.setBackground(Color.decode("#fdfdfd"));
+		   
+		   btnAddInTransactionTable = new JButton("Add");
+		   btnUpdateTransactionTable = new JButton("Update");
+		   btnDeleteInTransactionTable = new JButton("Delete");
+			  panelSouth.add(btnAddInTransactionTable);
+		   panelSouth.add(btnUpdateTransactionTable);
+		   panelSouth.add(btnDeleteInTransactionTable);
+		   
+		   btnUpdateTransactionTable.setActionCommand("UpdateTransactionTable");
+		   btnDeleteInTransactionTable.setActionCommand("DeleteInTransactionTable");
+		   btnAddInTransactionTable.setActionCommand("AddInTransactionTable");
+		   
+		   TransactionsTable.add(panelSouth, BorderLayout.SOUTH);
+   }
 
-            // Process the ResultSet
-        	
-            
-            while (resultSet.next()) {
-                Object[] row = new Object[8];
-                row[0] = resultSet.getInt(1); 
-                row[1] = resultSet.getInt(2);            
-                row[2] = resultSet.getInt(3);
-                row[3] = resultSet.getString(4);
-                row[4] = resultSet.getString(5);
-                row[5] = resultSet.getString(6); 
-                row[6] = resultSet.getString(7);
-                row[7] = resultSet.getInt(8);          
-                list.add(row);
-            }
-        }
 
-        // Convert the list to a 2D array
-        return list.toArray(new Object[0][8]);
-
-    } catch (Exception e) {
-        e.printStackTrace(); // Print stack trace for debugging
-        return null;
-    }
+public void showTransactionTable() {
+   String[] col = {"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"};
+   tableModelTransaction = new DefaultTableModel(getTransaction(), col){
+	   @Override
+	   public boolean isCellEditable(int row, int column) {
+		   return false; // Disable editing for all cells
+	   }
+   };
+   
+   refreshAdminTable();
+   tableTransactionTable = new JTable(tableModelTransaction);
+   tableTransactionTable.setEnabled(true); // Enable selection
+   
+  
+   // Add a mouse click listener to the table
+   tableTransactionTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	  
+	   public void mouseClicked(java.awt.event.MouseEvent evt) {
+		   int row = tableTransactionTable.getSelectedRow(); // Get selected row index
+		  
+		   
+		   if (row != -1) { // Ensure a valid cell is selected
+			   int transaction_no = (int)tableTransactionTable.getValueAt(row,0);
+			   int movie_code = (int)tableTransactionTable.getValueAt(row,1);
+			   int user_no = (int)tableTransactionTable.getValueAt(row,2);
+			   String date_borrowed = (String)tableTransactionTable.getValueAt(row,3);
+			   String date_toreturn = (String)tableTransactionTable.getValueAt(row,4);             
+			   String date_returned = (String)tableTransactionTable.getValueAt(row,5); 
+			   String payment = (String)tableTransactionTable.getValueAt(row,6);             
+			   int admin_no = (int)tableTransactionTable.getValueAt(row,7); 
+	   
+			   Ttransaction_no.setText(String.valueOf(transaction_no));
+			   Tmovie_code.setText(String.valueOf(movie_code));
+			   Tuser_no.setText(String.valueOf(user_no));
+			   Tdate_borrowed.setText(date_borrowed);
+			   Tdate_toreturn.setText(date_toreturn);
+			   Tdate_returned.setText(date_returned);
+			   Tpayment.setText(payment);
+			   Tadmin_no.setText(String.valueOf(admin_no));
+							  
+		   }
+	   }
+   });
+   
+   scrollerTransactionTable = new JScrollPane(tableTransactionTable);
+   scrollerTransactionTable.setPreferredSize(new Dimension(425, 200)); // Set preferred size
+   
+   // Center panel
+   JPanel moreCenter = new JPanel(new BorderLayout());
+   
+   // CENTER PANEL center panel
+   JPanel panelCenter = new JPanel(new GridBagLayout());
+   GridBagConstraints gbc = new GridBagConstraints();
+   gbc.gridx = 0;
+   gbc.gridy = 0;
+   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+   gbc.insets = new Insets(10, 10, 10, 10);
+   panelCenter.add(scrollerTransactionTable, gbc);
+   moreCenter.add(panelCenter, BorderLayout.CENTER);
+   
+   TransactionsTable.add(moreCenter, BorderLayout.WEST);
+   TransactionsTable.revalidate(); // Refresh the UI
+   TransactionsTable.repaint(); // Ensure it's redrawn
 }
 
-	//refreshing admin table
-	public void refreshTransactionTable() {
-		tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"});
-    }
+//getting data from db
+public Object[][] getTransaction() {
 
+ArrayList<Object[]> list = new ArrayList<>();
 
-	
-	
+try {
 
-	
+   // Establish connection
+   try (
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM transactions")) {
+
+	   // Process the ResultSet
+	   
+	   
+	   while (resultSet.next()) {
+		   Object[] row = new Object[8];
+		   row[0] = resultSet.getInt(1); 
+		   row[1] = resultSet.getInt(2);            
+		   row[2] = resultSet.getInt(3);
+		   row[3] = resultSet.getString(4);
+		   row[4] = resultSet.getString(5);
+		   row[5] = resultSet.getString(6); 
+		   row[6] = resultSet.getString(7);
+		   row[7] = resultSet.getInt(8);          
+		   list.add(row);
+	   }
+   }
+
+   // Convert the list to a 2D array
+   return list.toArray(new Object[0][8]);
+
+} catch (Exception e) {
+   e.printStackTrace(); // Print stack trace for debugging
+   return null;
+}
+}
+
+//refreshing transaction table
+public void refreshTransactionTable() {
+   tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"});
+}
+	////////////////////////////////////////////////////////////////////////////////////////////////// END OF TRANSACTIONS
+	/// 
+////////////////////////////////////////////////////////////////////////////////////////////////// START OF USERS
 	public void UsersTablePanel() {
-	     // NORTH PANEL
-	        JPanel panelNorth = new JPanel();
-	        panelNorth.setLayout(new FlowLayout());
-	        panelNorth.setBackground(Color.decode("#0A285f"));
+		// NORTH PANEL
+		   JPanel panelNorth = new JPanel();
+		   panelNorth.setLayout(new FlowLayout());
+		   panelNorth.setBackground(Color.decode("#0A285f"));
 
-	        JLabel label = new JLabel("USER TABLE");
-	        label.setForeground(Color.WHITE);
-	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
-	        panelNorth.add(label);
-	        
-	        UsersTable.add(panelNorth, BorderLayout.NORTH);
+		   JLabel label = new JLabel("USER TABLE");
+		   label.setForeground(Color.WHITE);
+		   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+		   panelNorth.add(label);
+		   
+		   UsersTable.add(panelNorth, BorderLayout.NORTH);
 
-	        //center panel
-    		JPanel centerPanel = new JPanel();
-    		centerPanel.setLayout(new GridBagLayout());
-    		GridBagConstraints gbc = new GridBagConstraints();
+		   //center panel
+		   JPanel centerPanel = new JPanel();
+		   centerPanel.setLayout(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
 
-            gbc.insets = new Insets(6, 6, 6, 6);
-            gbc.anchor = GridBagConstraints.WEST;
+		   gbc.insets = new Insets(6, 6, 6, 6);
+		   gbc.anchor = GridBagConstraints.WEST;
 
-            
-    		JLabel uuserno = new JLabel("User no.");
-    		uuserno.setForeground(Color.BLACK);
-    		uuserno.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 1;
-            centerPanel.add(uuserno, gbc);
-            Uuser_no = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 1;
-            centerPanel.add(Uuser_no, gbc);
-    		
-    		JLabel firstname = new JLabel("First Name");
-    		firstname.setForeground(Color.BLACK);
-    		firstname.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 2;
-            centerPanel.add(firstname, gbc);
-            Ufirst_name = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 2;
-            centerPanel.add(Ufirst_name,gbc);
-    		
-    		JLabel lastname = new JLabel("Last Name");
-    		lastname.setForeground(Color.BLACK);
-    		lastname.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 3;
-            centerPanel.add(lastname,gbc);
-            Ulast_name = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 3;
-            centerPanel.add(Ulast_name, gbc);
-    		
-    		JLabel email = new JLabel("Email");
-    		email.setForeground(Color.BLACK);
-    		email.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 4;
-            centerPanel.add(email , gbc);
-            Uemail = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 4;
-            centerPanel.add(Uemail, gbc);
-            
-            JLabel bday = new JLabel("Birthday");
-            bday.setForeground(Color.BLACK);
-            bday.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 5;
-            centerPanel.add(bday , gbc);
-            Ubirthday = new JTextField(20);
-    		gbc.gridx = 2;
-            gbc.gridy = 5;
-            centerPanel.add(Ubirthday, gbc);
-            
-            JLabel pass = new JLabel("Password");
-            pass.setForeground(Color.BLACK);
-            pass.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 6;
-            centerPanel.add(pass , gbc);
-            Upassword = new JTextField(20);
-            gbc.gridx = 2;
-            gbc.gridy = 6;
-            centerPanel.add(Upassword, gbc);
-            
-           
-            UsersTable.add(centerPanel , BorderLayout.EAST);
+		   
+		   JLabel uuserno = new JLabel("User no.");
+		   uuserno.setForeground(Color.BLACK);
+		   uuserno.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 1;
+		   centerPanel.add(uuserno, gbc);
+		   Uuser_no = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 1;
+		   centerPanel.add(Uuser_no, gbc);
+		   
+		   JLabel firstname = new JLabel("First Name");
+		   firstname.setForeground(Color.BLACK);
+		   firstname.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 2;
+		   centerPanel.add(firstname, gbc);
+		   Ufirst_name = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 2;
+		   centerPanel.add(Ufirst_name,gbc);
+		   
+		   JLabel lastname = new JLabel("Last Name");
+		   lastname.setForeground(Color.BLACK);
+		   lastname.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 3;
+		   centerPanel.add(lastname,gbc);
+		   Ulast_name = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 3;
+		   centerPanel.add(Ulast_name, gbc);
+		   
+		   JLabel email = new JLabel("Email");
+		   email.setForeground(Color.BLACK);
+		   email.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 4;
+		   centerPanel.add(email , gbc);
+		   Uemail = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 4;
+		   centerPanel.add(Uemail, gbc);
+		   
+		   JLabel bday = new JLabel("Birthday");
+		   bday.setForeground(Color.BLACK);
+		   bday.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 5;
+		   centerPanel.add(bday , gbc);
+		   Ubirthday = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 5;
+		   centerPanel.add(Ubirthday, gbc);
+		   
+		   JLabel pass = new JLabel("Password");
+		   pass.setForeground(Color.BLACK);
+		   pass.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 6;
+		   centerPanel.add(pass , gbc);
+		   Upassword = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 6;
+		   centerPanel.add(Upassword, gbc);
+		   
+		  
+		   UsersTable.add(centerPanel , BorderLayout.EAST);
 
-    		//SOUTH PANEL
-    		JPanel panelSouth = new JPanel();
-    		panelSouth.setLayout(new FlowLayout());
-    		panelSouth.setBackground(Color.decode("#fdfdfd"));
-    		
-    		btnAddInUserTable = new JButton("Add");
-    		btnUpdateUserTable = new JButton("Update");
-    		btnDeleteInUserTable = new JButton("Delete");
-       		panelSouth.add(btnAddInUserTable);
-    		panelSouth.add(btnUpdateUserTable);
-    		panelSouth.add(btnDeleteInUserTable);
-    		
-    		
-    		btnUpdateUserTable.setActionCommand("UpdateUserTable");
-    		btnDeleteInUserTable.setActionCommand("DeleteInUserTable");
-    		btnAddInUserTable.setActionCommand("AddInUserTable");
-    		
-    		UsersTable.add(panelSouth, BorderLayout.SOUTH);
-		}
-	
-	
-	public void showUserTable() {
-	    String[] col = {"user_no", "first_name","last_name", "email", "birthday","password"};
-	    tableModelUser = new DefaultTableModel(getUser(), col){
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Disable editing for all cells
-            }
-        };
-        
-	    refreshAdminTable();
-	    tableUserTable = new JTable(tableModelUser);
-	    tableUserTable.setEnabled(true); // Enable selection
-	    
+		   //SOUTH PANEL
+		   JPanel panelSouth = new JPanel();
+		   panelSouth.setLayout(new FlowLayout());
+		   panelSouth.setBackground(Color.decode("#fdfdfd"));
+		   
+		   btnAddInUserTable = new JButton("Add");
+		   btnUpdateUserTable = new JButton("Update");
+		   btnDeleteInUserTable = new JButton("Delete");
+			  panelSouth.add(btnAddInUserTable);
+		   panelSouth.add(btnUpdateUserTable);
+		   panelSouth.add(btnDeleteInUserTable);
+		   
+		   
+		   btnUpdateUserTable.setActionCommand("UpdateUserTable");
+		   btnDeleteInUserTable.setActionCommand("DeleteInUserTable");
+		   btnAddInUserTable.setActionCommand("AddInUserTable");
+		   
+		   UsersTable.add(panelSouth, BorderLayout.SOUTH);
+	   }
+   
+   
+   public void showUserTable() {
+	   String[] col = {"user_no", "first_name","last_name", "email", "birthday","password"};
+	   tableModelUser = new DefaultTableModel(getUser(), col){
+		   @Override
+		   public boolean isCellEditable(int row, int column) {
+			   return false; // Disable editing for all cells
+		   }
+	   };
 	   
-	    // Add a mouse click listener to the table
-	    tableUserTable.addMouseListener(new java.awt.event.MouseAdapter() {
-	       
-	        public void mouseClicked(java.awt.event.MouseEvent evt) {
-	            int row = tableUserTable.getSelectedRow(); // Get selected row index
-	           
-	            
-	            if (row != -1) { // Ensure a valid cell is selected
-	                int user_no = (int)tableUserTable.getValueAt(row,0);
-	                String first_name = (String)tableUserTable.getValueAt(row,1);
-	                String last_name = (String)tableUserTable.getValueAt(row,2);
-	                String email = (String)tableUserTable.getValueAt(row,3);
-	                String birthday = (String)tableUserTable.getValueAt(row,4);             
-	                String password = (String)tableUserTable.getValueAt(row,5); 
-            
-	                Uuser_no.setText(String.valueOf(user_no));
-	                Ufirst_name.setText(first_name);
-	                Ulast_name.setText(last_name);
-	                Uemail.setText(email);
-	                Ubirthday.setText(birthday);
-	                Upassword.setText(password);
-	            	               
-	            }
-	        }
-	    });
-	    
-	    scrollerUserTable = new JScrollPane(tableUserTable);
-	    scrollerUserTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
-	    
-	    // Center panel
-	    JPanel moreCenter = new JPanel(new BorderLayout());
-	    
-	    // CENTER PANEL center panel
-	    JPanel panelCenter = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
-	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
-	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    panelCenter.add(scrollerUserTable, gbc);
-	    moreCenter.add(panelCenter, BorderLayout.CENTER);
-	    
-	    UsersTable.add(moreCenter, BorderLayout.WEST);
-	    UsersTable.revalidate(); // Refresh the UI
-	    UsersTable.repaint(); // Ensure it's redrawn
-	}
+	   refreshAdminTable();
+	   tableUserTable = new JTable(tableModelUser);
+	   tableUserTable.setEnabled(true); // Enable selection
+	   
+	  
+	   // Add a mouse click listener to the table
+	   tableUserTable.addMouseListener(new java.awt.event.MouseAdapter() {
+		  
+		   public void mouseClicked(java.awt.event.MouseEvent evt) {
+			   int row = tableUserTable.getSelectedRow(); // Get selected row index
+			  
+			   
+			   if (row != -1) { // Ensure a valid cell is selected
+				   int user_no = (int)tableUserTable.getValueAt(row,0);
+				   String first_name = (String)tableUserTable.getValueAt(row,1);
+				   String last_name = (String)tableUserTable.getValueAt(row,2);
+				   String email = (String)tableUserTable.getValueAt(row,3);
+				   String birthday = (String)tableUserTable.getValueAt(row,4);             
+				   String password = (String)tableUserTable.getValueAt(row,5); 
+		   
+				   Uuser_no.setText(String.valueOf(user_no));
+				   Ufirst_name.setText(first_name);
+				   Ulast_name.setText(last_name);
+				   Uemail.setText(email);
+				   Ubirthday.setText(birthday);
+				   Upassword.setText(password);
+								  
+			   }
+		   }
+	   });
+	   
+	   scrollerUserTable = new JScrollPane(tableUserTable);
+	   scrollerUserTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+	   
+	   // Center panel
+	   JPanel moreCenter = new JPanel(new BorderLayout());
+	   
+	   // CENTER PANEL center panel
+	   JPanel panelCenter = new JPanel(new GridBagLayout());
+	   GridBagConstraints gbc = new GridBagConstraints();
+	   gbc.gridx = 0;
+	   gbc.gridy = 0;
+	   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	   gbc.insets = new Insets(10, 10, 10, 10);
+	   panelCenter.add(scrollerUserTable, gbc);
+	   moreCenter.add(panelCenter, BorderLayout.CENTER);
+	   
+	   UsersTable.add(moreCenter, BorderLayout.WEST);
+	   UsersTable.revalidate(); // Refresh the UI
+	   UsersTable.repaint(); // Ensure it's redrawn
+   }
 
-	//getting data from db
-	public Object[][] getUser() {
+   //getting data from db
+   public Object[][] getUser() {
+   ArrayList<Object[]> list = new ArrayList<>();
+
+   try {
+	   // Load the JDBC driver
+
+	   // Establish connection
+	   try (
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM users")) {
+
+		   // Process the ResultSet
+		   
+		   
+		   while (resultSet.next()) {
+			   Object[] row = new Object[6];
+			   row[0] = resultSet.getInt(1); 
+			   row[1] = resultSet.getString(2);            
+			   row[2] = resultSet.getString(3);
+			   row[3] = resultSet.getString(4);
+			   row[4] = resultSet.getString(5);
+			   row[5] = resultSet.getString(6);          
+			   list.add(row);
+		   }
+	   }
+
+	   // Convert the list to a 2D array
+	   return list.toArray(new Object[0][6]);
+
+   } catch (Exception e) {
+	   e.printStackTrace(); // Print stack trace for debugging
+	   return null;
+   }
+}
+
+   //refreshing user table
+   public void refreshUserTable() {
+	   tableModelUser.setDataVector(getUser(), new String[]{"user_no", "first_name","last_name", "email", "birthday","password"});
+   }
+
+////////////////////////////////////////////////////////////////////////////////////////////////// END OF USERS
+/// 
+/// 
+/// 
+/// START OF MOVIE REQ
+/// 
+
+public void Movie_reqTablePanel() {
+	// NORTH PANEL
+	   JPanel panelNorth = new JPanel();
+	   panelNorth.setLayout(new FlowLayout());
+	   panelNorth.setBackground(Color.decode("#0A285f"));
+
+	   JLabel label = new JLabel("MOVIE REQUEST TABLE");
+	   label.setForeground(Color.WHITE);
+	   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	   panelNorth.add(label);
+	   
+	   Movie_reqTable.add(panelNorth, BorderLayout.NORTH);
+
+
+	 //center panel
+	   JPanel centerPanel = new JPanel();
+	   centerPanel.setLayout(new GridBagLayout());
+	   GridBagConstraints gbc = new GridBagConstraints();
+
+	   gbc.insets = new Insets(6, 6, 6, 6);
+	   gbc.anchor = GridBagConstraints.WEST;
+
+	   
+	   JLabel mrequest_no = new JLabel("Request no.");
+	   mrequest_no.setForeground(Color.BLACK);
+	   mrequest_no.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 1;
+	   centerPanel.add(mrequest_no, gbc);
+	   MRrequest_no = new JTextField(20);
+	   gbc.gridx = 2;
+	   gbc.gridy = 1;
+	   centerPanel.add(MRrequest_no, gbc);
+	   
+	   JLabel movname = new JLabel("Movie Name");
+	   movname.setForeground(Color.BLACK);
+	   movname.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 2;
+	   centerPanel.add(movname, gbc);
+	   MRmovie_name = new JTextField(20);
+	   gbc.gridx = 2;
+	   gbc.gridy = 2;
+	   centerPanel.add(MRmovie_name,gbc);
+	   
+	   JLabel datefilled = new JLabel("Date Filled");
+	   datefilled.setForeground(Color.BLACK);
+	   datefilled.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 3;
+	   centerPanel.add(datefilled,gbc);
+	   MRdate_filled = new JTextField(20);
+	   gbc.gridx = 2;
+	   gbc.gridy = 3;
+	   centerPanel.add(MRdate_filled, gbc);
+	   
+	   JLabel userno = new JLabel("User no.");
+	   userno.setForeground(Color.BLACK);
+	   userno.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 4;
+	   centerPanel.add(userno , gbc);
+	   MRuser_no = new JTextField(15);
+	   gbc.gridx = 2;
+	   gbc.gridy = 4;
+	   centerPanel.add(MRuser_no, gbc);
+	   
+	   JLabel mediaType = new JLabel("Media Type");
+	   mediaType.setForeground(Color.BLACK);
+	   mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 5;
+	   centerPanel.add(mediaType , gbc);
+	   String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
+	   MRmedia_type = new JComboBox(mediachoice);
+	   gbc.gridx = 2;
+	   gbc.gridy = 5;
+	   centerPanel.add(MRmedia_type, gbc);
+	   
+	   JLabel stock = new JLabel("In Stock");
+	   stock.setForeground(Color.BLACK);
+	   stock.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 6;
+	   centerPanel.add(stock , gbc);
+	   String[] isInStock = {"", "YES", "NO"};
+	   MRin_stock = new JComboBox(isInStock);
+	   gbc.gridx = 2;
+	   gbc.gridy = 6;
+	   centerPanel.add(MRin_stock, gbc);
+	   
+	   JLabel approve = new JLabel("Approved");
+	   approve.setForeground(Color.BLACK);
+	   approve.setFont(new Font("Verdana", Font.BOLD, 19));
+	   gbc.gridx = 1;
+	   gbc.gridy = 7;
+	   centerPanel.add(approve , gbc);
+	   String[] isApproved = {"", "YES", "NO"};
+	   MRapproved = new JComboBox(isApproved);
+	   gbc.gridx = 2;
+	   gbc.gridy = 7;
+	   centerPanel.add(MRapproved, gbc);
+	   
+	   Movie_reqTable.add(centerPanel , BorderLayout.EAST);
+
+	   //SOUTH PANEL
+	   JPanel panelSouth = new JPanel();
+	   panelSouth.setLayout(new FlowLayout());
+	   panelSouth.setBackground(Color.decode("#fdfdfd"));
+	   
+	   btnAddInMovieReqTable = new JButton("Add");
+	   btnUpdateMovieReqTable = new JButton("Update");
+	   btnDeleteInMovieReqTable = new JButton("Delete");
+		  panelSouth.add(btnAddInMovieReqTable);
+	   panelSouth.add(btnUpdateMovieReqTable);
+	   panelSouth.add(btnDeleteInMovieReqTable);
+	   
+	   btnUpdateMovieReqTable.setActionCommand("UpdateMovieReqTable");
+	   btnDeleteInMovieReqTable.setActionCommand("DeleteInMovieReqTable");
+	   btnAddInMovieReqTable.setActionCommand("AddInMovieReqTable");
+	   
+	   Movie_reqTable.add(panelSouth, BorderLayout.SOUTH);
+   }
+
+public void showMovieReqTable() {
+   String[] col = {"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"};
+   tableModelMovieReq = new DefaultTableModel(getMovieReq(), col){
+	   @Override
+	   public boolean isCellEditable(int row, int column) {
+		   return false; // Disable editing for all cells
+	   }
+   };
+   
+   refreshAdminTable();
+   tableMovieReqTable = new JTable(tableModelMovieReq);
+   tableMovieReqTable.setEnabled(true); // Enable selection
+   
+  
+   // Add a mouse click listener to the table
+   tableMovieReqTable.addMouseListener(new java.awt.event.MouseAdapter() {
+	  
+	   public void mouseClicked(java.awt.event.MouseEvent evt) {
+		   int row = tableMovieReqTable.getSelectedRow(); // Get selected row index
+		  
+		   
+		   if (row != -1) { // Ensure a valid cell is selected
+			   int request_number = (int)tableMovieReqTable.getValueAt(row,0);
+			   String movie_name = (String)tableMovieReqTable.getValueAt(row,1);
+			   String date_filled = (String)tableMovieReqTable.getValueAt(row,2);
+			   int user_no = (int)tableMovieReqTable.getValueAt(row,3);
+			   String approved = (String)tableMovieReqTable.getValueAt(row,4);             
+			   String in_stock = (String)tableMovieReqTable.getValueAt(row,5); 
+			   String media_type = (String)tableMovieReqTable.getValueAt(row,6); 
+			   
+			   MRrequest_no.setText(String.valueOf(request_number));
+			   MRmovie_name.setText(movie_name);
+			   MRdate_filled.setText(date_filled);
+			   MRuser_no.setText(String.valueOf(user_no));
+			   MRapproved.setSelectedItem(approved);
+			   MRin_stock.setSelectedItem(in_stock);
+			   MRmedia_type.setSelectedItem(media_type);
+								  
+		   }
+	   }
+   });
+   
+   scrollerMovieReqTable = new JScrollPane(tableMovieReqTable);
+   scrollerMovieReqTable.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+   
+   // Center panel
+   JPanel moreCenter = new JPanel(new BorderLayout());
+   
+   // CENTER PANEL center panel
+   JPanel panelCenter = new JPanel(new GridBagLayout());
+   GridBagConstraints gbc = new GridBagConstraints();
+   gbc.gridx = 0;
+   gbc.gridy = 0;
+   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+   gbc.insets = new Insets(10, 10, 10, 10);
+   panelCenter.add(scrollerMovieReqTable, gbc);
+   moreCenter.add(panelCenter, BorderLayout.CENTER);
+   
+   Movie_reqTable.add(moreCenter, BorderLayout.WEST);
+   Movie_reqTable.revalidate(); // Refresh the UI
+   Movie_reqTable.repaint(); // Ensure it's redrawn
+}
+
+//getting data from db
+public Object[][] getMovieReq() {
 //		String url = "jdbc:mysql://147.185.221.23:51100/dbmovieRental";
 //		String username = "user";
 //		String password= "12345";
-	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-    String username = "root";
-    String password = "115978HxDC!rvd";
 
-    ArrayList<Object[]> list = new ArrayList<>();
+ArrayList<Object[]> list = new ArrayList<>();
 
-    try {
-        // Load the JDBC driver
-		Class.forName("com.mysql.cj.jdbc.Driver");
+try {
+   // Load the JDBC driver
+   Class.forName("com.mysql.cj.jdbc.Driver");
 
-        // Establish connection
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM users")) {
+   // Establish connection
+   try (
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM movie_req")) {
 
-            // Process the ResultSet
-        	
-            
-            while (resultSet.next()) {
-                Object[] row = new Object[6];
-                row[0] = resultSet.getInt(1); 
-                row[1] = resultSet.getString(2);            
-                row[2] = resultSet.getString(3);
-                row[3] = resultSet.getString(4);
-                row[4] = resultSet.getString(5);
-                row[5] = resultSet.getString(6);          
-                list.add(row);
-            }
-        }
+	   // Process the ResultSet
+	   
+	   
+	   while (resultSet.next()) {
+		   Object[] row = new Object[7];
+		   row[0] = resultSet.getInt(1); 
+		   row[1] = resultSet.getString(2);            
+		   row[2] = resultSet.getString(3);
+		   row[3] = resultSet.getInt(4); 
+		   String transmute;
+		   if(resultSet.getInt(5) == 1) {
+			   transmute = "YES";
+		   }else if(resultSet.getInt(5) == 0){
+			   transmute = "NO";
+		   }else transmute = "";
+		   row[4] = transmute;
+		   if(resultSet.getInt(6) == 1) {
+			   transmute = "YES";
+		   }else if(resultSet.getInt(6) == 0){
+			   transmute = "NO";
+		   }else transmute = "";
+		   row[5] = transmute;
+		   row[6] = resultSet.getString(7);           
+		   list.add(row);
+	   }
+   }
 
-        // Convert the list to a 2D array
-        return list.toArray(new Object[0][6]);
+   // Convert the list to a 2D array
+   return list.toArray(new Object[0][7]);
 
-    } catch (Exception e) {
-        e.printStackTrace(); // Print stack trace for debugging
-        return null;
-    }
+} catch (Exception e) {
+   e.printStackTrace(); // Print stack trace for debugging
+   return null;
+}
 }
 
-	//refreshing admin table
-	public void refreshUserTable() {
-		tableModelUser.setDataVector(getUser(), new String[]{"user_no", "first_name","last_name", "email", "birthday","password"});
-    }
+//refreshing admin table
+public void refreshMovieReqTable() {
+   tableModelMovieReq.setDataVector(getMovieReq(), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","in_stock","media_type"});
+}
 
-
-	
+//END OF MOVIE REQ
 	
 	public void setActionListener(ActionListener listener) {
 		btnTableInput.addActionListener(listener);
@@ -1945,6 +2575,15 @@ public void recordmanagement() {
        	btnDeleteInMovieReqTable.addActionListener(listener);
        	btnAddInMovieReqTable.addActionListener(listener);
        	
+       	btnUpdateMoviesTable.addActionListener(listener);
+       	btnDeleteInMoviesTable.addActionListener(listener); 
+       	btnAddInMoviesTable.addActionListener(listener);
+    	//review table
+    	btnUpdateReviewTable.addActionListener(listener); 
+    	btnDeleteInReviewTable.addActionListener(listener);
+    	btnAddInReviewTable.addActionListener(listener);
+
+       	
     	btnMovieRecord.addActionListener(listener);;
     	btnUserRecord.addActionListener(listener);;
     	btnAdminRecord.addActionListener(listener);;
@@ -1959,6 +2598,21 @@ public void recordmanagement() {
     	btnDeleteInTransactionTable.addActionListener(listener);
     	btnAddInTransactionTable.addActionListener(listener);
  
+    	btnMoviesBorrowed.addActionListener(listener);
+	    btnMostBorrowedMovies.addActionListener(listener);
+	    btnPopularGenres.addActionListener(listener);
+	    btnApprovedRequests.addActionListener(listener);
+	    btnMostRequestedMovies.addActionListener(listener);
+	    btnRentalHistory.addActionListener(listener);
+	    btnPolicyViolations.addActionListener(listener);
+	    btnRevenueReport.addActionListener(listener);
+	    btnTopRevenueUsers.addActionListener(listener);
+	    btnReturntoMainFromReport.addActionListener(listener);
+	    
+	    btnMoviesBorrowed.addActionListener(e -> generateMoviesBorrowedReport());
+	    
+	    btnPopularGenres.addActionListener(e -> generatePopularGenresReport());
+
 
 	}
 	
@@ -2251,6 +2905,95 @@ public void recordmanagement() {
 		Tadmin_no.setText(num);
 	}
 	
+	public int getMmovie_code() {
+	    return Integer.parseInt(Mmovie_code.getText());
+	}
+	
+	public void setMmovie_code(String num) {
+		Mmovie_code.setText(num);
+	}
+
+	public int getMyear() {
+	    return Integer.parseInt(Myear.getText());
+	}
+	
+	public void setMyear(String num) {
+		Myear.setText(num);
+	}
+	
+	public int getMgenre_id() {
+	    return Integer.parseInt(Mgenre_id.getText());
+	}
+	
+	public void setMgenre_id(String num) {
+		Mgenre_id.setText(num);
+	}
+
+	public String getMmovie_name() {
+	    return Mmovie_name.getText();
+	}
+	
+	public void setMmovie_name(String num) {
+		Mmovie_name.setText(num);
+	}
+	
+	public String getMlanguage() {
+	    return Mlanguage.getText();
+	}
+	
+	public void setMlanguage(String num) {
+		Mlanguage.setText(num);
+	}
+
+	public String getMrating() {
+	    return Mrating.getSelectedItem().toString();
+	}
+	
+	public void setMrating(String num) {
+		Mrating.setSelectedItem(num);
+	}
+	
+	public int getRreview_no() {
+	    return Integer.parseInt(Rreview_no.getText());
+	}
+	
+	public void setRreview_no(String num) {
+		Rreview_no.setText(num);
+	}
+
+	public int getRmovie_code() {
+	    return Integer.parseInt(Rmovie_code.getText());
+	}
+	
+	public void setRmovie_code(String num) {
+		Rmovie_code.setText(num);
+	}
+
+	public int getRuser_no() {
+	    return Integer.parseInt(Ruser_no.getText());
+	}
+	
+	public void setRuser_no(String num) {
+		Ruser_no.setText(num);
+	}
+
+	public String getRreview() {
+	    return Rreview.getText();
+	}
+	
+	public void setRreview(String num) {
+		Rreview.setText(num);
+	}
+
+	public int getRstars() {
+	    return Integer.parseInt(Rstars.getSelectedItem().toString());
+	}
+	
+	public void setRstars(String num) {
+		Rstars.setSelectedItem(num);
+	}
+	
+	
 	public void ClearAllTableInputs() {
 		setAdminFirstName("");
 		setAdminLastName("");
@@ -2291,10 +3034,20 @@ public void recordmanagement() {
 		setUpassword("");
 		setUuser_no("");
 		
+		setMmovie_code("");
+		setMmovie_name("");
+		setMyear("");
+		setMrating("");
+		setMlanguage("");
+		setMgenre_id("");
+		
+		setRmovie_code("");
+		setRreview("");
+		setRstars("");
+		setRreview_no("");
+		setRuser_no("");
 		
 	}
-
-	
 	
 	
 }
