@@ -2,9 +2,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import com.mysql.cj.result.Row;
 
 public class Controller implements ActionListener, DocumentListener{
 	private GUI gui;
@@ -36,8 +42,10 @@ public class Controller implements ActionListener, DocumentListener{
 			
 		case "RecordManagement":
 			System.out.println("You clicked TableManagement");
+			ClearUserManagementnputs();
 			gui.createRecordmanagementPanel();
-		
+			gui.setMRMmovie_name("");
+			gui.setMRMmovie_code("");
 			break;
 		
 		case "Reports":
@@ -56,6 +64,69 @@ public class Controller implements ActionListener, DocumentListener{
 			
 		case "MovieRecord" :
 			System.out.println("MovieRecord");
+			gui.refreshMovieRecord();
+			gui.createMovieRecordPanel();
+			break;
+		case "MRMselect":
+		    ArrayList<Object[]> list = new ArrayList<>();
+
+		    try {
+		        // Ensure the JDBC driver is loaded
+		        Class.forName("com.mysql.cj.jdbc.Driver");
+
+		        // Prepare the SQL query
+		        String movieInfos = "SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`\n"
+		        		+ "	FROM movies m\n"
+		        		+ "	LEFT JOIN transactions t  ON m.movie_code = t.movie_code\n"
+		        		+ "	WHERE m.movie_code = ?\n"
+		        		+ " GROUP BY m.movie_name, m.movie_code\n"
+		        		+ " ORDER BY m.movie_code;";
+
+		        // Use try-with-resources for JDBC resources
+		        try (PreparedStatement pstmt1 = connections.prepareStatement(movieInfos)) {
+		            // Set the parameter value
+		        	pstmt1.setString(1, gui.getMRMmovie_code());
+
+		            try (ResultSet resultSet = pstmt1.executeQuery()) {
+		                // Process the ResultSet
+		                while (resultSet.next()) {
+		                    Object[] row = new Object[3];
+		                    row[0] = resultSet.getInt(1);   // Movie Code
+		                    row[1] = resultSet.getString(2);   // Movie Name
+		                    row[2] = resultSet.getInt(3);  // Times Borrowed
+		                    list.add(row); // Add the row to the list
+
+		                    // Print the extracted values (for debugging)
+		                    System.out.println("Movie Code: " + row[0]);
+		                    System.out.println("Movie Name: " + row[1]);
+		                    System.out.println("Times Borrowed: " + row[2]);
+		                }
+		            }
+		        }
+
+		        // Check if the list is not empty
+		        if (!list.isEmpty()) {
+		            Object[] firstRow = list.get(0); // Get the first row
+		            int MRMmovie_code = Integer.parseInt(firstRow[0].toString());
+		            String MRMmoviename = firstRow[1].toString();
+		            int count = Integer.parseInt(firstRow[2].toString());
+
+		            // Show the details in a dialog
+		            JOptionPane.showMessageDialog(null, 
+		                "Movie Code: " + MRMmovie_code + "\n" +
+		                "Movie Name: " + MRMmoviename + "\n" +
+		                "Count: " + count);
+		        } else {
+		            JOptionPane.showMessageDialog(null, "No records found for the specified movie code.");
+		        }
+
+		    } catch (Exception ex) {
+		        ex.printStackTrace(); // Log the error for debugging
+		    }
+	
+		    gui.setMRMmovie_name("");
+		    gui.setMRMmovie_code("");
+
 			break;
 			
 		case"UserRecord":
@@ -622,9 +693,7 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.ClearAllTableInputs();
 			break;
 		case "ReturnUserRecordManagement":
-			gui.setURfirst_name("");
-			gui.setURlast_name("");
-			gui.setURuser_no("");
+			ClearUserManagementnputs();
 			gui.createUserRecordPanel();
 			break;
 		case "SelectUserRecord":
@@ -641,6 +710,12 @@ public class Controller implements ActionListener, DocumentListener{
 	catch (Exception ex) {
 		System.out.println(ex);
 	}
+	}
+	
+	public void ClearUserManagementnputs() {
+		gui.setURfirst_name("");
+		gui.setURlast_name("");
+		gui.setURuser_no("");
 	}
 	
 	public void ClearAdminInputs() {
