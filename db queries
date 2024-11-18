@@ -113,15 +113,7 @@ JOIN genre_type gt ON gt.genre_id = m.genre_id
 GROUP BY m.movie_code
 ORDER BY `Times Borrowed` DESC;
 
-Most popular movie genres are based on borrow rate(per day, month, year)
-Day
-SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, DAY(t.date_borrowed) AS `Day`, gt.genre_id,gt.description, COUNT(t.movie_code) AS `Times Borrowed`
-FROM transactions t
-JOIN movies m ON m.movie_code = t.movie_code
-JOIN genre_type gt ON gt.genre_id = m.genre_id
-WHERE DATE(t.date_borrowed) = '?'
-GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), DAY(t.date_borrowed), gt.genre_id
-ORDER BY `Times Borrowed` DESC;
+Most popular movie genres are based on borrow rate(per month, year)
 
 Month
 SELECT YEAR(t.date_borrowed) AS `Year`, MONTH(t.date_borrowed) AS `Month`, gt.genre_id,gt.description, COUNT(t.movie_code) AS `Times Borrowed`
