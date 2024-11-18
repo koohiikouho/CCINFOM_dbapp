@@ -225,59 +225,54 @@ public class GUI extends JFrame{
         panelSouth.setBackground(Color.BLACK);
         MainMenu.add(panelSouth, BorderLayout.SOUTH);
 
-        // CENTER PANEL
+     // CENTER PANEL
         JPanel panelCenter = new JPanel();
         panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.Y_AXIS));
         panelCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // Add vertical glue at the top for centering
+        panelCenter.add(Box.createVerticalGlue());
+
         // Button size
         Dimension buttonSize = new Dimension(350, 100);
-
-        btnTableInput = new JButton("Table Input");
-        btnTableInput.setPreferredSize(buttonSize);
-        btnTableInput.setMaximumSize(buttonSize);
-        btnTableInput.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-        panelCenter.add(btnTableInput);
 
         btnRecordManagement = new JButton("Record Management");
         btnRecordManagement.setPreferredSize(buttonSize);
         btnRecordManagement.setMaximumSize(buttonSize);
         btnRecordManagement.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
         panelCenter.add(btnRecordManagement);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing
 
         btnReports = new JButton("Reports");
         btnReports.setPreferredSize(buttonSize);
         btnReports.setMaximumSize(buttonSize);
         btnReports.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
         panelCenter.add(btnReports);
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing
 
-        
         btnTransactions = new JButton("Transactions");
         btnTransactions.setPreferredSize(buttonSize);
         btnTransactions.setMaximumSize(buttonSize);
         btnTransactions.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
         panelCenter.add(btnTransactions);
-        panelCenter.add(Box.createVerticalGlue());
+        panelCenter.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing
 
-        
         btnEXIT = new JButton("EXIT");
         btnEXIT.setPreferredSize(buttonSize);
         btnEXIT.setMaximumSize(buttonSize);
         btnEXIT.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
         panelCenter.add(btnEXIT);
+
+        // Add vertical glue at the bottom for centering
         panelCenter.add(Box.createVerticalGlue());
 
-        btnTableInput.setActionCommand("TableInput");
+        // Set action commands
         btnRecordManagement.setActionCommand("RecordManagement");
         btnReports.setActionCommand("Reports");
         btnTransactions.setActionCommand("Transactions");
         btnEXIT.setActionCommand("EXIT");
-        
+
+        // Add panel to the main menu
         MainMenu.add(panelCenter, BorderLayout.CENTER);
 	}
 
@@ -541,6 +536,7 @@ public class GUI extends JFrame{
         panelCenterSouth.setLayout(new FlowLayout()); 
         btnHome = new JButton("Home");
         panelCenterSouth.add(btnHome);
+        btnHome.setActionCommand("RecordManagement");
         
         // Add the panel to the center of BorderLayout
         panelCenter.add(panelCenterNorth, BorderLayout.NORTH);
@@ -3766,7 +3762,7 @@ try {
 	
 	
 	public void setActionListener(ActionListener listener) {
-		btnTableInput.addActionListener(listener);
+		//btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
 		btnReports.addActionListener(listener);
 		btnTransactions.addActionListener(listener);
