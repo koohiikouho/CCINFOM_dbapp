@@ -1141,13 +1141,18 @@ public class GUI extends JFrame{
 	                int copies_available = (int)tableMediaTable.getValueAt(row,5); 
 	                float rental_price = (float)tableMediaTable.getValueAt(row,6); 
 	                
+	                String transmute = "NO";
+	            	if(availability.equals("1")) {
+	            		transmute = "YES";
+	            	}
+
 	                MTproduct_id.setText(String.valueOf(product_id));
 	            	MTmovie_code.setText(String.valueOf(movie_code));
-	            	MTavailability.setSelectedItem(availability);
+	            	MTavailability.setSelectedItem(transmute);
 	            	MTrelease.setText(release_date.substring(0, 4));
 	            	MTmedia_type.setSelectedItem(media_type);
 	            	MTcopies.setText(String.valueOf(copies_available));
-	            	MTrentprice.setText(String.valueOf(rental_price));		               
+	            	MTrentprice.setText(String.valueOf(rental_price));               
 	            }
 	        }
 	    });
