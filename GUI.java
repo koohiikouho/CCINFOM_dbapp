@@ -4103,7 +4103,7 @@ private String genreSelector() {
 	    	    WHERE mt.movie_code = ? AND mt.media_type LIKE ?;
 	    	""";
 
-	    	value = null; // Initialize the variable
+	    	// Initialize the variable
 
 	    	try (PreparedStatement pstmt = connection.prepareStatement(checkProductID)) {
 	    	    pstmt.setString(1, movieCode);
@@ -4128,25 +4128,24 @@ private String genreSelector() {
 	    	        VALUES (?, ?, ?, DATE_ADD(CURDATE(), INTERVAL ? DAY), CURDATE(), ?);
 	    	    """;
 
-	    	    connection.setAutoCommit(false); // Start transaction
-	    	    System.out.println(insertTransactionQuery);
-	    	    try (PreparedStatement pstmt1 = connection.prepareStatement(insertTransactionQuery)) {
+	    	    try{
+					PreparedStatement pstmt1 = connection.prepareStatement(insertTransactionQuery);
 	    	        pstmt1.setInt(1, userId);
 	    	        pstmt1.setInt(2, Integer.parseInt(movieCode));
 	    	        pstmt1.setInt(3, Integer.parseInt(value));
 	    	        pstmt1.setInt(4, Integer.parseInt(numofdaystoborrow));
 					pstmt1.setInt(5, Integer.parseInt(loggedInAdmin));
-	    	        pstmt1.executeUpdate();
+	    	        pstmt1.execute();
 	    	        System.out.println("Executing query: " + pstmt1.toString());
 	    	        System.out.println("Number of days to borrow: " + numofdaystoborrow);
-
 	    	       
 	    	        JOptionPane.showMessageDialog(null, "Transaction recorded successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-	    	    } catch (SQLException e) {
+	    	    } catch (Exception e) {
 	    	        
 	    	        JOptionPane.showMessageDialog(null, "Error recording the transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
 	    	    } 
-	    	} catch (SQLException e) {
+	    	} catch (Exception e) {
 	    	    JOptionPane.showMessageDialog(null, "Error checking movie details: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	    	    e.printStackTrace();
 	    	}
