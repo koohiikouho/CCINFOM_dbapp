@@ -3582,14 +3582,17 @@ try {
 						break;
 					case "Year":
 						query = """
-								SELECT YEAR(t.date_borrowed) AS `Year`, gt.genre_id, gt.description AS `Genre`, 
-									   COUNT(t.movie_code) AS `Times Borrowed`
-								FROM transactions t
-								JOIN movies m ON m.movie_code = t.movie_code
-								JOIN genre_type gt ON gt.genre_id = m.genre_id
-								WHERE YEAR(t.date_borrowed) = ?
-								GROUP BY YEAR(t.date_borrowed), gt.genre_id
-								ORDER BY `Times Borrowed` DESC;
+								
+					SELECT YEAR(t.date_returned) AS `YEAR`,u.first_name,u.last_name,SUM(t.payment) AS `Total Payments`,
+					SUM(TIMESTAMPDIFF(DAY, t.date_borrowed, t.date_toreturn) * mt.rental_price) AS `Rental Fees`,
+					SUM(t.payment - (TIMESTAMPDIFF(DAY, t.date_borrowed, 
+					t.date_toreturn) * mt.rental_price)) AS `Late and Additional Fees`
+					FROM users u
+					JOIN transactions t ON u.user_no = t.user_no
+					JOIN media_type mt ON t.product_id = mt.product_id
+					WHERE t.date_returned IS NOT NULL AND YEAR(t.date_returned) = ?
+					GROUP BY u.user_no,`YEAR`
+					ORDER BY `Total Payments` DESC;
 								""";
 						break;
 					default:
@@ -3634,12 +3637,13 @@ try {
 	            }
 	        } else if (choice.equals("Year")) {
 	            while (rs.next()) {
-	                int year = rs.getInt("Year"),
+	                int year = rs.getInt("Year"), 
 	                	totalPayments = rs.getInt("Total Payments"),
 						rentalFees = rs.getInt("Rental fees"),
 						lateFees= rs.getInt("Late and Additional Fees");
-					String 	firstName = rs.getString("first_Name"),
+	                String 	firstName = rs.getString("first_Name"),
 	            			lastName = rs.getString("last_Name");
+	                
 					rows.add(new Object[]{year,  firstName, lastName, totalPayments, rentalFees, lateFees});
 	            }
 	        }
