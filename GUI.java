@@ -3974,7 +3974,7 @@ try {
 	        FROM movies m
 	        JOIN media_type mt ON mt.movie_code = m.movie_code
 	        JOIN genre_type gt ON gt.genre_id = m.genre_id
-	        WHERE m.movie_name LIKE ?;  -- Search for movie name
+	        WHERE m.movie_name LIKE ? AND mt.product_id IS NOT NULL;  -- Search for movie name
 	    """;
 
 	    List<String> availableMediaTypesWithPrice = new ArrayList<>();
