@@ -3,14 +3,10 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.swing.Box;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -152,6 +148,8 @@ public class Controller implements ActionListener, DocumentListener{
 			
 		case "MediaTypeRecord" :
 			System.out.println("MediaTypeRecord");
+			gui.refreshMediaTable();
+			gui.createMediaRecordTablePanel();
 			break;
 
 	        
