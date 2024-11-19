@@ -4095,6 +4095,8 @@ private String genreSelector() {
 	        return; // If the user cancels or doesn't want to borrow
 	    }
 
+	    
+
 	    String checkProductID = """
 	    	    SELECT product_id
 	    	    FROM media_type mt
@@ -4122,21 +4124,18 @@ private String genreSelector() {
 
 	    	    // Record the borrowing transaction
 	    	    String insertTransactionQuery = """
-<<<<<<< HEAD
-	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_borrowed, date_toreturn, admin_no)
-	    	        VALUES (?, ?, ?, CURDATE());
-=======
-	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_toreturn, date_borrowed)
-	    	        VALUES (?, ?, ?, DATE_ADD(CURDATE(), INTERVAL ? DAY), CURDATE());
->>>>>>> 788c1f36b7f26d8a1df52c0411ab028c203d07bb
+	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_toreturn, date_borrowed, admin_no)
+	    	        VALUES (?, ?, ?, DATE_ADD(CURDATE(), INTERVAL ? DAY), CURDATE(), ?);
 	    	    """;
 
-	   
+	    	    connection.setAutoCommit(false); // Start transaction
+	    	    System.out.println(insertTransactionQuery);
 	    	    try (PreparedStatement pstmt1 = connection.prepareStatement(insertTransactionQuery)) {
 	    	        pstmt1.setInt(1, userId);
 	    	        pstmt1.setInt(2, Integer.parseInt(movieCode));
 	    	        pstmt1.setInt(3, Integer.parseInt(value));
 	    	        pstmt1.setInt(4, Integer.parseInt(numofdaystoborrow));
+					pstmt1.setInt(5, Integer.parseInt(loggedInAdmin));
 	    	        pstmt1.executeUpdate();
 	    	        System.out.println("Executing query: " + pstmt1.toString());
 	    	        System.out.println("Number of days to borrow: " + numofdaystoborrow);

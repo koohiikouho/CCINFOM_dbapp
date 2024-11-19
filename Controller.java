@@ -12,9 +12,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import com.mysql.cj.result.Row;
-
-
 
 public class Controller implements ActionListener, DocumentListener{
 	private GUI gui;
