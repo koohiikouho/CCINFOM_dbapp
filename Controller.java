@@ -139,6 +139,13 @@ public class Controller implements ActionListener, DocumentListener{
 			if(loginHandlerAdmin()){
 			gui.createTableInputPanel();
 			gui.refreshAdminTable();
+			gui.refreshGenreTable();
+			gui.refreshMediaTable();
+			gui.refreshMovieReqTable();
+			gui.refreshMoviesTable();
+			gui.refreshReviewTable();
+			gui.refreshTransactionTable();
+			gui.refreshUserTable();
 			gui.ClearAllTableInputs();
 			System.out.println("AdminRecord");
 			break;
@@ -435,7 +442,7 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 
 		case "AddInTransactionTable":
-			int transaction_no7,movie_code7, user_no7, admin_no7;
+			int transaction_no7,movie_code7, user_no7, admin_no7,product_id;
 			String date_borrowed7, date_toreturn7, date_returned7;
 			float payment7;
 
@@ -451,15 +458,18 @@ public class Controller implements ActionListener, DocumentListener{
 			date_borrowed7 = gui.getTdate_borrowed();
 			date_toreturn7 = gui.getTdate_toreturn();
 			date_returned7 =  gui.getTdate_returned();
+			product_id = gui.getTproduct_id();	
 			payment7 = gui.getTpayment();
+			
 			pstmt.setInt(1,transaction_no7);
 			pstmt.setInt(2,movie_code7);
-			pstmt.setInt(3,user_no7);
-			pstmt.setString(4,date_borrowed7);
-			pstmt.setString(5, date_toreturn7);
-			pstmt.setString(6, date_returned7);
-			pstmt.setFloat(7, payment7);
-			pstmt.setInt(8, admin_no7);
+			pstmt.setInt(3,product_id);
+			pstmt.setInt(4,user_no7);
+			pstmt.setString(5,date_borrowed7);
+			pstmt.setString(6, date_toreturn7);
+			pstmt.setString(7, date_returned7);
+			pstmt.setFloat(8, payment7);
+			pstmt.setInt(9, admin_no7);
 			pstmt.execute();
 			gui.refreshTransactionTable();
 			gui.ClearAllTableInputs();
@@ -477,18 +487,20 @@ public class Controller implements ActionListener, DocumentListener{
 				date_borrowed7 = gui.getTdate_borrowed();
 				date_toreturn7 = gui.getTdate_toreturn();
 				date_returned7 =  gui.getTdate_returned();
+				product_id = gui.getTproduct_id();	
 				payment7 = gui.getTpayment();
 
 				String updateTransaction = "UPDATE transactions SET movie_code = ?, user_no = ?, admin_no = ?,date_borrowed =?, date_toreturn =?, date_returned =?,payment =? WHERE transaction_no = ?";
 				pstmt = connections.prepareStatement(updateTransaction);
-				pstmt.setInt(1, movie_code7);
-				pstmt.setInt(2, user_no7);
-				pstmt.setInt(3, admin_no7);
-				pstmt.setString(4, date_borrowed7);
-				pstmt.setString(5, date_toreturn7);
-				pstmt.setString(6, date_returned7);
-				pstmt.setFloat(7, payment7);
-				pstmt.setInt(8, transaction_no7);
+				pstmt.setInt(1,transaction_no7);
+				pstmt.setInt(2,movie_code7);
+				pstmt.setInt(3,product_id);
+				pstmt.setInt(4,user_no7);
+				pstmt.setString(5,date_borrowed7);
+				pstmt.setString(6, date_toreturn7);
+				pstmt.setString(7, date_returned7);
+				pstmt.setFloat(8, payment7);
+				pstmt.setInt(9, admin_no7);
 				pstmt.execute();
 				gui.refreshTransactionTable();;
 				gui.ClearAllTableInputs();
