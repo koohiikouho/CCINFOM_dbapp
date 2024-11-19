@@ -1,6 +1,6 @@
 
 
-CREATE TABLE movies(
+REATE TABLE movies(
 	movie_code INT PRIMARY KEY,
 	movie_name VARCHAR(100),
     year INT,
@@ -119,9 +119,15 @@ CREATE TABLE movie_req(
 
 
 INSERT INTO `movie_req` (movie_name,date_filed,user_no,approved,in_stock,media_type) VALUES
-('The SpongeBob Movie', '2024-01-01', 0001, 1, 0, 'DVD'),
+('The Godfather', '2022-05-22', 0001, 0, 0, 'VHS'),
+('The Shining', '2022-08-01', 0007, 1, 1, 'VHS'),
+('The Shining', '2022-10-21', 0008, 0, 1, 'VHS'),
+('Titanic', '2023-03-12', 0002, 1, 1, 'DVD'),
+('Whiplash', '2023-03-24', 0003, NULL, 0, 'DVD'),
+('The SpongeBob Movie', '2023-05-24', 0003, 0, 0, 'CD'),
+('The SpongeBob Movie', '2024-01-01', 0001, 0, 0, 'DVD'),
 ('Deadpool 2', '2024-01-02', 0002, 1, 1, 'Online'),
-('Star Wars: The Force Awakens', '2024-09-11', 0003, NULL, NULL, 'VHS'),
+('Star Wars: The Force Awakens', '2024-09-11', 0003, NULL, 0, 'VHS'),
 ('42', '2024-09-22', 0006, 1, 1, 'DVD'),
 ('Barbie', '2024-09-30', 0001, 1, 1, 'Online'),
 ('Terminator 2: Judgement Day', '2024-10-01', 0004, 0, 0, 'CD'),
@@ -142,8 +148,15 @@ CREATE TABLE transactions(
     admin_no INT
 ) AUTO_INCREMENT = 0;
 
+
 INSERT INTO `transactions` (movie_code,product_id,user_no,date_borrowed,date_toreturn,date_returned,payment,admin_no)
 VALUES
+(1000,2000, 0003, '2022-01-01', '2022-01-21', '2024-01-21', 600.00, 0001),
+(1001,5007, 0004, '2022-03-12', '2022-03-28', '2024-03-30', 360.80, 0001),
+(3000,1001, 0007, '2022-07-01', '2022-08-01', '2024-08-08', 1334.90, 0005),
+(4000,5011, 0007, '2023-02-11', '2022-02-18', NULL, NULL, 0002),
+(2001,4000, 0001, '2023-06-12', '2022-07-12', '2024-07-12', 930.00, 0003),
+(1002,4008, 0006, '2023-12-01', '2023-12-26', '2024-01-01', 622.40, 0005),
 (8000,3005, 0001, '2024-01-01', '2024-01-08', '2024-01-08', 175.00, 0001),
 (7000,3000,0001, '2024-01-08', '2024-01-15', '2024-01-10', 175.00, 0001),
 (7001,3004,0006, '2024-02-25', '2024-03-25', '2024-03-26', 750.50, 0004),
@@ -155,8 +168,9 @@ VALUES
 (8001,4009,0004,'2024-10-15', '2024-10-30', '2024-11-07', 694.80, 0003),
 (4001,5012,0009, '2024-10-20', '2024-10-31', '2024-10-31', 220.00, 0002),
 (4001,5012,0002, '2024-11-01', '2024-11-30', NULL, NULL, 0005),
-(1000,NULL,0010, '2024-11-15', '2024-11-23', '2024-11-23', 35.00, 0005),
+(1000,1000,0010, '2024-11-15', '2024-11-23', '2024-11-23', 35.00, 0005),
 (1000,NULL,NULL, NULL, NULL, NULL, NULL, NULL);
+
 
 CREATE TABLE admins(
  admin_no INT PRIMARY KEY auto_increment,
