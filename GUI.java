@@ -3964,6 +3964,7 @@ private String genreSelector() {
 	//END OF REPORTS
 
 	private void borrowMovieGUI() {
+		String value;
 	    // Step 1: Get User ID from the user
 	    String userIdInput = JOptionPane.showInputDialog(null, "Enter User ID to borrow movie:", "Borrow Movie", JOptionPane.PLAIN_MESSAGE);
 	    if (userIdInput == null || userIdInput.trim().isEmpty()) {
@@ -4091,20 +4092,57 @@ private String genreSelector() {
 	        return; // If the user cancels or doesn't want to borrow
 	    }
 
-	    // Step 8: Record the borrowing transaction (Commenting out the database update for now)
-	     String insertTransactionQuery = """
-	         INSERT INTO transactions (user_no, movie_code, date_borrowed)
-	         VALUES (?, ?, CURDATE());
-	     """;
-	     try (PreparedStatement pstmt = connection.prepareStatement(insertTransactionQuery)) {
-	         pstmt.setInt(1, userId);
-	         pstmt.setString(2, movieCode);  // You would pass the movie_code here
-	        // pstmt.setString(3, selectedMediaType);
-	         pstmt.executeUpdate();
-	     } catch (SQLException e) {
-	         JOptionPane.showMessageDialog(null, "Error recording the transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	         return;
-	     }
+	    
+
+	    String checkProductID = """
+	    	    SELECT product_id
+	    	    FROM media_type mt
+	    	    WHERE mt.movie_code = ? AND mt.media_type LIKE ?;
+	    	""";
+
+	    	value = null; // Initialize the variable
+
+	    	try (PreparedStatement pstmt = connection.prepareStatement(checkProductID)) {
+	    	    pstmt.setString(1, movieCode);
+	    	    String result = selectedMediaType.split(" - ")[0];
+	    	    pstmt.setString(2, result);
+
+	    	    try (ResultSet rs = pstmt.executeQuery()) {
+	    	        if (rs.next()) { // Check if a row exists
+	    	            value = rs.getString("product_id");
+	    	        } else {
+	    	            JOptionPane.showMessageDialog(null, "Media type not found for the selected movie.", "Error", JOptionPane.ERROR_MESSAGE);
+	    	            return; // Exit if no product_id is found
+	    	        }
+	    	    }
+
+	    	    // Record the borrowing transaction
+	    	    String insertTransactionQuery = """
+	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_borrowed)
+	    	        VALUES (?, ?, ?, CURDATE());
+	    	    """;
+
+	    	    connection.setAutoCommit(false); // Start transaction
+	    	    
+	    	    try (PreparedStatement pstmt1 = connection.prepareStatement(insertTransactionQuery)) {
+	    	        pstmt1.setInt(1, userId);
+	    	        pstmt1.setString(2, movieCode);
+	    	        pstmt1.setString(3, value);
+	    	        pstmt1.executeUpdate();
+
+	    	       
+	    	        JOptionPane.showMessageDialog(null, "Transaction recorded successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+	    	    } catch (SQLException e) {
+	    	        
+	    	        JOptionPane.showMessageDialog(null, "Error recording the transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    	    } 
+	    	} catch (SQLException e) {
+	    	    JOptionPane.showMessageDialog(null, "Error checking movie details: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    	    e.printStackTrace();
+	    	}
+
+	    
+	    
 
 	    // Step 9: Show success message (without database update for now)
 	    JOptionPane.showMessageDialog(null, "Movie borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
