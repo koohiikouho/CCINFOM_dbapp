@@ -3059,6 +3059,45 @@ try {
 	    }
 	}
 	
+private String genreSelector() {
+    List<String> genresList = new ArrayList<>();
+    String query = "SELECT description FROM genre_type";
+    
+    try (PreparedStatement pstmt = connection.prepareStatement(query);
+         ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            genresList.add(rs.getString(1)); // Add genre description to the list
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(null, "Error retrieving genres: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+        return null;
+    }
+
+    if (genresList.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "No genres available. Please add genres first.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        return null;
+    }
+
+    String[] genresArray = genresList.toArray(new String[0]);
+    String selectedGenre = (String) JOptionPane.showInputDialog(
+            null,
+            "Choose a Genre",
+            "Genre Selector",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            genresArray,
+            genresArray[0]);
+
+    if (selectedGenre == null) {
+        JOptionPane.showMessageDialog(null, "No genre selected.", "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+    
+    return selectedGenre;
+}
+
+
+	
 	private void generateMostBorrowedMovies() {
 	    String[] options = {"Monthly", "Yearly", "In General"};
 	    String choice = (String) JOptionPane.showInputDialog(
@@ -3084,7 +3123,7 @@ try {
 	                    FROM transactions t
 	                    JOIN movies m ON m.movie_code = t.movie_code
 	                    JOIN genre_type gt ON gt.genre_id = m.genre_id
-	                    WHERE YEAR(t.date_borrowed) = ? AND MONTH(t.date_borrowed) = ? AND gt.genre_id = ?
+	                    WHERE YEAR(t.date_borrowed) = ? AND MONTH(t.date_borrowed) = ? AND gt.description LIKE ?
 	                    GROUP BY YEAR(t.date_borrowed), MONTH(t.date_borrowed), m.movie_code
 	                    ORDER BY `Times Borrowed` DESC;
 	                    """;
@@ -3125,7 +3164,10 @@ try {
 	                pstmt.setString(2, month);
 	            }
 
-	            String genreId = JOptionPane.showInputDialog("Enter the Genre ID:");
+	            String genreId = genreSelector();
+	            if (genreId == null) {
+	                return; // User cancelled
+	            }
 	            pstmt.setString(choice.equals("Monthly") ? 3 : 2, genreId);
 	        }
 
@@ -3548,7 +3590,8 @@ try {
 			return month;	
 
 	}
-
+	
+	
 	private void generateTopRevenueUsers(){
 
 		String[] options = {"Month", "Year"};
@@ -3974,7 +4017,7 @@ try {
 	        FROM movies m
 	        JOIN media_type mt ON mt.movie_code = m.movie_code
 	        JOIN genre_type gt ON gt.genre_id = m.genre_id
-	        WHERE m.movie_name LIKE ? AND mt.product_id IS NOT NULL;  -- Search for movie name
+	        WHERE m.movie_name LIKE ?;  -- Search for movie name
 	    """;
 
 	    List<String> availableMediaTypesWithPrice = new ArrayList<>();
