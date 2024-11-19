@@ -120,7 +120,7 @@ public class GUI extends JFrame{
 	private DefaultTableModel tableModelUser;
 	
 	
-	private JTextField Ttransaction_no, Tmovie_code, Tuser_no, Tdate_borrowed, Tdate_toreturn, Tdate_returned,Tpayment, Tadmin_no;
+	private JTextField Ttransaction_no, Tmovie_code, Tuser_no, Tdate_borrowed, Tdate_toreturn, Tdate_returned,Tpayment, Tadmin_no,Tproduct_id;
 	private JScrollPane scrollerTransactionTable;
 	private JTable tableTransactionTable;
 	private DefaultTableModel tableModelTransaction;
@@ -1775,37 +1775,48 @@ public class GUI extends JFrame{
 		   gbc.gridy = 2;
 		   centerPanel.add(Tmovie_code,gbc);
 		   
+		   JLabel product_id = new JLabel("Product ID");
+		   product_id.setForeground(Color.BLACK);
+		   product_id.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 3;
+		   centerPanel.add(product_id, gbc);
+		   Tproduct_id = new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 3;
+		   centerPanel.add(Tproduct_id,gbc);
+		   
 		   JLabel user_no = new JLabel("User No.");
 		   user_no.setForeground(Color.BLACK);
 		   user_no.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
-		   gbc.gridy = 3;
+		   gbc.gridy = 4;
 		   centerPanel.add(user_no,gbc);
 		   Tuser_no = new JTextField(20);
 		   gbc.gridx = 2;
-		   gbc.gridy = 3;
+		   gbc.gridy = 4;
 		   centerPanel.add(Tuser_no, gbc);
 		   
 		   JLabel date_borrowed = new JLabel("Date Borrowed");
 		   date_borrowed.setForeground(Color.BLACK);
 		   date_borrowed.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
-		   gbc.gridy = 4;
+		   gbc.gridy = 5;
 		   centerPanel.add(date_borrowed , gbc);
 		   Tdate_borrowed = new JTextField(20);
 		   gbc.gridx = 2;
-		   gbc.gridy = 4;
+		   gbc.gridy = 5;
 		   centerPanel.add(Tdate_borrowed, gbc);
 		   
 		   JLabel date_toreturn = new JLabel("Date to Return");
 		   date_toreturn.setForeground(Color.BLACK);
 		   date_toreturn.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
-		   gbc.gridy = 5;
+		   gbc.gridy = 6;
 		   centerPanel.add(date_toreturn , gbc);
 		   Tdate_toreturn = new JTextField(20);
 		   gbc.gridx = 2;
-		   gbc.gridy = 5;
+		   gbc.gridy = 6;
 		   centerPanel.add(Tdate_toreturn, gbc);
 		   
 	   
@@ -1813,34 +1824,33 @@ public class GUI extends JFrame{
 		   date_returned.setForeground(Color.BLACK);
 		   date_returned.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
-		   gbc.gridy = 6;
+		   gbc.gridy = 7;
 		   centerPanel.add(date_returned , gbc);
-		   String[] isInStock = {"", "YES", "NO"};
 		   Tdate_returned = new JTextField(20);
 		   gbc.gridx = 2;
-		   gbc.gridy = 6;
+		   gbc.gridy = 7;
 		   centerPanel.add(Tdate_returned, gbc);
 		   
 		   JLabel payment = new JLabel("Payment");
 		   payment.setForeground(Color.BLACK);
 		   payment.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
-		   gbc.gridy = 7;
+		   gbc.gridy = 8;
 		   centerPanel.add(payment , gbc);
 		   Tpayment =  new JTextField(20);
 		   gbc.gridx = 2;
-		   gbc.gridy = 7;
+		   gbc.gridy = 8;
 		   centerPanel.add(Tpayment, gbc);
 		   
 		   JLabel admin_no = new JLabel("Admin no.");
 		   admin_no.setForeground(Color.BLACK);
 		   admin_no.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
-		   gbc.gridy = 8;
+		   gbc.gridy = 9;
 		   centerPanel.add(admin_no , gbc);
 		   Tadmin_no =  new JTextField(20);
 		   gbc.gridx = 2;
-		   gbc.gridy = 8;
+		   gbc.gridy = 9;
 		   centerPanel.add(Tadmin_no, gbc);
 		   
 		   TransactionsTable.add(centerPanel , BorderLayout.EAST);
@@ -1866,7 +1876,7 @@ public class GUI extends JFrame{
 
 
 	public void showTransactionTable() {
-   String[] col = {"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"};
+   String[] col = {"transaction_no", "movie_code","product_id", "user_no", "date_borrowed", "date_toreturn","date_returned","payment", "admin_no"};
    tableModelTransaction = new DefaultTableModel(getTransaction(), col){
 	   @Override
 	   public boolean isCellEditable(int row, int column) {
@@ -1889,15 +1899,19 @@ public class GUI extends JFrame{
 		   if (row != -1) { // Ensure a valid cell is selected
 			   int transaction_no = (int)tableTransactionTable.getValueAt(row,0);
 			   int movie_code = (int)tableTransactionTable.getValueAt(row,1);
-			   int user_no = (int)tableTransactionTable.getValueAt(row,2);
-			   String date_borrowed = (String)tableTransactionTable.getValueAt(row,3);
-			   String date_toreturn = (String)tableTransactionTable.getValueAt(row,4);             
-			   String date_returned = (String)tableTransactionTable.getValueAt(row,5); 
-			   String payment = (String)tableTransactionTable.getValueAt(row,6);             
-			   int admin_no = (int)tableTransactionTable.getValueAt(row,7); 
+			   int product_id = (int)tableTransactionTable.getValueAt(row,2);
+			   int user_no = (int)tableTransactionTable.getValueAt(row,3);
+			   String date_borrowed = (String)tableTransactionTable.getValueAt(row,4);
+			   String date_toreturn = (String)tableTransactionTable.getValueAt(row,5);             
+			   String date_returned = (String)tableTransactionTable.getValueAt(row,6); 
+			   String payment = (String)tableTransactionTable.getValueAt(row,7);             
+			   int admin_no = (int)tableTransactionTable.getValueAt(row,8); 
 	   
+			  
+			   
 			   Ttransaction_no.setText(String.valueOf(transaction_no));
 			   Tmovie_code.setText(String.valueOf(movie_code));
+			   Tproduct_id.setText(String.valueOf(product_id));
 			   Tuser_no.setText(String.valueOf(user_no));
 			   Tdate_borrowed.setText(date_borrowed);
 			   Tdate_toreturn.setText(date_toreturn);
@@ -1948,21 +1962,22 @@ try {
 	   
 	   
 	   while (resultSet.next()) {
-		   Object[] row = new Object[8];
+		   Object[] row = new Object[9];
 		   row[0] = resultSet.getInt(1); 
 		   row[1] = resultSet.getInt(2);            
 		   row[2] = resultSet.getInt(3);
-		   row[3] = resultSet.getString(4);
+		   row[3] = resultSet.getInt(4);
 		   row[4] = resultSet.getString(5);
-		   row[5] = resultSet.getString(6); 
-		   row[6] = resultSet.getString(7);
-		   row[7] = resultSet.getInt(8);          
+		   row[5] = resultSet.getString(6);
+		   row[6] = resultSet.getString(7); 
+		   row[7] = resultSet.getString(8);
+		   row[8] = resultSet.getInt(9);          
 		   list.add(row);
 	   }
    }
 
    // Convert the list to a 2D array
-   return list.toArray(new Object[0][8]);
+   return list.toArray(new Object[0][9]);
 
 } catch (Exception e) {
    e.printStackTrace(); // Print stack trace for debugging
@@ -1972,7 +1987,7 @@ try {
 
 //refreshing transaction table
 public void refreshTransactionTable() {
-   tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"});
+   tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","product_id","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"});
 }
 	////////////////////////////////////////////////////////////////////////////////////////////////// END OF TRANSACTIONS
 	/// 
@@ -4077,19 +4092,19 @@ private String genreSelector() {
 	    }
 
 	    // Step 8: Record the borrowing transaction (Commenting out the database update for now)
-	    // String insertTransactionQuery = """
-	    //     INSERT INTO transactions (user_no, movie_code, media_type, date_borrowed, date_returned)
-	    //     VALUES (?, ?, ?, CURDATE(), NULL);
-	    // """;
-	    // try (PreparedStatement pstmt = connection.prepareStatement(insertTransactionQuery)) {
-	    //     pstmt.setInt(1, userId);
-	    //     pstmt.setString(2, movieCode);  // You would pass the movie_code here
-	    //     pstmt.setString(3, selectedMediaType);
-	    //     pstmt.executeUpdate();
-	    // } catch (SQLException e) {
-	    //     JOptionPane.showMessageDialog(null, "Error recording the transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	    //     return;
-	    // }
+	     String insertTransactionQuery = """
+	         INSERT INTO transactions (user_no, movie_code, date_borrowed)
+	         VALUES (?, ?, CURDATE());
+	     """;
+	     try (PreparedStatement pstmt = connection.prepareStatement(insertTransactionQuery)) {
+	         pstmt.setInt(1, userId);
+	         pstmt.setString(2, movieCode);  // You would pass the movie_code here
+	        // pstmt.setString(3, selectedMediaType);
+	         pstmt.executeUpdate();
+	     } catch (SQLException e) {
+	         JOptionPane.showMessageDialog(null, "Error recording the transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	         return;
+	     }
 
 	    // Step 9: Show success message (without database update for now)
 	    JOptionPane.showMessageDialog(null, "Movie borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -4565,6 +4580,14 @@ private String genreSelector() {
 	public void setMgenre_id(String num) {
 		Mgenre_id.setText(num);
 	}
+	
+	public int getTproduct_id() {
+	    return Integer.parseInt(Tproduct_id.getText());
+	}
+	
+	public void setTproduct_id(String num) {
+		Tproduct_id.setText(num);
+	}
 
 	public String getMmovie_name() {
 	    return Mmovie_name.getText();
@@ -4716,6 +4739,7 @@ private String genreSelector() {
 		setTpayment("");
 		setTtransaction_no("");
 		setTuser_no("");
+		setTproduct_id("");
 
 		setUbirthday("");
 		setUemail("");
