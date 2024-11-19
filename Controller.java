@@ -133,10 +133,11 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 			
 		case"UserRecord":
-			System.out.println("UserRecord");
+			if(loginHandlerAdmin()) {
 			gui.refreshUserRecord();
 			gui.createUserRecordPanel();
 			break;
+			}else break;
 			
 		case "AdminRecord" :
 			if(loginHandlerAdmin()){
@@ -724,8 +725,8 @@ public class Controller implements ActionListener, DocumentListener{
 	
 
 	private boolean loginHandlerAdmin(){
-		JTextField user = new JTextField();
-		JTextField pass = new JPasswordField();
+		JTextField user = new JTextField(20);
+		JTextField pass = new JPasswordField(20);
 		Object[] message = {
 			"Username:", user,
 			"Password:", pass
