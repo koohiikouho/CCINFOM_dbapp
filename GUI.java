@@ -1140,15 +1140,11 @@ public class GUI extends JFrame{
 	                String media_type = (String)tableMediaTable.getValueAt(row,4);             
 	                int copies_available = (int)tableMediaTable.getValueAt(row,5); 
 	                float rental_price = (float)tableMediaTable.getValueAt(row,6); 
-	                
-	                String transmute = "NO";
-	            	if(availability.equals("1")) {
-	            		transmute = "YES";
-	            	}
+	            
 
 	                MTproduct_id.setText(String.valueOf(product_id));
 	            	MTmovie_code.setText(String.valueOf(movie_code));
-	            	MTavailability.setSelectedItem(transmute);
+	            	MTavailability.setSelectedItem(availability);
 	            	MTrelease.setText(release_date.substring(0, 4));
 	            	MTmedia_type.setSelectedItem(media_type);
 	            	MTcopies.setText(String.valueOf(copies_available));
@@ -1205,7 +1201,13 @@ public class GUI extends JFrame{
                 Object[] row = new Object[7];
                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
-                row[2] = resultSet.getString(3); // Assuming column 3 is int
+                String transmute="NO";
+                if(resultSet.getInt(3) == 1) {
+     			   transmute = "YES";
+     		   }else if(resultSet.getInt(3) == 0){
+     			   transmute = "NO";
+     		   }else transmute = "";
+                row[2] = transmute;
                 row[3] = resultSet.getString(4); // Assuming column 4 is String
                 row[4] = resultSet.getString(5); // Assuming column 5 is String
                 row[5] = resultSet.getInt(6); // Assuming column 6 is String
