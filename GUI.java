@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 public class GUI extends JFrame{
 	
 	//main menu
-	private JButton btnTableInput,btnRecordManagement,btnReports, btnEXIT, btnTransactions;
+	private JButton btnRecordManagement,btnReports, btnEXIT, btnTransactions;
 	//records
 	private JButton btnMovieRecord,btnUserRecord,btnAdminRecord, btnMediaTypeRecord, btnReturntoMain;
 	
@@ -49,7 +49,7 @@ public class GUI extends JFrame{
 	private JButton btnUpdateReviewTable, btnDeleteInReviewTable, btnAddInReviewTable;
 	private JButton btnSelectuserRecord, btnReturnRecordManagementfromUR;
 
-	private JButton btnReturnToUserRecord;
+	private JButton btnReturnToUserRecord,btnReturnFromMediaManagement;
 	
 	private JPanel MainMenu = new JPanel(), RecordManagement = new JPanel();
 	private JPanel TableInput = new JPanel();
@@ -63,6 +63,8 @@ public class GUI extends JFrame{
 	private JPanel UserRecord = new JPanel();
 	private JPanel UserProfile = new JPanel();
 	private JPanel MovieRecord = new JPanel();
+	private JPanel MediaTypeRecord = new JPanel();
+
 	
 	// admin table text fields
 	private JTextField ATAdminNo, ATFirst_Name, ATLast_Name, ATPass, ATAdminLevel;
@@ -206,6 +208,10 @@ public class GUI extends JFrame{
 		MovieRecord.setLayout(new BorderLayout());
 		showMovieRecord();
 		MovieRecordPanel();
+		
+		MediaTypeRecord.setLayout(new BorderLayout());
+		showMediaRecordTable();
+		MediaRecordTablePanel();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -371,8 +377,7 @@ public class GUI extends JFrame{
         repaint();
 		
 	}
-	
-	
+		
 	public void reportmanagement() {
 	    // NORTH PANEL
 	    JPanel panelNorth = new JPanel();
@@ -488,7 +493,6 @@ public class GUI extends JFrame{
 
 	    ReportManagement.add(panelCenter, BorderLayout.CENTER);
 	}
-
 	
 	public void createTableInputPanel() {		
 		setContentPane(TableInput);
@@ -1000,117 +1004,196 @@ public class GUI extends JFrame{
 	        
 	        Media_TypeTable.add(panelNorth, BorderLayout.NORTH);
 	    	
-    		//center panel
-    		JPanel centerPanel = new JPanel();
-    		centerPanel.setLayout(new GridBagLayout());
-    		GridBagConstraints gbc = new GridBagConstraints();
+   		//center panel
+   		JPanel centerPanel = new JPanel();
+   		centerPanel.setLayout(new GridBagLayout());
+   		GridBagConstraints gbc = new GridBagConstraints();
 
-            gbc.insets = new Insets(6, 6, 6, 6);
-            gbc.anchor = GridBagConstraints.WEST;
+           gbc.insets = new Insets(6, 6, 6, 6);
+           gbc.anchor = GridBagConstraints.WEST;
 
-            
-    		JLabel pID = new JLabel("Product ID");
-    		pID.setForeground(Color.BLACK);
-    		pID.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 1;
-            centerPanel.add(pID, gbc);
-            MTproduct_id = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 1;
-            centerPanel.add(MTproduct_id, gbc);
-    		
-    		JLabel mcode = new JLabel("Movie Code");
-    		mcode.setForeground(Color.BLACK);
-    		mcode.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 2;
-            centerPanel.add(mcode, gbc);
-            MTmovie_code = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 2;
-            centerPanel.add(MTmovie_code,gbc);
-    		
-    		JLabel avail = new JLabel("Availability");
-    		avail.setForeground(Color.BLACK);
-    		avail.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 3;
-            centerPanel.add(avail,gbc);
-            String[] availability = {"", "YES", "NO"};
-            MTavailability = new JComboBox(availability);
-    		gbc.gridx = 2;
-            gbc.gridy = 3;
-            centerPanel.add(MTavailability, gbc);
-    		
-    		JLabel releasedate = new JLabel("Release Date");
-    		releasedate.setForeground(Color.BLACK);
-    		releasedate.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 4;
-            centerPanel.add(releasedate , gbc);
-            MTrelease = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 4;
-            centerPanel.add(MTrelease, gbc);
-            
-            JLabel mediaType = new JLabel("Media Type");
-            mediaType.setForeground(Color.BLACK);
-            mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 5;
-            centerPanel.add(mediaType , gbc);
-            String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
-            MTmedia_type = new JComboBox(mediachoice);
-           //MTmedia_type = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 5;
-            centerPanel.add(MTmedia_type, gbc);
-            
-            JLabel copies = new JLabel("Copies Available");
-            copies.setForeground(Color.BLACK);
-            copies.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 6;
-            centerPanel.add(copies , gbc);
-            MTcopies = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 6;
-            centerPanel.add(MTcopies, gbc);
-            
-            JLabel rentprice = new JLabel("Rental Price");
-            rentprice.setForeground(Color.BLACK);
-            rentprice.setFont(new Font("Verdana", Font.BOLD, 19));
-    		gbc.gridx = 1;
-            gbc.gridy = 7;
-            centerPanel.add(rentprice , gbc);
-            MTrentprice = new JTextField(15);
-    		gbc.gridx = 2;
-            gbc.gridy = 7;
-            centerPanel.add(MTrentprice, gbc);
-            
-            
-            Media_TypeTable.add(centerPanel , BorderLayout.EAST);
-    		
-            
+           
+   		JLabel pID = new JLabel("Product ID");
+   		pID.setForeground(Color.BLACK);
+   		pID.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 1;
+           centerPanel.add(pID, gbc);
+           MTproduct_id = new JTextField(15);
+   		gbc.gridx = 2;
+           gbc.gridy = 1;
+           centerPanel.add(MTproduct_id, gbc);
+   		
+   		JLabel mcode = new JLabel("Movie Code");
+   		mcode.setForeground(Color.BLACK);
+   		mcode.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 2;
+           centerPanel.add(mcode, gbc);
+           MTmovie_code = new JTextField(15);
+   		gbc.gridx = 2;
+           gbc.gridy = 2;
+           centerPanel.add(MTmovie_code,gbc);
+   		
+   		JLabel avail = new JLabel("Availability");
+   		avail.setForeground(Color.BLACK);
+   		avail.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 3;
+           centerPanel.add(avail,gbc);
+           String[] availability = {"", "YES", "NO"};
+           MTavailability = new JComboBox(availability);
+   		gbc.gridx = 2;
+           gbc.gridy = 3;
+           centerPanel.add(MTavailability, gbc);
+   		
+   		JLabel releasedate = new JLabel("Release Date");
+   		releasedate.setForeground(Color.BLACK);
+   		releasedate.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 4;
+           centerPanel.add(releasedate , gbc);
+           MTrelease = new JTextField(15);
+   		gbc.gridx = 2;
+           gbc.gridy = 4;
+           centerPanel.add(MTrelease, gbc);
+           
+           JLabel mediaType = new JLabel("Media Type");
+           mediaType.setForeground(Color.BLACK);
+           mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 5;
+           centerPanel.add(mediaType , gbc);
+           String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
+           MTmedia_type = new JComboBox(mediachoice);
+          //MTmedia_type = new JTextField(15);
+   		gbc.gridx = 2;
+           gbc.gridy = 5;
+           centerPanel.add(MTmedia_type, gbc);
+           
+           JLabel copies = new JLabel("Copies Available");
+           copies.setForeground(Color.BLACK);
+           copies.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 6;
+           centerPanel.add(copies , gbc);
+           MTcopies = new JTextField(15);
+   		gbc.gridx = 2;
+           gbc.gridy = 6;
+           centerPanel.add(MTcopies, gbc);
+           
+           JLabel rentprice = new JLabel("Rental Price");
+           rentprice.setForeground(Color.BLACK);
+           rentprice.setFont(new Font("Verdana", Font.BOLD, 19));
+   		gbc.gridx = 1;
+           gbc.gridy = 7;
+           centerPanel.add(rentprice , gbc);
+           MTrentprice = new JTextField(15);
+   		gbc.gridx = 2;
+           gbc.gridy = 7;
+           centerPanel.add(MTrentprice, gbc);
+           
+           
+           Media_TypeTable.add(centerPanel , BorderLayout.EAST);
+   		
+           
+   		//SOUTH PANEL
+   		JPanel panelSouth = new JPanel();
+   		panelSouth.setLayout(new FlowLayout());
+   		panelSouth.setBackground(Color.decode("#fdfdfd"));
+   		
+   		btnAddInMediaTable = new JButton("Add");
+   		btnUpdateMediaTable = new JButton("Update");
+   		btnDeleteInMediaTable = new JButton("Delete");
+      		panelSouth.add(btnAddInMediaTable);
+   		panelSouth.add(btnUpdateMediaTable);
+   		panelSouth.add(btnDeleteInMediaTable);
+   		
+   		btnUpdateMediaTable.setActionCommand("UpdateMediaTable");
+   		btnDeleteInMediaTable.setActionCommand("DeleteInMediaTable");
+   		btnAddInMediaTable.setActionCommand("AddInMediaTable");
+   		
+   		Media_TypeTable.add(panelSouth, BorderLayout.SOUTH);
+		}
+	
+	private JScrollPane scrollerMediaRecord;
+	private JTable tableMediaRecord;
+	private DefaultTableModel tableModelMediaRecord;
+	
+	public void showMediaRecordTable() {
+	    String[] col = {"product_id", "movie_code","availability", "release_date","media_type","copies_available","rental_price"};
+	    tableModelMediaRecord = new DefaultTableModel(getMedia(), col) {
+           @Override
+           public boolean isCellEditable(int row, int column) {
+               return false; // Disable editing for all cells
+           }
+       };
+;
+	    tableMediaRecord = new JTable(tableModelMediaRecord);
+	    tableMediaRecord.setEnabled(true); // Enable selection
+	    
+	    // Add a mouse click listener to the table
+	   
+	    scrollerMediaRecord = new JScrollPane(tableMediaRecord);
+	    scrollerMediaRecord.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+	    
+	    // Center panel
+	    JPanel moreCenter = new JPanel(new BorderLayout());
+	    
+	    // CENTER PANEL center panel
+	    JPanel panelCenter = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+	    gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+	    gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    panelCenter.add(scrollerMediaRecord, gbc);
+	    moreCenter.add(panelCenter, BorderLayout.CENTER);
+	    
+	    MediaTypeRecord.add(moreCenter, BorderLayout.CENTER);
+	    MediaTypeRecord.revalidate(); // Refresh the UI
+	    MediaTypeRecord.repaint(); // Ensure it's redrawn
+	}
+
+
+	public void createMediaRecordTablePanel() {		
+		setContentPane(MediaTypeRecord);
+        revalidate();
+        repaint();
+	}
+	
+
+	
+	public void MediaRecordTablePanel() {
+	     // NORTH PANEL
+	        JPanel panelNorth = new JPanel();
+	        panelNorth.setLayout(new FlowLayout());
+	        panelNorth.setBackground(Color.decode("#0A285f"));
+
+	        JLabel label = new JLabel("MEDIA RECORD MANAGEMENT");
+	        label.setForeground(Color.WHITE);
+	        label.setFont(new Font("Gaegu", Font.BOLD, 18));
+	        panelNorth.add(label);
+	        
+	        MediaTypeRecord.add(panelNorth, BorderLayout.NORTH);
+	    	
     		//SOUTH PANEL
     		JPanel panelSouth = new JPanel();
     		panelSouth.setLayout(new FlowLayout());
     		panelSouth.setBackground(Color.decode("#fdfdfd"));
     		
-    		btnAddInMediaTable = new JButton("Add");
-    		btnUpdateMediaTable = new JButton("Update");
-    		btnDeleteInMediaTable = new JButton("Delete");
-       		panelSouth.add(btnAddInMediaTable);
-    		panelSouth.add(btnUpdateMediaTable);
-    		panelSouth.add(btnDeleteInMediaTable);
+    		btnReturnFromMediaManagement = new JButton("Return");
+       		panelSouth.add(btnReturnFromMediaManagement);
+    		btnReturnFromMediaManagement.setActionCommand("RecordManagement");
     		
-    		btnUpdateMediaTable.setActionCommand("UpdateMediaTable");
-    		btnDeleteInMediaTable.setActionCommand("DeleteInMediaTable");
-    		btnAddInMediaTable.setActionCommand("AddInMediaTable");
-    		
-    		Media_TypeTable.add(panelSouth, BorderLayout.SOUTH);
+    		MediaTypeRecord.add(panelSouth, BorderLayout.SOUTH);
 		}
+	
+	
+	
+	
 	
 	public void showMediaTable() {
 	    String[] col = {"product_id", "movie_code","availability", "release_date","media_type","copies_available","rental_price"};
@@ -2373,7 +2456,7 @@ try {
 	}
 
 	
-		public void MovieRecordPanel() {
+	public void MovieRecordPanel() {
 		// NORTH PANEL
 		   JPanel panelNorth = new JPanel();
 		   panelNorth.setLayout(new FlowLayout());
@@ -2532,7 +2615,6 @@ try {
 			tableModelMovieRecord.setDataVector(getMovieRecord(), new String[]{"movie_code", "movie_name"});
 			}
 
-		
 	
 	public void createUserRecordPanel() {		
 	setContentPane(UserRecord);
@@ -3270,7 +3352,6 @@ try {
 	    }
 	}
 
-
 	private void generateMostRequestedMoviesReport() {
 	    // Options to choose the type of report
 	    String[] options = {"General", "Monthly", "Yearly"};
@@ -4004,7 +4085,6 @@ try {
 		
 	}
 
-
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
@@ -4084,7 +4164,11 @@ try {
 		btnReturntoMainFromTransaction.addActionListener(listener);
 
 		btnBorrowMovie.addActionListener(e -> borrowMovieGUI());
+		btnReturnFromMediaManagement.addActionListener(listener);
 	}
+	
+	
+	
 	
 	
 	 // Retrieves the text from the JTextField.
