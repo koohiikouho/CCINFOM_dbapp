@@ -131,6 +131,9 @@ public class GUI extends JFrame{
 	
 	JLabel UPuserno ,UPfirstname, UPlastName;
 
+	//storing admin number for transactions
+	private String loggedInAdmin;
+
 	//MovieRecord
 		private JScrollPane scrollerMovieRecord;
 		private JTable tableMovieRecord;
@@ -4118,7 +4121,7 @@ private String genreSelector() {
 
 	    	    // Record the borrowing transaction
 	    	    String insertTransactionQuery = """
-	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_borrowed)
+	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_borrowed, date_toreturn, admin_no)
 	    	        VALUES (?, ?, ?, CURDATE());
 	    	    """;
 
@@ -4228,6 +4231,10 @@ private String genreSelector() {
 		
 	}
 
+	public void storeUser(String admin_no){
+		loggedInAdmin = admin_no;
+	}
+
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
@@ -4303,7 +4310,6 @@ private String genreSelector() {
 		btnRevenueReport.addActionListener(e -> generateRevenueReport());
 		btnTopRevenueUsers.addActionListener(e -> generateTopRevenueUsers());
 
-		btnTransactions.addActionListener(listener);
 		btnReturntoMainFromTransaction.addActionListener(listener);
 
 		btnBorrowMovie.addActionListener(e -> borrowMovieGUI());
@@ -4312,7 +4318,9 @@ private String genreSelector() {
 	
 	
 	
-	
+	public String getLoggedInAdmin(){
+		return loggedInAdmin;
+	}
 	
 	 // Retrieves the text from the JTextField.
 	public int getAdminNumber() {

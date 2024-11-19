@@ -14,11 +14,14 @@ import javax.swing.event.DocumentListener;
 
 import com.mysql.cj.result.Row;
 
+
+
 public class Controller implements ActionListener, DocumentListener{
 	private GUI gui;
 	private Model model;
 	private static Connection connections;
-	
+	protected Integer loggedInAdmin;
+
 	public Controller(GUI gui, Model model, Connection connection) {
 		this.gui = gui;
 		this.model = model;
@@ -48,14 +51,16 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.createReportmanagementPanel();
 			break;
 		case "Transactions":
-			System.out.println("Transactions");
-			gui.createTransactionsPanel();
-			break;
-			
+			if( loginHandlerAdmin() ){
+				System.out.println("Transactions");
+				System.out.println( gui.getLoggedInAdmin() );
+				gui.createTransactionsPanel();
+				break;
+			} else
+				break;
 		case "EXIT":
 			System.exit(0);
 			break;
-			
 		case "Home":
 			gui.createMainMenuPanel();
 			gui.ClearAllTableInputs();
@@ -730,8 +735,9 @@ public class Controller implements ActionListener, DocumentListener{
 			"Password:", pass
 		};
 	if(JOptionPane.showConfirmDialog(null, message, "Enter Credentials", JOptionPane.OK_CANCEL_OPTION) == 0){
-		if(model.checkAdminPassCorrect(user.getText(), pass.getText()))
+		if(model.checkAdminPassCorrect(user.getText(), pass.getText())){
 			return true;
+		}
 		else{
 			JOptionPane.showMessageDialog(new JFrame(), "Wrong Credentials", "ERROR!",JOptionPane.ERROR_MESSAGE);
 			return false;
