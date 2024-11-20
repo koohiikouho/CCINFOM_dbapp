@@ -277,6 +277,7 @@ public class Controller implements ActionListener, DocumentListener{
 			int transmute = 1;
 			
 			try {
+			
 			String InsertMedia = " insert into media_type (product_id,movie_code, availability, release_date,media_type,copies_available,rental_price)"
 				    + " values (?, ?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMedia);
@@ -292,15 +293,31 @@ public class Controller implements ActionListener, DocumentListener{
              if(availability3.equals("NO")) {
              	transmute = 0;
              }
+            if(copies_available3>0) {
 			pstmt.setInt(1,product_id3);
 			pstmt.setInt(2,movie_code3);
-			pstmt.setInt(3, transmute);
+			pstmt.setInt(3, 1);
 			pstmt.setInt(4, Integer.parseInt(release_date3));
 			pstmt.setString(5, media_type3);
 			pstmt.setInt(6, copies_available3);
 			pstmt.setFloat(7, rental_price3);
 			pstmt.execute();
 			gui.refreshMediaTable();
+			}
+            else if(copies_available3 == 0) {
+        			pstmt.setInt(1,product_id3);
+        			pstmt.setInt(2,movie_code3);
+        			pstmt.setInt(3, 0);
+        			pstmt.setInt(4, Integer.parseInt(release_date3));
+        			pstmt.setString(5, media_type3);
+        			pstmt.setInt(6, copies_available3);
+        			pstmt.setFloat(7, rental_price3);
+        			pstmt.execute();
+        			gui.refreshMediaTable();
+        			}            
+            	else JOptionPane.showMessageDialog(null, "Invalid Input! Copies available cannot be negative!");
+            
+ 
 			ClearMediaInputs();
 			}catch(Exception ex){
 				JOptionPane.showMessageDialog(null, "Invalid Inputs");
@@ -337,20 +354,36 @@ public class Controller implements ActionListener, DocumentListener{
             if(availability3.equals("NO")) {
             	transmute = 0;
             }
-            
+            if(copies_available3>0) {
 			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
 			pstmt = connections.prepareStatement(updateMedia);
 			pstmt.setInt(1, movie_code3);
-			pstmt.setInt(2, transmute);
-			pstmt.setInt(3, Integer.parseInt(release_date3));
+			pstmt.setInt(2, 1);
+			pstmt.setString(3, release_date3);
 			pstmt.setString(4, media_type3);
 			pstmt.setInt(5, copies_available3);
 			pstmt.setFloat(6, rental_price3);
 			pstmt.setInt(7, product_id3);
-			
 			pstmt.execute();
 			gui.refreshMediaTable();
-			ClearMediaInputs();
+            }else if(copies_available3 == 0) {
+        			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
+        			pstmt = connections.prepareStatement(updateMedia);
+        			pstmt.setInt(1, movie_code3);
+        			pstmt.setInt(2, 0);
+        			pstmt.setString(3, release_date3);
+        			pstmt.setString(4, media_type3);
+        			pstmt.setInt(5, copies_available3);
+        			pstmt.setFloat(6, rental_price3);
+        			pstmt.setInt(7, product_id3);
+        			pstmt.execute();
+        			gui.refreshMediaTable();
+                    }
+
+            else JOptionPane.showMessageDialog(null, "Invalid Input! Copies available cannot be negative!");
+			
+            ClearMediaInputs();
+            
 			}catch(Exception ex) {
 				JOptionPane.showMessageDialog(null, "Invalid Inputs");
 			}
@@ -361,8 +394,8 @@ public class Controller implements ActionListener, DocumentListener{
 			String movie_name4, date_filled4,approved4,in_stock4, media_type4;
 			
 			try {
-			String InsertMovieReq = " insert into movie_req (request_number, movie_name, date_filed, user_no,approved,in_stock,media_type)"
-				    + " values (?, ?, ?, ?, ?, ?, ?)";
+			String InsertMovieReq = " insert into movie_req (request_number, movie_name, date_filed, user_no,approved,media_type)"
+				    + " values (?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMovieReq);
 			
 			request_number4 = gui.getMRMovieReqNo();
@@ -370,7 +403,6 @@ public class Controller implements ActionListener, DocumentListener{
 			movie_name4 = gui.getMRmoviename();
 			date_filled4 = gui.getMRdate_filled();
 			approved4 = gui.getMRapproved();
-			in_stock4 = gui.getMRin_stock();
 			media_type4 = gui.getMRmedia_type();
 
 			pstmt.setInt(1,request_number4);
@@ -382,12 +414,7 @@ public class Controller implements ActionListener, DocumentListener{
              	transmute = 0;
              }
 			pstmt.setInt(5, transmute);
-			 transmute = 1;
-             if(in_stock4.equals("NO")) {
-             	transmute = 0;
-             }
-			pstmt.setInt(6, transmute);
-			pstmt.setString(7, media_type4);
+			pstmt.setString(6, media_type4);
 			pstmt.execute();
 			gui.refreshMovieReqTable();
 			ClearMovieReqInputs();
@@ -404,9 +431,8 @@ public class Controller implements ActionListener, DocumentListener{
 			movie_name4 = gui.getMRmoviename();
 			date_filled4 = gui.getMRdate_filled();
 			approved4 = gui.getMRapproved();
-			in_stock4 = gui.getMRin_stock();
 			media_type4 = gui.getMRmedia_type();
-			String updateMovieReq = "UPDATE movie_req SET movie_name = ?, date_filed = ?, user_no = ?,approved =?, in_stock =?, media_type =? WHERE request_number = ?";
+			String updateMovieReq = "UPDATE movie_req SET movie_name = ?, date_filed = ?, user_no = ?,approved =?, media_type =? WHERE request_number = ?";
 			pstmt = connections.prepareStatement(updateMovieReq);
 			pstmt.setString(1, movie_name4);
 			pstmt.setString(2, date_filled4);
@@ -418,13 +444,8 @@ public class Controller implements ActionListener, DocumentListener{
             }
 			pstmt.setInt(4, transmute);
 			transmute =1;
-            if(approved4.equals("NO")) {
-            	transmute = 0;
-            }
-			pstmt.setInt(5, transmute);
-			pstmt.setString(6, media_type4);
-			pstmt.setInt(7, request_number4);
-			
+			pstmt.setString(5, media_type4);
+			pstmt.setInt(6, request_number4);
 			pstmt.execute();
 			gui.refreshMovieReqTable();
 			ClearMovieReqInputs();
@@ -791,7 +812,6 @@ public class Controller implements ActionListener, DocumentListener{
 	public void ClearMovieReqInputs() {
 		gui.setMRapproved("");
 		gui.setMRdate_filled("");
-		gui.setMRin_stock("");
 		gui.setMRmedia_type("");
 		gui.setMRmoviename("");
 		gui.setMRMovieReqNo("");
