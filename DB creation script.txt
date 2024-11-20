@@ -1,6 +1,6 @@
 
 
-REATE TABLE movies(
+CREATE TABLE movies(
 	movie_code INT PRIMARY KEY,
 	movie_name VARCHAR(100),
     year INT,
@@ -92,8 +92,7 @@ CREATE TABLE review(
     user_no INT
 )AUTO_INCREMENT = 0;
 
-SELECT *
-FROM review;
+
 INSERT INTO `review` (stars,review,movie_code,user_no) VALUES 
 (10,'Amazing Out of Body experience will recommend to everyone #GoatApproved',8000,0001)
 ,(8,'Extremely emotional with memorable scenes a must watch with friends family and significant other#JackWillLiveForever',7000,0001)
@@ -106,35 +105,33 @@ INSERT INTO `review` (stars,review,movie_code,user_no) VALUES
 ,(1,'I would not recommend this to my dog boring trash',1010,0007)
 ,(8,'',1000,0010);
 
-
 CREATE TABLE movie_req(
 	request_number INT PRIMARY KEY auto_increment,
     movie_name VARCHAR(100),
     date_filed DATE,
     user_no INT NOT NULL,
     approved BIT,
-    in_stock BIT,
     media_type VARCHAR(50)
 ) AUTO_INCREMENT = 0;
 
 
-INSERT INTO `movie_req` (movie_name,date_filed,user_no,approved,in_stock,media_type) VALUES
-('The Godfather', '2022-05-22', 0001, 0, 0, 'VHS'),
-('The Shining', '2022-08-01', 0007, 1, 1, 'VHS'),
-('The Shining', '2022-10-21', 0008, 0, 1, 'VHS'),
-('Titanic', '2023-03-12', 0002, 1, 1, 'DVD'),
-('Whiplash', '2023-03-24', 0003, NULL, 0, 'DVD'),
-('The SpongeBob Movie', '2023-05-24', 0003, 0, 0, 'CD'),
-('The SpongeBob Movie', '2024-01-01', 0001, 0, 0, 'DVD'),
-('Deadpool 2', '2024-01-02', 0002, 1, 1, 'Online'),
-('Star Wars: The Force Awakens', '2024-09-11', 0003, NULL, 0, 'VHS'),
-('42', '2024-09-22', 0006, 1, 1, 'DVD'),
-('Barbie', '2024-09-30', 0001, 1, 1, 'Online'),
-('Terminator 2: Judgement Day', '2024-10-01', 0004, 0, 0, 'CD'),
-('Kingpin', '2024-10-12', 0008, 0, 1, 'CD'),
-('Notting Hill', '2024-10-24', 0003, 1, 1, 'DVD'),
-('Sing', '2024-11-01', 0015, 1, 0, 'Online'),
-('scdsfdsvdsdsf', NULL, 0001, NULL, NULL, '');
+INSERT INTO `movie_req` (movie_name,date_filed,user_no,approved,media_type) VALUES
+('The Godfather', '2022-05-22', 0001, 0, 'VHS'),
+('The Shining', '2022-08-01', 0007, 1, 'VHS'),
+('The Shining', '2022-10-21', 0008, 1,'VHS'),
+('Titanic', '2023-03-12', 0002, 1, 'DVD'),
+('Whiplash', '2023-03-24', 0003, NULL, 'DVD'),
+('The SpongeBob Movie', '2023-05-24', 0003, 0, 'CD'),
+('The SpongeBob Movie', '2024-01-01', 0001, 0, 'DVD'),
+('Deadpool 2', '2024-01-02', 0002, 1,'Online'),
+('Star Wars: The Force Awakens', '2024-09-11', 0003, NULL,'VHS'),
+('42', '2024-09-22', 0006, 1, 'DVD'),
+('Barbie', '2024-09-30', 0001, 1, 'Online'),
+('Terminator 2: Judgement Day', '2024-10-01', 0004, 0, 'CD'),
+('Kingpin', '2024-10-12', 0008, 0,'CD'),
+('Notting Hill', '2024-10-24', 0003, 1,'DVD'),
+('Sing', '2024-11-01', 0015, 1,'Online'),
+('scdsfdsvdsdsf', NULL, 0001,NULL,'');
 
 CREATE TABLE transactions(
 	transaction_no INT auto_increment PRIMARY KEY,
