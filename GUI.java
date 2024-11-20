@@ -4119,8 +4119,19 @@ private String genreSelector() {
 	    	        }
 	    	    }
 
-	    	    String numofdaystoborrow = JOptionPane.showInputDialog(null, "For how many days do you want to borrow this movie?", "Days of Rental", JOptionPane.PLAIN_MESSAGE);
+	    	    String[] numOfDaysArray = new String[31];
+	    	    for (int i = 0; i < 31; i++) {
+	    	        numOfDaysArray[i] = String.valueOf(i + 1);
+	    	    }
+	    	    
+	    	    String numofdaystoborrow = (String) JOptionPane.showInputDialog(null, "For how many days do you want to borrow this movie?",
+	    	            "Days of Rental", JOptionPane.QUESTION_MESSAGE, null, numOfDaysArray, numOfDaysArray[0]);
 
+	    	    if (numofdaystoborrow == null) {
+	    	        return; // If the user cancels the selection
+	    	    }
+
+	  
 
 	    	    // Record the borrowing transaction
 	    	    String insertTransactionQuery = """
@@ -4135,6 +4146,7 @@ private String genreSelector() {
 	    	        pstmt1.setInt(3, Integer.parseInt(value));
 	    	        pstmt1.setInt(4, Integer.parseInt(numofdaystoborrow));
 					pstmt1.setInt(5, Integer.parseInt(loggedInAdmin));
+					
 	    	        pstmt1.execute();
 	    	        System.out.println("Executing query: " + pstmt1.toString());
 	    	        System.out.println("Number of days to borrow: " + numofdaystoborrow);
