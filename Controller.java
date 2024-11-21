@@ -55,6 +55,9 @@ public class Controller implements ActionListener, DocumentListener{
 				break;
 			} else
 				break;
+		case "returntoTransaction":
+			gui.createTransactionsPanel();
+			break;
 		case "EXIT":
 			System.exit(0);
 			break;
@@ -739,7 +742,10 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.setUPlastName(gui.getURlast_name());
 			gui.createUserProfilePanel();
 			break;
+		case "FormalizeMovieRequests": 
 			
+			gui.createMovie_reqTransactionTablePanel();
+			break;
 		}
 
 	}
