@@ -278,7 +278,7 @@ public class Controller implements ActionListener, DocumentListener{
 			
 			try {
 			
-			String InsertMedia = " insert into media_type (product_id,movie_code, availability, release_date,media_type,copies_available,rental_price)"
+			String InsertMedia = " insert into media_type (product_id,movie_code, release_date,media_type,copies_available,rental_price)"
 				    + " values (?, ?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMedia);
 			
@@ -288,15 +288,12 @@ public class Controller implements ActionListener, DocumentListener{
 			rental_price3 = gui.getRentalPrice();
 			release_date3 = gui.getMediaRelease();
 			media_type3 = gui.getMmedia_type();
-			availability3 = gui.getMavailability();
+	
 			 
-             if(availability3.equals("NO")) {
-             	transmute = 0;
-             }
+           
             if(copies_available3>0) {
 			pstmt.setInt(1,product_id3);
 			pstmt.setInt(2,movie_code3);
-			pstmt.setInt(3, 1);
 			pstmt.setInt(4, Integer.parseInt(release_date3));
 			pstmt.setString(5, media_type3);
 			pstmt.setInt(6, copies_available3);
@@ -348,34 +345,29 @@ public class Controller implements ActionListener, DocumentListener{
 			rental_price3 = gui.getRentalPrice();
 			release_date3 = gui.getMediaRelease();
 			media_type3 = gui.getMmedia_type();
-			availability3 = gui.getMavailability();
+			
 
-			transmute = 1;
-            if(availability3.equals("NO")) {
-            	transmute = 0;
-            }
+			
             if(copies_available3>0) {
-			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
+			String updateMedia = "UPDATE media_type SET movie_code = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
 			pstmt = connections.prepareStatement(updateMedia);
 			pstmt.setInt(1, movie_code3);
-			pstmt.setInt(2, 1);
-			pstmt.setString(3, release_date3);
-			pstmt.setString(4, media_type3);
-			pstmt.setInt(5, copies_available3);
-			pstmt.setFloat(6, rental_price3);
-			pstmt.setInt(7, product_id3);
+			pstmt.setString(2, release_date3);
+			pstmt.setString(3, media_type3);
+			pstmt.setInt(4, copies_available3);
+			pstmt.setFloat(5, rental_price3);
+			pstmt.setInt(6, product_id3);
 			pstmt.execute();
 			gui.refreshMediaTable();
             }else if(copies_available3 == 0) {
         			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
         			pstmt = connections.prepareStatement(updateMedia);
         			pstmt.setInt(1, movie_code3);
-        			pstmt.setInt(2, 0);
-        			pstmt.setString(3, release_date3);
-        			pstmt.setString(4, media_type3);
-        			pstmt.setInt(5, copies_available3);
-        			pstmt.setFloat(6, rental_price3);
-        			pstmt.setInt(7, product_id3);
+        			pstmt.setString(2, release_date3);
+        			pstmt.setString(3, media_type3);
+        			pstmt.setInt(4, copies_available3);
+        			pstmt.setFloat(5, rental_price3);
+        			pstmt.setInt(6, product_id3);
         			pstmt.execute();
         			gui.refreshMediaTable();
                     }
@@ -802,7 +794,6 @@ public class Controller implements ActionListener, DocumentListener{
 	public void ClearMediaInputs() {
 		gui.setMProductID("");
 		gui.setMmovieCode("");
-		gui.setMavailability("");
 		gui.setMediaRelease("");
 		gui.setMmedia_type("");
 		gui.setMediaCopies("");
