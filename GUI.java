@@ -999,7 +999,7 @@ public class GUI extends JFrame{
     }
 
 	public void showMediaRecordTable() {
-	    String[] col = {"product_id", "movie_code","availability", "release_date","media_type","copies_available","rental_price"};
+	    String[] col = {"product_id", "movie_code","release_date","media_type","copies_available","rental_price"};
 	    tableModelMediaRecord = new DefaultTableModel(getMedia(), col) {
            @Override
            public boolean isCellEditable(int row, int column) {
@@ -1113,17 +1113,17 @@ public class GUI extends JFrame{
           gbc.gridy = 2;
           centerPanel.add(MTmovie_code,gbc);
   		
-  		JLabel avail = new JLabel("Availability");
-  		avail.setForeground(Color.BLACK);
-  		avail.setFont(new Font("Verdana", Font.BOLD, 19));
-  		gbc.gridx = 1;
-          gbc.gridy = 3;
-          centerPanel.add(avail,gbc);
-          String[] availability = {"", "YES", "NO"};
-          MTavailability = new JComboBox(availability);
-  		gbc.gridx = 2;
-          gbc.gridy = 3;
-          centerPanel.add(MTavailability, gbc);
+  		// JLabel avail = new JLabel("Availability");
+  		// avail.setForeground(Color.BLACK);
+  		// avail.setFont(new Font("Verdana", Font.BOLD, 19));
+  		// gbc.gridx = 1;
+        //   gbc.gridy = 3;
+        //   centerPanel.add(avail,gbc);
+        //   String[] availability = {"", "YES", "NO"};
+        //   MTavailability = new JComboBox(availability);
+  		// gbc.gridx = 2;
+        //   gbc.gridy = 3;
+        //   centerPanel.add(MTavailability, gbc);
   		
   		JLabel releasedate = new JLabel("Release Date");
   		releasedate.setForeground(Color.BLACK);
@@ -1198,14 +1198,14 @@ public class GUI extends JFrame{
 	
 	
 	public void showMediaTable() {
-	    String[] col = {"product_id", "movie_code","availability", "release_date","media_type","copies_available","rental_price"};
+	    String[] col = {"product_id","movie_code","release_date","media_type","copies_available","rental_price"};
 	    tableModelMedia = new DefaultTableModel(getMedia(), col) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Disable editing for all cells
             }
         };
-;
+
 	    refreshAdminTable();
 	    tableMediaTable = new JTable(tableModelMedia);
 	    tableMediaTable.setEnabled(true); // Enable selection
@@ -1220,16 +1220,14 @@ public class GUI extends JFrame{
 	            if (row != -1) { // Ensure a valid cell is selected
 	                int product_id = (int)tableMediaTable.getValueAt(row,0);
 	                int movie_code = (int)tableMediaTable.getValueAt(row,1);
-	                String availability = (String)tableMediaTable.getValueAt(row,2);
-	                String release_date = (String)tableMediaTable.getValueAt(row,3);
-	                String media_type = (String)tableMediaTable.getValueAt(row,4);             
-	                int copies_available = (int)tableMediaTable.getValueAt(row,5); 
-	                float rental_price = (float)tableMediaTable.getValueAt(row,6); 
+	                String release_date = (String)tableMediaTable.getValueAt(row,2);
+	                String media_type = (String)tableMediaTable.getValueAt(row,3);             
+	                int copies_available = (int)tableMediaTable.getValueAt(row,4); 
+	                float rental_price = (float)tableMediaTable.getValueAt(row,5); 
 	            
 
 	                MTproduct_id.setText(String.valueOf(product_id));
 	            	MTmovie_code.setText(String.valueOf(movie_code));
-	            	MTavailability.setSelectedItem(availability);
 	            	MTrelease.setText(release_date.substring(0, 4));
 	            	MTmedia_type.setSelectedItem(media_type);
 	            	MTcopies.setText(String.valueOf(copies_available));         
@@ -1263,19 +1261,9 @@ public class GUI extends JFrame{
 
 	//getting data from db
 	public Object[][] getMedia() {
-		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//    String username = "root";
-//    String password = "dl_MySQL_su";
-
     ArrayList<Object[]> list = new ArrayList<>();
 
     try {
-        // Load the JDBC driver
-		Class.forName("com.mysql.cj.jdbc.Driver");
-
         // Establish connection
         try (
              Statement statement = connection.createStatement();
@@ -1283,20 +1271,13 @@ public class GUI extends JFrame{
 
             // Process the ResultSet
             while (resultSet.next()) {
-                Object[] row = new Object[7];
+                Object[] row = new Object[6];
                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
-                String transmute="NO";
-                if(resultSet.getInt(3) == 1) {
-     			   transmute = "YES";
-     		   }else if(resultSet.getInt(3) == 0){
-     			   transmute = "NO";
-     		   }else transmute = "";
-                row[2] = transmute;
-                row[3] = resultSet.getString(4); // Assuming column 4 is String
-                row[4] = resultSet.getString(5); // Assuming column 5 is String
-                row[5] = resultSet.getInt(6); // Assuming column 6 is String
-                row[6] = resultSet.getFloat(7); // Assuming column 7 is float          
+                row[2] = resultSet.getInt(3); // Assuming column 4 is String
+                row[3] = resultSet.getString(4); // Assuming column 5 is String
+                row[4] = resultSet.getInt(5); // Assuming column 6 is String
+                row[5] = resultSet.getFloat(6); // Assuming column 7 is float          
                 list.add(row);
             }
         }
@@ -1312,7 +1293,7 @@ public class GUI extends JFrame{
 
 	//refreshing admin table
 	public void refreshMediaTable() {
-	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code","availability", "release_date", "media_type","copies_available","rental_price"});
+	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code", "release_date", "media_type","copies_available","rental_price"});
     }
 
 	public void showMoviesTable() {
@@ -3912,28 +3893,6 @@ try {
 	        // Create the DefaultTableModel with the fetched data
 
 			jTableInstantiate(columnNames, rows, "Rental History Report");
-	        // DefaultTableModel tableModel = new DefaultTableModel(rows.toArray(new Object[0][0]), columnNames) {
-	        //     @Override
-	        //     public boolean isCellEditable(int row, int column) {
-	        //         return false; // Make all cells non-editable
-	        //     }
-	        // };
-
-	        // // Create the JTable using the DefaultTableModel
-	        // JTable table = new JTable(tableModel);
-	        // table.setFont(new Font("Serif", Font.PLAIN, 14)); // Set font for readability
-
-	        // // Set up the JScrollPane for the table
-	        // JScrollPane scrollPane = new JScrollPane(table);
-	        // scrollPane.setPreferredSize(new Dimension(1000, 300)); // Set preferred size
-
-	        // // Panel to contain the JScrollPane
-	        // JPanel panel = new JPanel(new BorderLayout());
-	        // panel.setBackground(new Color(240, 240, 240)); // Soft background color
-	        // panel.add(scrollPane, BorderLayout.CENTER);
-
-	        // // Show the table in a message dialog
-	        // JOptionPane.showMessageDialog(null, panel, "Rental History", JOptionPane.INFORMATION_MESSAGE);
 
 	    } catch (SQLException ex) {
 	        JOptionPane.showMessageDialog(null, "Error retrieving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -4039,7 +3998,6 @@ try {
 	        JOptionPane.showMessageDialog(null, "Invalid User ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
-
 	    // Step 2: Check if the user is currently borrowing a movie (except for User ID 1)
 	    String checkUserQuery = """
 	        SELECT 
@@ -4066,7 +4024,7 @@ try {
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
 	            // If the user is not ID 1 and is already borrowing, show a warning
-	            if (userId != 1 && rs.getString("Status").equals("Currently Borrowing")) {
+	            if (rs.getString("Status").equals("Currently Borrowing")) {
 	                JOptionPane.showMessageDialog(null, "You are already borrowing a movie. Please return the current movie first.", "Error", JOptionPane.ERROR_MESSAGE);
 	                return; // Prevent borrowing if already borrowing
 	            }
@@ -4085,11 +4043,9 @@ try {
 	    // Step 4: Check the movie's availability and other details using the updated SQL query with movie name
 	    String checkMovieQuery = """
 	        SELECT m.movie_code, m.movie_name, m.year, m.rating, gt.description AS `Genre`, mt.media_type, mt.rental_price, 
-	            mt.availability,
+	            mt.copies_available,
 	            CASE 
-	                WHEN mt.availability = 1 THEN 'Available'
-	                ELSE 'Unavailable'
-	            END AS `Movie Availability`
+	                WHEN mt.copies_available > 0 THEN 'Available' ELSE 'Unavailable' END AS 'Movie Availability'
 	        FROM movies m
 	        JOIN media_type mt ON mt.movie_code = m.movie_code
 	        JOIN genre_type gt ON gt.genre_id = m.genre_id
@@ -4193,7 +4149,7 @@ try {
 
 	    	    // Record the borrowing transaction
 	    	    String insertTransactionQuery = """
-	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_toreturn, date_borrowed, admin_no)
+	    	        INSERT INTO transactions (user_no, movie_code, product_id, date_toreturn, date_borrowed, admin_bo)
 	    	        VALUES (?, ?, ?, DATE_ADD(CURDATE(), INTERVAL ? DAY), CURDATE(), ?);
 	    	    """;
 
@@ -4208,26 +4164,18 @@ try {
 	    	        pstmt1.execute();
 //	    	        System.out.println("Executing query: " + pstmt1.toString());
 //	    	        System.out.println("Number of days to borrow: " + numofdaystoborrow);
-	    	        
 	    	                
-	    	     
-	    	                
-	    	        String updatecopiesavailable = "UPDATE media_type  \n"
-	    	        		+ "	    	        SET copies_available = CASE \n"
-	    	        		+ "	    	        WHEN ? > 0 THEN ? - 1 \n"
-	    	        		+ "	    	                ELSE 0 \n"
-	    	        		+ "	    	            END,\n"
-	    	        		+ "	    	            availability = CASE \n"
-	    	        		+ "	    	                WHEN ? - 1 <= 0 THEN 0 \n"
-	    	        		+ "	    	                ELSE 1 \n"
-	    	        		+ "	    	            END\n"
-	    	        		+ "	    	        WHERE product_id = ?";
+	    	        String updatecopiesavailable = "UPDATE media_type SET copies_available = CASE WHEN ? > 0 THEN ? - 1 ELSE 0 END WHERE product_id = ?";
+	    	        		// + "	    	            availability = CASE \n"
+	    	        		// + "	    	                WHEN ? - 1 <= 0 THEN 0 \n"
+	    	        		// + "	    	                ELSE 1 \n"
+	    	        		// + "	    	            END\n"
 	    	    	try {
 	    				PreparedStatement pstmt3 = connection.prepareStatement(updatecopiesavailable);
 	    				pstmt3.setInt(1, Integer.parseInt(copiesavail));
 	    				pstmt3.setInt(2, Integer.parseInt(copiesavail));
-	    				pstmt3.setInt(3, Integer.parseInt(copiesavail));
-	    				pstmt3.setInt(4, Integer.parseInt(value));
+	    				//pstmt3.setInt(3, Integer.parseInt(copiesavail));
+	    				pstmt3.setInt(3, Integer.parseInt(value));
 	    				pstmt3.executeUpdate();
 //	    				System.out.println(copiesavail);
 //	    				System.out.println("Executing query: " + pstmt3.toString());
@@ -4249,15 +4197,120 @@ try {
 	    	    e.printStackTrace();
 	    	}
 
-	    	
-	    
-
 	    // Step 9: Show success message (without database update for now)
 	    JOptionPane.showMessageDialog(null, "Movie borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public void storeUser(String admin_no){
 		loggedInAdmin = admin_no;
+	}
+
+	private void returnMovieGUI(){
+	
+		String value,copiesavail;
+	    // Step 1: Get User ID from the user
+	    String userIdInput = JOptionPane.showInputDialog(null, "Enter UserID of movie returnee", "Return Movie", JOptionPane.PLAIN_MESSAGE);
+	    if (userIdInput == null || userIdInput.trim().isEmpty()) {
+	        return; // If user cancels or doesn't enter a user ID
+	    }
+
+	    // Convert the user input to the correct type
+	    int userId;
+	    try {
+	        userId = Integer.parseInt(userIdInput);
+	    } catch (NumberFormatException e) {
+	        JOptionPane.showMessageDialog(null, "Invalid User ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+		String checkUserQuery = """
+	        SELECT 
+	            u.first_name,
+	            u.last_name,
+	            CASE 
+	                WHEN COUNT(t.transaction_no) > 0 THEN 'Currently Borrowing'
+	                ELSE 'Not Currently Borrowing'
+	            END AS `Status`
+	        FROM 
+	            users u
+	        LEFT JOIN 
+	            transactions t 
+	            ON u.user_no = t.user_no 
+	            AND t.date_returned IS NULL  -- Only consider transactions that are still ongoing (not returned)
+	        WHERE 
+	            u.user_no = ?  -- Placeholder for user_id parameter
+	        GROUP BY 
+	            u.user_no, u.first_name, u.last_name;
+	    """;
+		
+	    try (PreparedStatement pstmt = connection.prepareStatement(checkUserQuery)) {
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();	
+	        if (rs.next()) {
+	            // If the user is not ID 1 and is already borrowing, show a warning
+	            if (rs.getString("Status").equals("Not Currently Borrowing")) {
+	                JOptionPane.showMessageDialog(null, "You are not borrowing a movie. Please borrow a movie first", "Error", JOptionPane.ERROR_MESSAGE);
+	                return; // Prevent borrowing if already borrowing
+	            }
+	        }	    
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error checking user borrowing status: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		String checkTransactions = """
+	        SELECT 	u.first_name, 
+					u.last_name, 
+                    m.movie_name, 
+                    mt.media_type, 
+                    t.date_toreturn, 
+                    current_date(),  
+                    timestampdiff(day, t.date_borrowed, current_date()) * mt.rental_price AS "normal fees", 
+					timestampdiff(day, t.date_toreturn, current_date()) * 1.2 *  mt.rental_price AS "late fees"
+	        FROM 
+				transactions t
+            JOIN 	users u 
+					ON u.user_no = t.user_no
+            JOIN 	movies m 
+					ON m.movie_code = t.movie_code
+            JOIN 	media_type mt 
+					ON t.product_id = mt.product_id
+	        WHERE 	t.user_no = ? 
+					AND date_returned IS NULL;
+	    """;
+
+		try(PreparedStatement returnQuery = connection.prepareStatement(checkTransactions)){
+			returnQuery.setInt(1, userId);
+			ResultSet rs = returnQuery.executeQuery();
+			if(rs.next()){
+			String displayResult = String.format(
+			"""
+			Customer name: %s %s\n
+			Movie name: %s\n
+			Media type to return: %s\n
+			Date to return: %s\n
+			Current Date: %s\n
+			Customer has to pay for normal fees: %s\n
+			""",
+			rs.getString("first_name"),
+			rs.getString("last_name"),
+			rs.getString("movie_name"),
+			rs.getString("media_type"),
+			rs.getString("date_toreturn"),
+			rs.getString("current_date()"),
+			rs.getString("normal fees")
+			);
+			JOptionPane.showMessageDialog(null, displayResult, "Return Details", JOptionPane.INFORMATION_MESSAGE);
+			String lateFees = rs.getString("late fees");
+
+			}
+
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error checking user borrowing status: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+
 	}
 
 	public void setActionListener(ActionListener listener) {
@@ -4338,11 +4391,9 @@ try {
 		btnReturntoMainFromTransaction.addActionListener(listener);
 
 		btnBorrowMovie.addActionListener(e -> borrowMovieGUI());
+		btnReturnMovie.addActionListener(e -> returnMovieGUI());
 		btnReturnFromMediaManagement.addActionListener(listener);
 	}
-	
-	
-	
 	
 	public String getLoggedInAdmin(){
 		return loggedInAdmin;

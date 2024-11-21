@@ -30,7 +30,6 @@ public class Model {
 				storeGUI.storeUser( row[2].toString() );
             	return true;
             }
-
        }
 		}
 		catch (Exception e) {
