@@ -64,7 +64,7 @@ public class GUI extends JFrame{
 	private JPanel UserProfile = new JPanel();
 	private JPanel MovieRecord = new JPanel();
 	private JPanel MediaTypeRecord = new JPanel();
-
+	private JPanel ADDINGMOVIEREQ = new JPanel();
 	
 	// admin table text fields
 	private JTextField ATAdminNo, ATFirst_Name, ATLast_Name, ATPass, ATAdminLevel;
@@ -219,6 +219,10 @@ public class GUI extends JFrame{
 		MediaTypeRecord.setLayout(new BorderLayout());
 		showMediaRecordTable();
 		MediaRecordTablePanel();
+		
+		ADDINGMOVIEREQ.setLayout(new BorderLayout());
+		showMovie_reqTransactionTable();
+		Movie_reqTransactionTablePanel();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -2236,7 +2240,7 @@ try {
 	   gbc.gridy = 2;
 	   centerPanel.add(MRmovie_name,gbc);
 	   
-	   JLabel datefilled = new JLabel("Date Filled");
+	   JLabel datefilled = new JLabel("Date Filed");
 	   datefilled.setForeground(Color.BLACK);
 	   datefilled.setFont(new Font("Verdana", Font.BOLD, 19));
 	   gbc.gridx = 1;
@@ -4307,6 +4311,254 @@ try {
 
 	}
 
+	private JScrollPane scrollerMovie_reqTransaction;
+	private JTable tableMovie_reqTransaction;
+	private DefaultTableModel tableModelMovie_reqTransaction;
+	private JTextField MRTTrequest_no,MRTTmovie_name, MRTTdate_filled, MRTTuser_no;
+	private JComboBox MRTTapproved,MRTTmedia_type;
+	private JButton btnUpdateMovie_reqTransactionTable,btnreturntohomefromMRTT;
+	
+	
+
+	public void createMovie_reqTransactionTablePanel() {		
+		setContentPane(ADDINGMOVIEREQ);
+        revalidate();
+        repaint();
+	}
+
+	 public void Movie_reqTransactionTablePanel() {
+			// NORTH PANEL
+			   JPanel panelNorth = new JPanel();
+			   panelNorth.setLayout(new FlowLayout());
+			   panelNorth.setBackground(Color.decode("#0A285f"));
+
+			   JLabel label = new JLabel("MOVIE REQUEST FOR APPROVAL");
+			   label.setForeground(Color.WHITE);
+			   label.setFont(new Font("Gaegu", Font.BOLD, 18));
+			   panelNorth.add(label);
+			   
+			   ADDINGMOVIEREQ.add(panelNorth, BorderLayout.NORTH);
+
+
+			 //center panel
+			   JPanel centerPanel = new JPanel();
+			   centerPanel.setLayout(new GridBagLayout());
+			   GridBagConstraints gbc = new GridBagConstraints();
+
+			   gbc.insets = new Insets(6, 6, 6, 6);
+			   gbc.anchor = GridBagConstraints.WEST;
+
+			   
+			   JLabel mrequest_no = new JLabel("Request no.");
+			   mrequest_no.setForeground(Color.BLACK);
+			   mrequest_no.setFont(new Font("Verdana", Font.BOLD, 19));
+			   gbc.gridx = 1;
+			   gbc.gridy = 1;
+			   centerPanel.add(mrequest_no, gbc);
+			   MRTTrequest_no = new JTextField(20);
+			   gbc.gridx = 2;
+			   gbc.gridy = 1;
+			   centerPanel.add(MRTTrequest_no, gbc);
+			   
+			   JLabel movname = new JLabel("Movie Name");
+			   movname.setForeground(Color.BLACK);
+			   movname.setFont(new Font("Verdana", Font.BOLD, 19));
+			   gbc.gridx = 1;
+			   gbc.gridy = 2;
+			   centerPanel.add(movname, gbc);
+			   MRTTmovie_name = new JTextField(20);
+			   gbc.gridx = 2;
+			   gbc.gridy = 2;
+			   centerPanel.add(MRTTmovie_name,gbc);
+			   
+			   JLabel datefilled = new JLabel("Date Filed");
+			   datefilled.setForeground(Color.BLACK);
+			   datefilled.setFont(new Font("Verdana", Font.BOLD, 19));
+			   gbc.gridx = 1;
+			   gbc.gridy = 3;
+			   centerPanel.add(datefilled,gbc);
+			   MRTTdate_filled = new JTextField(20);
+			   gbc.gridx = 2;
+			   gbc.gridy = 3;
+			   centerPanel.add(MRTTdate_filled, gbc);
+			   
+			   JLabel userno = new JLabel("User no.");
+			   userno.setForeground(Color.BLACK);
+			   userno.setFont(new Font("Verdana", Font.BOLD, 19));
+			   gbc.gridx = 1;
+			   gbc.gridy = 4;
+			   centerPanel.add(userno , gbc);
+			   MRTTuser_no = new JTextField(15);
+			   gbc.gridx = 2;
+			   gbc.gridy = 4;
+			   centerPanel.add(MRTTuser_no, gbc);
+			   
+			   JLabel approve = new JLabel("Approved");
+			   approve.setForeground(Color.BLACK);
+			   approve.setFont(new Font("Verdana", Font.BOLD, 19));
+			   gbc.gridx = 1;
+			   gbc.gridy = 5;
+			   centerPanel.add(approve , gbc);
+			   String[] isApproved = {"", "YES", "NO"};
+			   MRTTapproved = new JComboBox(isApproved);
+			   gbc.gridx = 2;
+			   gbc.gridy = 5;
+			   centerPanel.add(MRTTapproved, gbc);
+			   
+			   JLabel mediaType = new JLabel("Media Type");
+			   mediaType.setForeground(Color.BLACK);
+			   mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
+			   gbc.gridx = 1;
+			   gbc.gridy = 6;
+			   centerPanel.add(mediaType , gbc);
+			   String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
+			   MRTTmedia_type = new JComboBox(mediachoice);
+			   gbc.gridx = 2;
+			   gbc.gridy = 6;
+			   centerPanel.add(MRTTmedia_type, gbc);
+			   
+			   btnUpdateMovie_reqTransactionTable = new JButton("Update");
+			   gbc.gridx = 1;
+			   gbc.gridy = 7;
+			   gbc.gridwidth = 2;
+			   gbc.anchor = GridBagConstraints.CENTER;
+			   centerPanel.add(btnUpdateMovie_reqTransactionTable, gbc);
+			   
+			   ADDINGMOVIEREQ.add(centerPanel , BorderLayout.EAST);
+
+			   //SOUTH PANEL
+			   JPanel panelSouth = new JPanel();
+			   panelSouth.setLayout(new FlowLayout());
+			   panelSouth.setBackground(Color.decode("#fdfdfd"));
+			   
+			   
+			   btnUpdateMovie_reqTransactionTable = new JButton("Update");
+			   btnreturntohomefromMRTT  = new JButton("Return");
+			   panelSouth.add(btnreturntohomefromMRTT);
+			   
+			   
+			   btnUpdateMovieReqTable.setActionCommand("UpdateMovie_reqTransactionTable");
+			   btnreturntohomefromMRTT.setActionCommand("returntoTransaction");
+			   
+			   ADDINGMOVIEREQ.add(panelSouth, BorderLayout.SOUTH);
+		   }
+		   
+	 public void showMovie_reqTransactionTable() {
+		   String[] col = {"request_number", "movie_name","date_filled", "user_no", "approved","media_type"};
+		   tableModelMovie_reqTransaction = new DefaultTableModel(getMovie_reqTransaction(), col){
+			   @Override
+			   public boolean isCellEditable(int row, int column) {
+				   return false; // Disable editing for all cells
+			   }
+		   };
+		   
+		   refreshAdminTable();
+		   tableMovie_reqTransaction = new JTable(tableModelMovie_reqTransaction);
+		   tableMovie_reqTransaction.setEnabled(true); // Enable selection
+		   
+		  
+		   // Add a mouse click listener to the table
+		   tableMovie_reqTransaction.addMouseListener(new java.awt.event.MouseAdapter() {
+			  
+			   public void mouseClicked(java.awt.event.MouseEvent evt) {
+				   int row = tableMovie_reqTransaction.getSelectedRow(); // Get selected row index
+				  
+				   
+				   if (row != -1) { // Ensure a valid cell is selected
+					   int request_number = (int)tableMovie_reqTransaction.getValueAt(row,0);
+					   String movie_name = (String)tableMovie_reqTransaction.getValueAt(row,1);
+					   String date_filled = (String)tableMovie_reqTransaction.getValueAt(row,2);
+					   int user_no = (int)tableMovie_reqTransaction.getValueAt(row,3);
+					   String approved = (String)tableMovie_reqTransaction.getValueAt(row,4);             
+					   String media_type = (String)tableMovie_reqTransaction.getValueAt(row,5); 
+					   
+					   MRTTrequest_no.setText(String.valueOf(request_number));
+					   MRTTmovie_name.setText(movie_name);
+					   MRTTdate_filled.setText(date_filled);
+					   MRTTuser_no.setText(String.valueOf(user_no));
+					   MRTTapproved.setSelectedItem(approved);
+					   MRTTmedia_type.setSelectedItem(media_type);	
+										  
+				   }
+			   }
+		   });
+		   
+		   scrollerMovie_reqTransaction = new JScrollPane(tableMovie_reqTransaction);
+		   scrollerMovie_reqTransaction.setPreferredSize(new Dimension(450, 200)); // Set preferred size
+		   
+		   // Center panel
+		   JPanel moreCenter = new JPanel(new BorderLayout());
+		   
+		   // CENTER PANEL center panel
+		   JPanel panelCenter = new JPanel(new GridBagLayout());
+		   GridBagConstraints gbc = new GridBagConstraints();
+		   gbc.gridx = 0;
+		   gbc.gridy = 0;
+		   gbc.fill = GridBagConstraints.BOTH; // Make the table expand both horizontally and vertically
+		   gbc.weightx = 1.0; // Give more weight to the x-axis for expansion
+		   gbc.weighty = 1.0; // Give more weight to the y-axis for expansion
+		   gbc.insets = new Insets(10, 10, 10, 10);
+		   panelCenter.add(scrollerMovie_reqTransaction, gbc);
+		   moreCenter.add(panelCenter, BorderLayout.CENTER);
+		   
+		   ADDINGMOVIEREQ.add(moreCenter, BorderLayout.WEST);
+		   ADDINGMOVIEREQ.revalidate(); // Refresh the UI
+		   ADDINGMOVIEREQ.repaint(); // Ensure it's redrawn
+		}
+
+		//getting data from db
+	public Object[][] getMovie_reqTransaction() {
+
+		ArrayList<Object[]> list = new ArrayList<>();
+
+		try {
+		   // Load the JDBC driver
+		   Class.forName("com.mysql.cj.jdbc.Driver");
+
+		   // Establish connection
+		   try (
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM movie_req WHERE approved IS NULL")) {
+
+			   // Process the ResultSet
+			   
+			   
+			   while (resultSet.next()) {
+				   Object[] row = new Object[6];
+				   row[0] = resultSet.getInt(1); 
+				   row[1] = resultSet.getString(2);            
+				   row[2] = resultSet.getString(3);
+				   row[3] = resultSet.getInt(4); 
+				   String transmute;
+				   
+				   if(resultSet.getObject(5) == null) {
+					   transmute = "";
+				   }else if(resultSet.getInt(5) == 0 ){
+					   transmute = "NO";
+				   }else transmute = "YES";
+				   row[4] = transmute;
+				   row[5] = resultSet.getString(6);           
+				   list.add(row);
+			   }
+		   }
+
+		   // Convert the list to a 2D array
+		   return list.toArray(new Object[0][6]);
+
+		} catch (Exception e) {
+		   e.printStackTrace(); // Print stack trace for debugging
+		   return null;
+		}
+		}
+
+		//refreshing admin table
+	public void refreshMovie_reqTransactionTable() {
+				tableModelMovie_reqTransaction.setDataVector(getMovie_reqTransaction(), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
+		}
+
+	
+	
+	
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
 		btnRecordManagement.addActionListener(listener);
@@ -4387,6 +4639,10 @@ try {
 		btnBorrowMovie.addActionListener(e -> borrowMovieGUI());
 		btnReturnMovie.addActionListener(e -> returnMovieGUI());
 		btnReturnFromMediaManagement.addActionListener(listener);
+		btnUpdateMovie_reqTransactionTable.addActionListener(listener);
+		btnreturntohomefromMRTT.addActionListener(listener);
+		btnFormalizeMovieRequests.addActionListener(listener);
+		
 	}
 	
 	public String getLoggedInAdmin(){
