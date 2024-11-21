@@ -73,7 +73,7 @@ public class GUI extends JFrame{
 	private JTextArea GTDesc;
 	//media type
 	private JTextField MTproduct_id, MTmovie_code, MTrelease, MTcopies, MTrentprice;
-	private JComboBox MTmedia_type, MTavailability;
+	private JComboBox MTmedia_type;
 	//movie req
 	private JTextField MRrequest_no, MRmovie_name, MRdate_filled, MRuser_no;
 	private JComboBox MRmedia_type, MRapproved;//MRin_stock
@@ -1113,62 +1113,50 @@ public class GUI extends JFrame{
           gbc.gridy = 2;
           centerPanel.add(MTmovie_code,gbc);
   		
-  		// JLabel avail = new JLabel("Availability");
-  		// avail.setForeground(Color.BLACK);
-  		// avail.setFont(new Font("Verdana", Font.BOLD, 19));
-  		// gbc.gridx = 1;
-        //   gbc.gridy = 3;
-        //   centerPanel.add(avail,gbc);
-        //   String[] availability = {"", "YES", "NO"};
-        //   MTavailability = new JComboBox(availability);
-  		// gbc.gridx = 2;
-        //   gbc.gridy = 3;
-        //   centerPanel.add(MTavailability, gbc);
-  		
   		JLabel releasedate = new JLabel("Release Date");
   		releasedate.setForeground(Color.BLACK);
   		releasedate.setFont(new Font("Verdana", Font.BOLD, 19));
   		gbc.gridx = 1;
-          gbc.gridy = 4;
+          gbc.gridy = 3;
           centerPanel.add(releasedate , gbc);
           MTrelease = new JTextField(15);
   		gbc.gridx = 2;
-          gbc.gridy = 4;
+          gbc.gridy = 3;
           centerPanel.add(MTrelease, gbc);
           
           JLabel mediaType = new JLabel("Media Type");
           mediaType.setForeground(Color.BLACK);
           mediaType.setFont(new Font("Verdana", Font.BOLD, 19));
   		gbc.gridx = 1;
-          gbc.gridy = 5;
+          gbc.gridy = 4;
           centerPanel.add(mediaType , gbc);
           String[] mediachoice = {"", "VHS", "CD", "DVD", "Blu-Ray","Online"};
           MTmedia_type = new JComboBox(mediachoice);
          //MTmedia_type = new JTextField(15);
   		gbc.gridx = 2;
-          gbc.gridy = 5;
+          gbc.gridy = 4;
           centerPanel.add(MTmedia_type, gbc);
           
           JLabel copies = new JLabel("Copies Available");
           copies.setForeground(Color.BLACK);
           copies.setFont(new Font("Verdana", Font.BOLD, 19));
   		gbc.gridx = 1;
-          gbc.gridy = 6;
+          gbc.gridy = 5;
           centerPanel.add(copies , gbc);
           MTcopies = new JTextField(15);
   		gbc.gridx = 2;
-          gbc.gridy = 6;
+          gbc.gridy = 5;
           centerPanel.add(MTcopies, gbc);
           
           JLabel rentprice = new JLabel("Rental Price");
           rentprice.setForeground(Color.BLACK);
           rentprice.setFont(new Font("Verdana", Font.BOLD, 19));
   		gbc.gridx = 1;
-          gbc.gridy = 7;
+          gbc.gridy = 6;
           centerPanel.add(rentprice , gbc);
           MTrentprice = new JTextField(15);
   		gbc.gridx = 2;
-          gbc.gridy = 7;
+          gbc.gridy = 6;
           centerPanel.add(MTrentprice, gbc);
           
           
@@ -1183,7 +1171,7 @@ public class GUI extends JFrame{
   		btnAddInMediaTable = new JButton("Add");
   		btnUpdateMediaTable = new JButton("Update");
   		btnDeleteInMediaTable = new JButton("Delete");
-     		panelSouth.add(btnAddInMediaTable);
+     	panelSouth.add(btnAddInMediaTable);
   		panelSouth.add(btnUpdateMediaTable);
   		panelSouth.add(btnDeleteInMediaTable);
   		
@@ -1194,11 +1182,8 @@ public class GUI extends JFrame{
   		Media_TypeTable.add(panelSouth, BorderLayout.SOUTH);
 		}
 	
-
-	
-	
 	public void showMediaTable() {
-	    String[] col = {"product_id","movie_code","release_date","media_type","copies_available","rental_price"};
+	    String[] col = {"product_id", "movie_code", "release_date","media_type","copies_available","rental_price"};
 	    tableModelMedia = new DefaultTableModel(getMedia(), col) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -1257,13 +1242,23 @@ public class GUI extends JFrame{
 	    Media_TypeTable.add(moreCenter, BorderLayout.WEST);
 	    Media_TypeTable.revalidate(); // Refresh the UI
 	    Media_TypeTable.repaint(); // Ensure it's redrawn
-	}
-
+	}	//getting data from db
+	
 	//getting data from db
 	public Object[][] getMedia() {
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//    String username = "root";
+//    String password = "dl_MySQL_su";
+
     ArrayList<Object[]> list = new ArrayList<>();
 
     try {
+        // Load the JDBC driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+
         // Establish connection
         try (
              Statement statement = connection.createStatement();
@@ -1274,7 +1269,7 @@ public class GUI extends JFrame{
                 Object[] row = new Object[6];
                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
-                row[2] = resultSet.getInt(3); // Assuming column 4 is String
+                row[2] = resultSet.getString(3); // Assuming column 4 is String
                 row[3] = resultSet.getString(4); // Assuming column 5 is String
                 row[4] = resultSet.getInt(5); // Assuming column 6 is String
                 row[5] = resultSet.getFloat(6); // Assuming column 7 is float          
@@ -1283,19 +1278,17 @@ public class GUI extends JFrame{
         }
 
         // Convert the list to a 2D array
-        return list.toArray(new Object[0][7]);
+        return list.toArray(new Object[0][6]);
 
     } catch (Exception e) {
         e.printStackTrace(); // Print stack trace for debugging
         return null;
     }
 }
-
 	//refreshing admin table
 	public void refreshMediaTable() {
 	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_code", "release_date", "media_type","copies_available","rental_price"});
     }
-
 	public void showMoviesTable() {
 			String[] col = {"movie_code", "movie_name", "year","rating","language","genre_id"};
 			tableModelMovies = new DefaultTableModel(getMovies(), col){
@@ -4496,14 +4489,6 @@ try {
 		MTrentprice.setText(num);
 	}
 	
-	public String getMavailability() {
-	    return MTavailability.getSelectedItem().toString();
-	}
-	
-	public void setMavailability(String num) {
-		MTavailability.setSelectedItem(num);
-	}
-	
 	public String getMmedia_type() {
 	    return MTmedia_type.getSelectedItem().toString();
 	}
@@ -4832,7 +4817,6 @@ try {
 		setGenreDesc("");
 		setMProductID("");
 		setMmovieCode("");
-		setMavailability("");
 		setMediaRelease("");
 		setMmedia_type("");
 		setMediaCopies("");
