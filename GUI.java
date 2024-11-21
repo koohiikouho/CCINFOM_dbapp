@@ -4264,7 +4264,10 @@ try {
                     t.date_toreturn, 
                     current_date(),  
                     timestampdiff(day, t.date_borrowed, current_date()) * mt.rental_price AS "normal fees", 
-					timestampdiff(day, t.date_toreturn, current_date()) * 1.2 *  mt.rental_price AS "late fees"
+					timestampdiff(day, t.date_toreturn, current_date()) * 1.2 *  mt.rental_price AS "late fees",
+					t.transaction_no,
+					t.product_id,
+					mt.copies_available
 	        FROM 
 				transactions t
             JOIN 	users u 
@@ -4281,6 +4284,11 @@ try {
 			returnQuery.setInt(1, userId);
 			ResultSet rs = returnQuery.executeQuery();
 			if(rs.next()){
+			Float lateFees = rs.getFloat("late fees");
+			Float normalFees = rs.getFloat("normal fees");
+			Integer transactionNo = rs.getInt("transaction_no");
+			Integer productId = rs.getInt("product_id");
+			Integer copiesAvailable = rs.getInt("copies_available");
 			String displayResult = String.format(
 			"""
 			Customer name: %s %s\n
@@ -4288,7 +4296,7 @@ try {
 			Media type to return: %s\n
 			Date to return: %s\n
 			Current Date: %s\n
-			Customer has to pay for normal fees: %s\n
+			Customer has to pay for normal fees: %2f PHP\n
 			""",
 			rs.getString("first_name"),
 			rs.getString("last_name"),
@@ -4296,10 +4304,50 @@ try {
 			rs.getString("media_type"),
 			rs.getString("date_toreturn"),
 			rs.getString("current_date()"),
-			rs.getString("normal fees")
-			);
+			normalFees);
 			JOptionPane.showMessageDialog(null, displayResult, "Return Details", JOptionPane.INFORMATION_MESSAGE);
-			String lateFees = rs.getString("late fees");
+			
+			if(lateFees > 0){
+				displayResult = String.format("""
+					Customer is returning the rental LATE\n
+					customer has to pay an additional: %2f PHP
+						""", lateFees);
+			JOptionPane.showMessageDialog(null, displayResult, "LATE RETURN", JOptionPane.INFORMATION_MESSAGE);
+			normalFees += lateFees;
+			}
+			
+			displayResult = String.format("""
+					Customer pays: %2f
+						""", normalFees);
+			JOptionPane.showMessageDialog(null, displayResult, "HAS TO PAY", JOptionPane.INFORMATION_MESSAGE);
+
+			String updateAvailable = "UPDATE media_type SET copies_available = CASE WHEN ? > 0 THEN ? + 1 ELSE 1 END WHERE product_id = ?";
+			String updateTransaction = "UPDATE transactions SET date_returned = CURDATE(), payment = ?, admin_re = ? WHERE transaction_no = ?";
+
+			try {
+				PreparedStatement returnSt = connection.prepareStatement(updateAvailable);
+				returnSt.setInt(1, copiesAvailable);
+				returnSt.setInt(2, copiesAvailable);
+				returnSt.setInt(3, productId);
+				
+				returnSt.executeUpdate();
+
+				returnSt = connection.prepareStatement(updateTransaction);
+				
+				returnSt.setFloat(1, normalFees);
+				returnSt.setInt(2, Integer.parseInt(loggedInAdmin) );
+				returnSt.setInt(3, transactionNo);
+				returnSt.executeUpdate();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Something went wrong", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			displayResult = String.format("""
+					Transaction Completed!\n
+					Product returned to inventory
+						""");
+			JOptionPane.showMessageDialog(null, displayResult, "Transaction Success", JOptionPane.INFORMATION_MESSAGE);
 
 			}
 
