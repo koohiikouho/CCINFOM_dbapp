@@ -2391,11 +2391,12 @@ try {
 		   row[2] = resultSet.getString(3);
 		   row[3] = resultSet.getInt(4); 
 		   String transmute;
-		   if(resultSet.getInt(5) == 1) {
-			   transmute = "YES";
-		   }else if(resultSet.getInt(5) == 0){
+		   
+		   if(resultSet.getObject(5) == null) {
+			   transmute = "";
+		   }else if(resultSet.getInt(5) == 0 ){
 			   transmute = "NO";
-		   }else transmute = "";
+		   }else transmute = "YES";
 		   row[4] = transmute;
 		   row[5] = resultSet.getString(6);           
 		   list.add(row);
