@@ -5,12 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
 
 
 public class Controller implements ActionListener, DocumentListener{
@@ -80,11 +77,9 @@ public class Controller implements ActionListener, DocumentListener{
 		    Object[][] mediaArray = new Object[tempList.size()][2];
 
 		    try {
-		        // Ensure the JDBC driver is loaded
-		        Class.forName("com.mysql.cj.jdbc.Driver");
 
 		        // Prepare the SQL query
-		        String movieInfos = "SELECT m.movie_code, m.movie_name, mt.copies_available, m.year,m.language, gt.description\n"
+		String movieInfos = "SELECT m.movie_code, m.movie_name, mt.copies_available, m.year,m.language, gt.description\n"
 		        		+ "	FROM movies m\n"
 		        		+ "LEFT JOIN genre_type gt ON m.genre_id = gt.genre_id "
 		        		+ "LEFT JOIN media_type mt ON m.movie_code = mt.movie_code"
@@ -105,44 +100,7 @@ public class Controller implements ActionListener, DocumentListener{
 	                    info[5] = rs.getString(6);   // desc  
 	                    list.add(info);
 	            }
-		        	
-//		        	 String getallMedia = " SELECT mt.media_type, mt.rental_price "
-//			                   + "FROM movies m "
-//			                   + "JOIN genre_type gt ON m.genre_id = gt.genre_id "
-//			                   + "JOIN media_type mt ON m.movie_code = mt.movie_code "
-//			                   + "WHERE m.movie_code = ?;";
-//
-//			try (PreparedStatement pstmt4 = connections.prepareStatement(getallMedia)) {
-//			    // Set the movie code parameter
-//			    pstmt4.setInt(1, Integer.parseInt(gui.getMRMmovie_code()));
-//
-//			    // Execute the query
-//			    ResultSet rs4 = pstmt4.executeQuery();
-//
-//			    // Initialize variables to handle results
-//
-//			    // Fetch results into a temporary list
-//			    StringBuilder sb = new StringBuilder();
-//			    while (rs4.next()) {
-//			       
-//			        row[0] = rs4.getString("media_type");  // Store media_type
-//			        row[1] = rs4.getDouble("rental_price"); // Store rental_price
-//			        
-//			        
-//			        sb.append(row[0] + " - ₱" + row[1]);
-//			        
-//			        if (rs4.next()) {
-//			            // Process the first row
-//			            String mediaType = rs4.getString("media_type");
-//			            double rentalPrice = rs4.getDouble("rental_price");
-//			            System.out.println("Media Type: " + mediaType + ", Rental Price: " + rentalPrice);
-//			        }
-//			       
-//			    }
-
-
-
-			    JOptionPane.showMessageDialog(null, 
+				JOptionPane.showMessageDialog(null, 
 		                "Movie Code: " + info[0] + "\n" +
 		                "Movie Name: " + info[1] + "\n" +
 		                "Copies Available: " + info[2] + "\n"+
@@ -152,11 +110,108 @@ public class Controller implements ActionListener, DocumentListener{
 		               // "Rental Price"+ sb  + "\n" 
 		                
 		                );
-			    
-//			} catch (Exception ex) {
-//			    System.err.println("Error while executing getallMedia query: " + ex.getMessage());
-//			    ex.printStackTrace(); // Detailed log for debugging
-//			}
+		        	
+		        String getAllMedia = "SELECT mt.media_type, mt.rental_price, m.movie_name "
+			                   + "FROM movies m "
+			                   + "JOIN genre_type gt ON m.genre_id = gt.genre_id "
+			                   + "JOIN media_type mt ON m.movie_code = mt.movie_code "
+			                   + "WHERE m.movie_code = ?;";
+				String getBorrowCount = """
+						SELECT COUNT(t.transaction_no) AS "counter"
+						FROM movies m
+						JOIN transactions t  ON m.movie_code = t.movie_code
+						WHERE m.movie_code = ?
+						GROUP BY m.movie_code;
+						""";
+				StringBuilder report = new StringBuilder();
+				try {
+					PreparedStatement mediaTypes = connections.prepareStatement(getAllMedia);
+					mediaTypes.setString(1, gui.getMRMmovie_code());		
+					ResultSet typeResult = mediaTypes.executeQuery();
+
+					PreparedStatement borrowCount = connections.prepareStatement(getBorrowCount);
+					borrowCount.setString(1, gui.getMRMmovie_code());
+					ResultSet borrowResult = borrowCount.executeQuery();
+					
+					String movieName = "error";
+					if(borrowResult.next()){
+						String counter = borrowResult.getString("counter");
+						
+						JOptionPane.showMessageDialog(null, "This movie has been borrowed " + counter
+					+ " times", "Borrow Count", JOptionPane.INFORMATION_MESSAGE);
+					}
+						
+					report.append("Media Type\t\t\tRentalPrices\n");
+					while (typeResult.next()) {
+					String mediaTypeName = typeResult.getString("media_type");
+					Float price = typeResult.getFloat("rental_price");
+					movieName = typeResult.getString("movie_name");
+					 // Check for valid date and valid number of movies borrowed
+
+					report.append(movieName).append(" in ").append(mediaTypeName).append("\t\t").append(price).append(" PHP\n");
+						}
+			JTextArea textArea = new JTextArea(report.toString());
+	        textArea.setEditable(false);
+	        textArea.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
+	        textArea.setBackground(new Color(245, 245, 245));  // Soft background color
+	        textArea.setMargin(new Insets(10, 10, 10, 10));  // Add padding
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        scrollPane.setPreferredSize(new Dimension(600, 400));
+
+	        // Customize the window (Optional)
+	        JPanel panel = new JPanel(new BorderLayout());
+	        panel.setBackground(new Color(240, 240, 240));  // Soft background color
+	        panel.add(scrollPane, BorderLayout.CENTER);
+
+	        JOptionPane.showMessageDialog(null, panel, "Media Types for " + movieName, JOptionPane.INFORMATION_MESSAGE);
+						
+			} catch(Exception ex){
+				ex.printStackTrace(); 
+			}
+
+						 
+			
+			String currentlyBorrowedByQuery = """
+					SELECT CONCAT(u.first_name, " ", u.last_name) AS "Borrower's Name", mt.media_type
+					FROM movies m
+					JOIN transactions t on m.movie_code = t.movie_code
+					JOIN media_type mt on t.product_id = mt.product_id
+					JOIN users u on u.user_no = t.user_no
+					WHERE m.movie_code = ? AND t.date_returned IS NULL;
+					""";
+			PreparedStatement borrowers = connections.prepareStatement(currentlyBorrowedByQuery);
+
+			borrowers.setString(1, gui.getMRMmovie_code());
+			ResultSet borrowersResult = borrowers.executeQuery();
+
+			StringBuilder report2 = new StringBuilder();
+
+				report2.append("Borrower\t\tMedia Type\n");
+				while (borrowersResult.next()) {
+				String borrowerName = borrowersResult.getString("Borrower's Name");
+				String mediaTYpe = borrowersResult.getString("media_type");
+				report2.append(borrowerName).append("\t\t").append(mediaTYpe).append("\n");
+				}
+
+					JTextArea textArea2 = new JTextArea(report2.toString());
+					textArea2.setEditable(false);
+					textArea2.setFont(new Font("Serif", Font.PLAIN, 14));  // Set a readable font
+					textArea2.setBackground(new Color(245, 245, 245));  // Soft background color
+					textArea2.setMargin(new Insets(10, 10, 10, 10));  // Add padding
+					JScrollPane scrollPane2 = new JScrollPane(textArea2);
+					scrollPane2.setPreferredSize(new Dimension(600, 400));
+		
+					// Customize the window (Optional)
+					JPanel panel2 = new JPanel(new BorderLayout());
+					panel2.setBackground(new Color(240, 240, 240));  // Soft background color
+					panel2.add(scrollPane2, BorderLayout.CENTER);
+		
+					JOptionPane.showMessageDialog(null, panel2, "Current Borrowers List", JOptionPane.INFORMATION_MESSAGE);			
+			
+			// } catch (Exception ex) {
+			//     System.err.println("Error while executing getallMedia query: " + ex.getMessage());
+			//     ex.printStackTrace(); // Detailed log for debugging
+			// }
 		        	
 		        	
 

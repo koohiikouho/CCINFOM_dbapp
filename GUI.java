@@ -4797,6 +4797,12 @@ try {
 	public String getReqMediaType() {
 	    return mediachoices.getSelectedItem().toString();
 	}
+
+	public void movieDetails() {
+		
+
+	}
+
 	
 	public void setActionListener(ActionListener listener) {
 		//btnTableInput.addActionListener(listener);
