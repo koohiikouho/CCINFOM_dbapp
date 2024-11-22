@@ -4432,7 +4432,6 @@ try {
 			   panelSouth.setBackground(Color.decode("#fdfdfd"));
 			   
 			   
-			   btnUpdateMovie_reqTransactionTable = new JButton("Update");
 			   btnreturntohomefromMRTT  = new JButton("Return");
 			   panelSouth.add(btnreturntohomefromMRTT);
 			   
@@ -4638,6 +4637,7 @@ try {
 
 		btnBorrowMovie.addActionListener(e -> borrowMovieGUI());
 		btnReturnMovie.addActionListener(e -> returnMovieGUI());
+		
 		btnReturnFromMediaManagement.addActionListener(listener);
 		btnUpdateMovie_reqTransactionTable.addActionListener(listener);
 		btnreturntohomefromMRTT.addActionListener(listener);
