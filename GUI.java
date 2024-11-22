@@ -4372,6 +4372,7 @@ try {
 	private JComboBox MRTTapproved,MRTTmedia_type;
 	private JButton btnUpdateMovie_reqTransactionTable,btnreturntohomefromMRTT;
 	
+
 	public void createMovie_reqTransactionTablePanel() {		
 		setContentPane(ADDINGMOVIEREQ);
         revalidate();
@@ -4484,20 +4485,18 @@ try {
 			   panelSouth.setBackground(Color.decode("#fdfdfd"));
 			   
 			   
-			   btnUpdateMovie_reqTransactionTable = new JButton("Update");
 			   btnreturntohomefromMRTT  = new JButton("Return");
 			   panelSouth.add(btnreturntohomefromMRTT);
 			   
 			   
-			   btnUpdateMovieReqTable.setActionCommand("UpdateMovie_reqTransactionTable");
+			   btnUpdateMovie_reqTransactionTable.setActionCommand("UpdateMovie_reqTransactionTable");
 			   btnreturntohomefromMRTT.setActionCommand("returntoTransaction");
 			   
 			   ADDINGMOVIEREQ.add(panelSouth, BorderLayout.SOUTH);
 		   }
 		   
 	 public void showMovie_reqTransactionTable() {
-		String showUnapprovedQuery = "SELECT * FROM movie_req WHERE approved IS NULL";
-
+		 String showUnapprovedQuery = "SELECT * FROM movie_req WHERE approved IS NULL";
 		   String[] col = {"request_number", "movie_name","date_filled", "user_no", "approved","media_type"};
 		   tableModelMovie_reqTransaction = new DefaultTableModel(getMovie_reqTransaction(showUnapprovedQuery), col){
 			   @Override
@@ -4561,55 +4560,57 @@ try {
 		}
 
 		//getting data from db
-	public Object[][] getMovie_reqTransaction(String query) {
+	 public Object[][] getMovie_reqTransaction(String query) {
 
-		ArrayList<Object[]> list = new ArrayList<>();
+			ArrayList<Object[]> list = new ArrayList<>();
 
-		try {
-		   // Load the JDBC driver
-		   Class.forName("com.mysql.cj.jdbc.Driver");
+			try {
+			   // Load the JDBC driver
+			   Class.forName("com.mysql.cj.jdbc.Driver");
 
-		   // Establish connection
-		   try (
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(query)) {
+			   // Establish connection
+			   try (
+					Statement statement = connection.createStatement();
+					ResultSet resultSet = statement.executeQuery(query)) {
 
-			   // Process the ResultSet
-			   
-			   
-			   while (resultSet.next()) {
-				   Object[] row = new Object[6];
-				   row[0] = resultSet.getInt(1); 
-				   row[1] = resultSet.getString(2);            
-				   row[2] = resultSet.getString(3);
-				   row[3] = resultSet.getInt(4); 
-				   String transmute;
+				   // Process the ResultSet
 				   
-				   if(resultSet.getObject(5) == null) {
-					   transmute = "";
-				   }else if(resultSet.getInt(5) == 0 ){
-					   transmute = "NO";
-				   }else transmute = "YES";
-				   row[4] = transmute;
-				   row[5] = resultSet.getString(6);           
-				   list.add(row);
+				   
+				   while (resultSet.next()) {
+					   Object[] row = new Object[6];
+					   row[0] = resultSet.getInt(1); 
+					   row[1] = resultSet.getString(2);            
+					   row[2] = resultSet.getString(3);
+					   row[3] = resultSet.getInt(4); 
+					   String transmute;
+					   
+					   if(resultSet.getObject(5) == null) {
+						   transmute = "";
+					   }else if(resultSet.getInt(5) == 0 ){
+						   transmute = "NO";
+					   }else transmute = "YES";
+					   row[4] = transmute;
+					   row[5] = resultSet.getString(6);           
+					   list.add(row);
+				   }
 			   }
-		   }
 
-		   // Convert the list to a 2D array
-		   return list.toArray(new Object[0][6]);
+			   // Convert the list to a 2D array
+			   return list.toArray(new Object[0][6]);
 
-		} catch (Exception e) {
-		   e.printStackTrace(); // Print stack trace for debugging
-		   return null;
-		}
-		}
-
+			} catch (Exception e) {
+			   e.printStackTrace(); // Print stack trace for debugging
+			   return null;
+			}
+			}
 		//refreshing admin table
 	public void refreshMovie_reqTransactionTable() {
 		String showUnapprovedQuery = "SELECT * FROM movie_req WHERE approved IS NULL";
 				tableMovieFileModel.setDataVector(getMovie_reqTransaction(showUnapprovedQuery), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
-		}
+				tableModelMovie_reqTransaction.setDataVector(getMovie_reqTransaction(showUnapprovedQuery), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
+	}
+
+	
 
 	private JScrollPane scrollerFileReq;
 	private JTable tableMovieFile;
