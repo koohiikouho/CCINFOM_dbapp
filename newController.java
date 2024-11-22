@@ -746,18 +746,23 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.createMovie_reqTransactionTablePanel();
 			break;
 		case "UpdateMovie_reqTransactionTable":
-			System.out.println("btnUpdateMovie_reqTransactionTable");
+			System.out.println("UpdateMovie_reqTransactionTable");
 			String mrttapproved = gui.getMRTTapproved();
 			String mrttrequest = gui.getMRTTrequest_no();
 			transmute = 1;
-			if(mrttapproved.equals("YES")) {
+			if(mrttapproved.equals("NO")) {
 				transmute=0;
 			}
-			String UpdateMovie_reqTransactionTable = " UPDATE transactions SET approved = ? WHERE review_no = ?";
-			pstmt = connections.prepareStatement(UpdateMovie_reqTransactionTable);
-			pstmt.setInt(1, transmute);
-			pstmt.setInt(2, Integer.parseInt(mrttrequest));
-			pstmt.execute();
+			String UpdateMovie_reqTransactionTable = " UPDATE movie_req SET approved = ? WHERE request_number = ?";
+			
+			if(!mrttapproved.equals("")){
+				pstmt = connections.prepareStatement(UpdateMovie_reqTransactionTable);
+				pstmt.setInt(1, transmute);
+				pstmt.setInt(2, Integer.parseInt(mrttrequest));
+				pstmt.execute();
+			}else JOptionPane.showMessageDialog(new JFrame(), "Error Invalid Input", "ERROR!",JOptionPane.ERROR_MESSAGE);
+
+			
 			gui.refreshMovie_reqTransactionTable();
 			break;
 		}
