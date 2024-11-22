@@ -73,64 +73,104 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 		case "MRMselect":
 		    ArrayList<Object[]> list = new ArrayList<>();
+	        ArrayList<Object[]> MediaTypesWithPrice = new ArrayList<>();
+		    ArrayList<Object[]> tempList = new ArrayList<>();
+		    Object[] info = new Object[6];
+		    Object[] row = new Object[2];
+		    Object[][] mediaArray = new Object[tempList.size()][2];
 
 		    try {
 		        // Ensure the JDBC driver is loaded
 		        Class.forName("com.mysql.cj.jdbc.Driver");
 
 		        // Prepare the SQL query
-		        String movieInfos = "SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`\n"
+		        String movieInfos = "SELECT m.movie_code, m.movie_name, mt.copies_available, m.year,m.language, gt.description\n"
 		        		+ "	FROM movies m\n"
-		        		+ "	LEFT JOIN transactions t  ON m.movie_code = t.movie_code\n"
+		        		+ "LEFT JOIN genre_type gt ON m.genre_id = gt.genre_id "
+		        		+ "LEFT JOIN media_type mt ON m.movie_code = mt.movie_code"
 		        		+ "	WHERE m.movie_code = ?\n"
-		        		+ " GROUP BY m.movie_name, m.movie_code\n"
 		        		+ " ORDER BY m.movie_code;";
 
 		        // Use try-with-resources for JDBC resources
 		        try (PreparedStatement pstmt1 = connections.prepareStatement(movieInfos)) {
 		            // Set the parameter value
 		        	pstmt1.setString(1, gui.getMRMmovie_code());
+		        	ResultSet rs = pstmt1.executeQuery();
+		        	if (rs.next()) {
+	                    info[0] = rs.getInt(1);   //  movcode
+	                    info[1] = rs.getString(2);   // movname
+	                    info[2] = rs.getInt(3);   //  copies
+	                    info[3] = rs.getString(4);   // year
+	                    info[4] = rs.getString(5);   //  language
+	                    info[5] = rs.getString(6);   // desc  
+	                    list.add(info);
+	            }
+		        	
+//		        	 String getallMedia = " SELECT mt.media_type, mt.rental_price "
+//			                   + "FROM movies m "
+//			                   + "JOIN genre_type gt ON m.genre_id = gt.genre_id "
+//			                   + "JOIN media_type mt ON m.movie_code = mt.movie_code "
+//			                   + "WHERE m.movie_code = ?;";
+//
+//			try (PreparedStatement pstmt4 = connections.prepareStatement(getallMedia)) {
+//			    // Set the movie code parameter
+//			    pstmt4.setInt(1, Integer.parseInt(gui.getMRMmovie_code()));
+//
+//			    // Execute the query
+//			    ResultSet rs4 = pstmt4.executeQuery();
+//
+//			    // Initialize variables to handle results
+//
+//			    // Fetch results into a temporary list
+//			    StringBuilder sb = new StringBuilder();
+//			    while (rs4.next()) {
+//			       
+//			        row[0] = rs4.getString("media_type");  // Store media_type
+//			        row[1] = rs4.getDouble("rental_price"); // Store rental_price
+//			        
+//			        
+//			        sb.append(row[0] + " - ₱" + row[1]);
+//			        
+//			        if (rs4.next()) {
+//			            // Process the first row
+//			            String mediaType = rs4.getString("media_type");
+//			            double rentalPrice = rs4.getDouble("rental_price");
+//			            System.out.println("Media Type: " + mediaType + ", Rental Price: " + rentalPrice);
+//			        }
+//			       
+//			    }
 
-		            try (ResultSet resultSet = pstmt1.executeQuery()) {
-		                // Process the ResultSet
-		                while (resultSet.next()) {
-		                    Object[] row = new Object[3];
-		                    row[0] = resultSet.getInt(1);   // Movie Code
-		                    row[1] = resultSet.getString(2);   // Movie Name
-		                    row[2] = resultSet.getInt(3);  // Times Borrowed
-		                    list.add(row); // Add the row to the list
 
-		                    // Print the extracted values (for debugging)
-		                    System.out.println("Movie Code: " + row[0]);
-		                    System.out.println("Movie Name: " + row[1]);
-		                    System.out.println("Times Borrowed: " + row[2]);
-		                }
-		            }
-		        }
 
-		        // Check if the list is not empty
-		        if (!list.isEmpty()) {
-		            Object[] firstRow = list.get(0); // Get the first row
-		            int MRMmovie_code = Integer.parseInt(firstRow[0].toString());
-		            String MRMmoviename = firstRow[1].toString();
-		            int count = Integer.parseInt(firstRow[2].toString());
-
-		            // Show the details in a dialog
-		            JOptionPane.showMessageDialog(null, 
-		                "Movie Code: " + MRMmovie_code + "\n" +
-		                "Movie Name: " + MRMmoviename + "\n" +
-		                "Count: " + count);
-		        } else {
-		            JOptionPane.showMessageDialog(null, "No records found for the specified movie code.");
-		        }
+			    JOptionPane.showMessageDialog(null, 
+		                "Movie Code: " + info[0] + "\n" +
+		                "Movie Name: " + info[1] + "\n" +
+		                "Copies Available: " + info[2] + "\n"+
+		                "Year: " + info[3] + "\n" +
+		                "Language: " + info[4] + "\n" +
+		                "Description: "+ info[5] + "\n"//+
+		               // "Rental Price"+ sb  + "\n" 
+		                
+		                );
+			    
+//			} catch (Exception ex) {
+//			    System.err.println("Error while executing getallMedia query: " + ex.getMessage());
+//			    ex.printStackTrace(); // Detailed log for debugging
+//			}
+		        	
+		        	
 
 		    } catch (Exception ex) {
 		        ex.printStackTrace(); // Log the error for debugging
 		    }
-	
-		    gui.setMRMmovie_name("");
-		    gui.setMRMmovie_code("");
+		        
 
+		    }catch (Exception ex) {
+			    System.err.println("Error while executing getallMedia query: " + ex.getMessage());
+			    ex.printStackTrace(); // Detailed log for debugging
+			}
+		   
+		    
 			break;
 			
 		case"UserRecord":
