@@ -4639,14 +4639,7 @@ try {
 		   
 		  
 		   // Add a mouse click listener to the table
-		   tableMovie_reqTransaction.addMouseListener(new java.awt.event.MouseAdapter() {
-			  
-			   public void mouseClicked(java.awt.event.MouseEvent evt) {
-				   int row = tableMovie_reqTransaction.getSelectedRow(); // Get selected row index
-				  
-				
-			   }	
-	});
+		  
 	scrollerFileReq= new JScrollPane(tableMovieFile);
 	scrollerFileReq.setPreferredSize(new Dimension(450, 200)); // Set preferred size
 	
