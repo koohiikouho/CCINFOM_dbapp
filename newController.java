@@ -2,16 +2,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class newController implements ActionListener, DocumentListener{
-	private newGUI gui;
+
+public class Controller implements ActionListener, DocumentListener{
+	private GUI gui;
 	private Model model;
 	private static Connection connections;
+	protected Integer loggedInAdmin;
 
-	public newController(newGUI gui, Model model, Connection connection) {
+	public Controller(GUI gui, Model model, Connection connection) {
 		this.gui = gui;
 		this.model = model;
 		gui.setActionListener(this);
@@ -25,31 +33,34 @@ public class newController implements ActionListener, DocumentListener{
 		
 		try {
 
-		
 		switch(command) {
-		
-		case "TableInput":
-			System.out.println("You clicked TableInput");
-			gui.createTableInputPanel();
-			gui.refreshAdminTable();
-			gui.ClearAllTableInputs();
-			break;
 			
 		case "RecordManagement":
 			System.out.println("You clicked TableManagement");
+			ClearUserManagementnputs();
 			gui.createRecordmanagementPanel();
-		
+			gui.setMRMmovie_name("");
+			gui.setMRMmovie_code("");
 			break;
 		
 		case "Reports":
 			System.out.println("You clicked Reports");
 			gui.createReportmanagementPanel();
 			break;
-			
+		case "Transactions":
+			if( loginHandlerAdmin() ){
+				System.out.println("Transactions");
+				System.out.println( gui.getLoggedInAdmin() );
+				gui.createTransactionsPanel();
+				break;
+			} else
+				break;
+		case "returntoTransaction":
+			gui.createTransactionsPanel();
+			break;
 		case "EXIT":
 			System.exit(0);
 			break;
-			
 		case "Home":
 			gui.createMainMenuPanel();
 			gui.ClearAllTableInputs();
@@ -57,18 +68,100 @@ public class newController implements ActionListener, DocumentListener{
 			
 		case "MovieRecord" :
 			System.out.println("MovieRecord");
+			gui.refreshMovieRecord();
+			gui.createMovieRecordPanel();
+			break;
+		case "MRMselect":
+		    ArrayList<Object[]> list = new ArrayList<>();
+
+		    try {
+		        // Ensure the JDBC driver is loaded
+		        Class.forName("com.mysql.cj.jdbc.Driver");
+
+		        // Prepare the SQL query
+		        String movieInfos = "SELECT m.movie_code, m.movie_name, COUNT(t.movie_code) AS `Times Borrowed`\n"
+		        		+ "	FROM movies m\n"
+		        		+ "	LEFT JOIN transactions t  ON m.movie_code = t.movie_code\n"
+		        		+ "	WHERE m.movie_code = ?\n"
+		        		+ " GROUP BY m.movie_name, m.movie_code\n"
+		        		+ " ORDER BY m.movie_code;";
+
+		        // Use try-with-resources for JDBC resources
+		        try (PreparedStatement pstmt1 = connections.prepareStatement(movieInfos)) {
+		            // Set the parameter value
+		        	pstmt1.setString(1, gui.getMRMmovie_code());
+
+		            try (ResultSet resultSet = pstmt1.executeQuery()) {
+		                // Process the ResultSet
+		                while (resultSet.next()) {
+		                    Object[] row = new Object[3];
+		                    row[0] = resultSet.getInt(1);   // Movie Code
+		                    row[1] = resultSet.getString(2);   // Movie Name
+		                    row[2] = resultSet.getInt(3);  // Times Borrowed
+		                    list.add(row); // Add the row to the list
+
+		                    // Print the extracted values (for debugging)
+		                    System.out.println("Movie Code: " + row[0]);
+		                    System.out.println("Movie Name: " + row[1]);
+		                    System.out.println("Times Borrowed: " + row[2]);
+		                }
+		            }
+		        }
+
+		        // Check if the list is not empty
+		        if (!list.isEmpty()) {
+		            Object[] firstRow = list.get(0); // Get the first row
+		            int MRMmovie_code = Integer.parseInt(firstRow[0].toString());
+		            String MRMmoviename = firstRow[1].toString();
+		            int count = Integer.parseInt(firstRow[2].toString());
+
+		            // Show the details in a dialog
+		            JOptionPane.showMessageDialog(null, 
+		                "Movie Code: " + MRMmovie_code + "\n" +
+		                "Movie Name: " + MRMmoviename + "\n" +
+		                "Count: " + count);
+		        } else {
+		            JOptionPane.showMessageDialog(null, "No records found for the specified movie code.");
+		        }
+
+		    } catch (Exception ex) {
+		        ex.printStackTrace(); // Log the error for debugging
+		    }
+	
+		    gui.setMRMmovie_name("");
+		    gui.setMRMmovie_code("");
+
 			break;
 			
 		case"UserRecord":
-			System.out.println("UserRecord");
+			if(loginHandlerAdmin()) {
+			gui.refreshUserRecord();
+			gui.createUserRecordPanel();
 			break;
+			}else break;
 			
 		case "AdminRecord" :
+			if(loginHandlerAdmin()){
+			gui.createTableInputPanel();
+			gui.refreshAdminTable();
+			gui.refreshGenreTable();
+			gui.refreshMediaTable();
+			gui.refreshMovieReqTable();
+			gui.refreshMoviesTable();
+			gui.refreshReviewTable();
+			gui.refreshTransactionTable();
+			gui.refreshUserTable();
+			gui.ClearAllTableInputs();
 			System.out.println("AdminRecord");
 			break;
+			}
+			else
+				break;
 			
 		case "MediaTypeRecord" :
 			System.out.println("MediaTypeRecord");
+			gui.refreshMediaTable();
+			gui.createMediaRecordTablePanel();
 			break;
 
 	        
@@ -187,7 +280,8 @@ public class newController implements ActionListener, DocumentListener{
 			int transmute = 1;
 			
 			try {
-			String InsertMedia = " insert into media_type (product_id,movie_code, availability, release_date,media_type,copies_available,rental_price)"
+			
+			String InsertMedia = " insert into media_type (product_id,movie_code, release_date,media_type,copies_available,rental_price)"
 				    + " values (?, ?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMedia);
 			
@@ -197,20 +291,33 @@ public class newController implements ActionListener, DocumentListener{
 			rental_price3 = gui.getRentalPrice();
 			release_date3 = gui.getMediaRelease();
 			media_type3 = gui.getMmedia_type();
-			availability3 = gui.getMavailability();
+	
 			 
-             if(availability3.equals("NO")) {
-             	transmute = 0;
-             }
+           
+            if(copies_available3>0) {
 			pstmt.setInt(1,product_id3);
 			pstmt.setInt(2,movie_code3);
-			pstmt.setInt(3, transmute);
 			pstmt.setInt(4, Integer.parseInt(release_date3));
 			pstmt.setString(5, media_type3);
 			pstmt.setInt(6, copies_available3);
 			pstmt.setFloat(7, rental_price3);
 			pstmt.execute();
 			gui.refreshMediaTable();
+			}
+            else if(copies_available3 == 0) {
+        			pstmt.setInt(1,product_id3);
+        			pstmt.setInt(2,movie_code3);
+        			pstmt.setInt(3, 0);
+        			pstmt.setInt(4, Integer.parseInt(release_date3));
+        			pstmt.setString(5, media_type3);
+        			pstmt.setInt(6, copies_available3);
+        			pstmt.setFloat(7, rental_price3);
+        			pstmt.execute();
+        			gui.refreshMediaTable();
+        			}            
+            	else JOptionPane.showMessageDialog(null, "Invalid Input! Copies available cannot be negative!");
+            
+ 
 			ClearMediaInputs();
 			}catch(Exception ex){
 				JOptionPane.showMessageDialog(null, "Invalid Inputs");
@@ -241,26 +348,37 @@ public class newController implements ActionListener, DocumentListener{
 			rental_price3 = gui.getRentalPrice();
 			release_date3 = gui.getMediaRelease();
 			media_type3 = gui.getMmedia_type();
-			availability3 = gui.getMavailability();
+			
 
-			transmute = 1;
-            if(availability3.equals("NO")) {
-            	transmute = 0;
-            }
-            
-			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
+			
+            if(copies_available3>0) {
+			String updateMedia = "UPDATE media_type SET movie_code = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
 			pstmt = connections.prepareStatement(updateMedia);
 			pstmt.setInt(1, movie_code3);
-			pstmt.setInt(2, transmute);
-			pstmt.setInt(3, Integer.parseInt(release_date3));
-			pstmt.setString(4, media_type3);
-			pstmt.setInt(5, copies_available3);
-			pstmt.setFloat(6, rental_price3);
-			pstmt.setInt(7, product_id3);
-			
+			pstmt.setString(2, release_date3);
+			pstmt.setString(3, media_type3);
+			pstmt.setInt(4, copies_available3);
+			pstmt.setFloat(5, rental_price3);
+			pstmt.setInt(6, product_id3);
 			pstmt.execute();
 			gui.refreshMediaTable();
-			ClearMediaInputs();
+            }else if(copies_available3 == 0) {
+        			String updateMedia = "UPDATE media_type SET movie_code = ?, availability = ?, release_date = ?,media_type =?, copies_available =?, rental_price =? WHERE product_id = ?";
+        			pstmt = connections.prepareStatement(updateMedia);
+        			pstmt.setInt(1, movie_code3);
+        			pstmt.setString(2, release_date3);
+        			pstmt.setString(3, media_type3);
+        			pstmt.setInt(4, copies_available3);
+        			pstmt.setFloat(5, rental_price3);
+        			pstmt.setInt(6, product_id3);
+        			pstmt.execute();
+        			gui.refreshMediaTable();
+                    }
+
+            else JOptionPane.showMessageDialog(null, "Invalid Input! Copies available cannot be negative!");
+			
+            ClearMediaInputs();
+            
 			}catch(Exception ex) {
 				JOptionPane.showMessageDialog(null, "Invalid Inputs");
 			}
@@ -271,8 +389,8 @@ public class newController implements ActionListener, DocumentListener{
 			String movie_name4, date_filled4,approved4,in_stock4, media_type4;
 			
 			try {
-			String InsertMovieReq = " insert into movie_req (request_number, movie_name, date_filed, user_no,approved,in_stock,media_type)"
-				    + " values (?, ?, ?, ?, ?, ?, ?)";
+			String InsertMovieReq = " insert into movie_req (request_number, movie_name, date_filed, user_no,approved,media_type)"
+				    + " values (?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMovieReq);
 			
 			request_number4 = gui.getMRMovieReqNo();
@@ -280,7 +398,6 @@ public class newController implements ActionListener, DocumentListener{
 			movie_name4 = gui.getMRmoviename();
 			date_filled4 = gui.getMRdate_filled();
 			approved4 = gui.getMRapproved();
-			in_stock4 = gui.getMRin_stock();
 			media_type4 = gui.getMRmedia_type();
 
 			pstmt.setInt(1,request_number4);
@@ -292,12 +409,7 @@ public class newController implements ActionListener, DocumentListener{
              	transmute = 0;
              }
 			pstmt.setInt(5, transmute);
-			 transmute = 1;
-             if(in_stock4.equals("NO")) {
-             	transmute = 0;
-             }
-			pstmt.setInt(6, transmute);
-			pstmt.setString(7, media_type4);
+			pstmt.setString(6, media_type4);
 			pstmt.execute();
 			gui.refreshMovieReqTable();
 			ClearMovieReqInputs();
@@ -314,9 +426,8 @@ public class newController implements ActionListener, DocumentListener{
 			movie_name4 = gui.getMRmoviename();
 			date_filled4 = gui.getMRdate_filled();
 			approved4 = gui.getMRapproved();
-			in_stock4 = gui.getMRin_stock();
 			media_type4 = gui.getMRmedia_type();
-			String updateMovieReq = "UPDATE movie_req SET movie_name = ?, date_filed = ?, user_no = ?,approved =?, in_stock =?, media_type =? WHERE request_number = ?";
+			String updateMovieReq = "UPDATE movie_req SET movie_name = ?, date_filed = ?, user_no = ?,approved =?, media_type =? WHERE request_number = ?";
 			pstmt = connections.prepareStatement(updateMovieReq);
 			pstmt.setString(1, movie_name4);
 			pstmt.setString(2, date_filled4);
@@ -328,13 +439,8 @@ public class newController implements ActionListener, DocumentListener{
             }
 			pstmt.setInt(4, transmute);
 			transmute =1;
-            if(approved4.equals("NO")) {
-            	transmute = 0;
-            }
-			pstmt.setInt(5, transmute);
-			pstmt.setString(6, media_type4);
-			pstmt.setInt(7, request_number4);
-			
+			pstmt.setString(5, media_type4);
+			pstmt.setInt(6, request_number4);
 			pstmt.execute();
 			gui.refreshMovieReqTable();
 			ClearMovieReqInputs();
@@ -354,7 +460,7 @@ public class newController implements ActionListener, DocumentListener{
 			break;
 
 		case "AddInTransactionTable":
-			int transaction_no7,movie_code7, user_no7, admin_no7;
+			int transaction_no7,movie_code7, user_no7, admin_no7,product_id;
 			String date_borrowed7, date_toreturn7, date_returned7;
 			float payment7;
 
@@ -370,17 +476,18 @@ public class newController implements ActionListener, DocumentListener{
 			date_borrowed7 = gui.getTdate_borrowed();
 			date_toreturn7 = gui.getTdate_toreturn();
 			date_returned7 =  gui.getTdate_returned();
+			product_id = gui.getTproduct_id();	
 			payment7 = gui.getTpayment();
-
 			
 			pstmt.setInt(1,transaction_no7);
 			pstmt.setInt(2,movie_code7);
-			pstmt.setInt(3,user_no7);
-			pstmt.setString(4,date_borrowed7);
-			pstmt.setString(5, date_toreturn7);
-			pstmt.setString(6, date_returned7);
-			pstmt.setFloat(7, payment7);
-			pstmt.setInt(8, admin_no7);
+			pstmt.setInt(3,product_id);
+			pstmt.setInt(4,user_no7);
+			pstmt.setString(5,date_borrowed7);
+			pstmt.setString(6, date_toreturn7);
+			pstmt.setString(7, date_returned7);
+			pstmt.setFloat(8, payment7);
+			pstmt.setInt(9, admin_no7);
 			pstmt.execute();
 			gui.refreshTransactionTable();
 			gui.ClearAllTableInputs();
@@ -388,6 +495,7 @@ public class newController implements ActionListener, DocumentListener{
 				JOptionPane.showMessageDialog(null, "Invalid Inputs");
 			}
 			break;
+			
 		case "UpdateTransactionTable":
 			try {
 				transaction_no7 = gui.getTtransaction_no();
@@ -397,18 +505,20 @@ public class newController implements ActionListener, DocumentListener{
 				date_borrowed7 = gui.getTdate_borrowed();
 				date_toreturn7 = gui.getTdate_toreturn();
 				date_returned7 =  gui.getTdate_returned();
+				product_id = gui.getTproduct_id();	
 				payment7 = gui.getTpayment();
 
 				String updateTransaction = "UPDATE transactions SET movie_code = ?, user_no = ?, admin_no = ?,date_borrowed =?, date_toreturn =?, date_returned =?,payment =? WHERE transaction_no = ?";
 				pstmt = connections.prepareStatement(updateTransaction);
-				pstmt.setInt(1, movie_code7);
-				pstmt.setInt(2, user_no7);
-				pstmt.setInt(3, admin_no7);
-				pstmt.setString(4, date_borrowed7);
-				pstmt.setString(5, date_toreturn7);
-				pstmt.setString(6, date_returned7);
-				pstmt.setFloat(7, payment7);
-				pstmt.setInt(8, transaction_no7);
+				pstmt.setInt(1,transaction_no7);
+				pstmt.setInt(2,movie_code7);
+				pstmt.setInt(3,product_id);
+				pstmt.setInt(4,user_no7);
+				pstmt.setString(5,date_borrowed7);
+				pstmt.setString(6, date_toreturn7);
+				pstmt.setString(7, date_returned7);
+				pstmt.setFloat(8, payment7);
+				pstmt.setInt(9, admin_no7);
 				pstmt.execute();
 				gui.refreshTransactionTable();;
 				gui.ClearAllTableInputs();
@@ -491,7 +601,8 @@ public class newController implements ActionListener, DocumentListener{
 			gui.refreshUserTable();
 			gui.ClearAllTableInputs();
 			break;
-			case "AddInMoviesTable":
+			
+		case "AddInMoviesTable":
 			int moviecode5,year5,genreid5;
 			String moviename5,rating5,language5;
 			
@@ -620,13 +731,71 @@ public class newController implements ActionListener, DocumentListener{
 			gui.refreshReviewTable();
 			gui.ClearAllTableInputs();
 			break;
-
+		case "ReturnUserRecordManagement":
+			ClearUserManagementnputs();
+			gui.createUserRecordPanel();
+			break;
+		case "SelectUserRecord":
+			gui.refreshUserProfileTable();
+			gui.setUPuserno(Integer.valueOf(gui.getURuser_no()));
+			gui.setUPfirstname(gui.getURfirst_name());
+			gui.setUPlastName(gui.getURlast_name());
+			gui.createUserProfilePanel();
+			break;
+		case "FormalizeMovieRequests": 
+			gui.createMovie_reqTransactionTablePanel();
+			break;
+		case "UpdateMovie_reqTransactionTable":
+			System.out.println("btnUpdateMovie_reqTransactionTable");
+			String mrttapproved = gui.getMRTTapproved();
+			String mrttrequest = gui.getMRTTrequest_no();
+			transmute = 1;
+			if(mrttapproved.equals("YES")) {
+				transmute=0;
+			}
+			String UpdateMovie_reqTransactionTable = " UPDATE transactions SET approved = ? WHERE review_no = ?";
+			pstmt = connections.prepareStatement(UpdateMovie_reqTransactionTable);
+			pstmt.setInt(1, transmute);
+			pstmt.setInt(2, Integer.parseInt(mrttrequest));
+			pstmt.execute();
+			gui.refreshMovie_reqTransactionTable();
+			break;
 		}
 
 	}
 	catch (Exception ex) {
 		System.out.println(ex);
 	}
+	}
+	
+
+	private boolean loginHandlerAdmin(){
+		JTextField user = new JTextField(20);
+		JTextField pass = new JPasswordField(20);
+		Object[] message = {
+			"Username:", user,
+			"Password:", pass
+		};
+	if(JOptionPane.showConfirmDialog(null, message, "Enter Credentials", JOptionPane.OK_CANCEL_OPTION) == 0){
+		if(model.checkAdminPassCorrect(user.getText(), pass.getText())){
+			return true;
+		}
+		else{
+			JOptionPane.showMessageDialog(new JFrame(), "Wrong Credentials", "ERROR!",JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+	}else{
+		JOptionPane.showMessageDialog(new JFrame(), "User Cancelled", "ERROR!",JOptionPane.ERROR_MESSAGE);
+		return false;
+	}
+			
+
+	}
+
+	public void ClearUserManagementnputs() {
+		gui.setURfirst_name("");
+		gui.setURlast_name("");
+		gui.setURuser_no("");
 	}
 	
 	public void ClearAdminInputs() {
@@ -645,7 +814,6 @@ public class newController implements ActionListener, DocumentListener{
 	public void ClearMediaInputs() {
 		gui.setMProductID("");
 		gui.setMmovieCode("");
-		gui.setMavailability("");
 		gui.setMediaRelease("");
 		gui.setMmedia_type("");
 		gui.setMediaCopies("");
@@ -655,13 +823,11 @@ public class newController implements ActionListener, DocumentListener{
 	public void ClearMovieReqInputs() {
 		gui.setMRapproved("");
 		gui.setMRdate_filled("");
-		gui.setMRin_stock("");
 		gui.setMRmedia_type("");
 		gui.setMRmoviename("");
 		gui.setMRMovieReqNo("");
 		gui.setMRUserno("");
 		gui.setMediaRelease("");
-	
 	}
 
 	@Override
