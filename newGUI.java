@@ -4318,7 +4318,6 @@ try {
 	private JComboBox MRTTapproved,MRTTmedia_type;
 	private JButton btnUpdateMovie_reqTransactionTable,btnreturntohomefromMRTT;
 	
-	
 
 	public void createMovie_reqTransactionTablePanel() {		
 		setContentPane(ADDINGMOVIEREQ);
@@ -5076,9 +5075,42 @@ try {
 		    return MRMmovie_name.getText();
 		}
 		
-		public void setMRMmovie_name(String num) {
+	public void setMRMmovie_name(String num) {
 			MRMmovie_name.setText(num);
 		}
+		
+	public String getMRTTmedia_type() {
+			    return MRTTmedia_type.getSelectedItem().toString();
+			}
+			
+	public void setMRTTmedia_type(String num) {
+				MRTTmedia_type.setSelectedItem(num);
+			}
+	public String getMRTTmovie_name() {
+				    return MRTTmovie_name.getText();
+				}
+				
+	public void setMRTTmovie_name(String num) {
+		MRTTmovie_name.setText(num);
+				}
+	
+	public String getMRTTdate_filled() {
+	    return MRTTdate_filled.getText();
+	}
+	
+	public void setMRTTdate_filled(String num) {
+		MRTTdate_filled.setText(num);
+	}
+	
+	public String getMRTTuser_no() {
+	    return MRTTuser_no.getText();
+	}
+	
+	public void setMRTTuser_no(String num) {
+		MRTTuser_no.setText(num);
+	}
+
+	
 
 		
 	public void ClearAllTableInputs() {
