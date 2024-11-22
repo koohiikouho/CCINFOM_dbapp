@@ -749,10 +749,6 @@ public class Controller implements ActionListener, DocumentListener{
 		case "File Movie Request":
 			gui.createMovieRequestPanel();
 			break;
-		case "UpdateMovie_reqTransactionTable":
-			String updateTransaction = "";
-			
-			break;
 		case "AddMovieRequest":
 			String addReq = "insert into movie_req (movie_name, date_filed, user_no, media_type) values (?, CURDATE(), ?, ?)";
 			pstmt = connections.prepareStatement(addReq);
@@ -763,7 +759,30 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.refreshMoveReqPanel();
 			gui.ClearAllTableInputs();
 			break;
+
+			case "UpdateMovie_reqTransactionTable":
+			System.out.println("UpdateMovie_reqTransactionTable");
+			String mrttapproved = gui.getMRTTapproved();
+			String mrttrequest = gui.getMRTTrequest_no();
+			transmute = 1;
+			if(mrttapproved.equals("NO")) {
+				transmute=0;
+			}
+			String UpdateMovie_reqTransactionTable = " UPDATE movie_req SET approved = ? WHERE request_number = ?";
+			
+			if(!mrttapproved.equals("")){
+				pstmt = connections.prepareStatement(UpdateMovie_reqTransactionTable);
+				pstmt.setInt(1, transmute);
+				pstmt.setInt(2, Integer.parseInt(mrttrequest));
+				pstmt.execute();
+			}else JOptionPane.showMessageDialog(new JFrame(), "Error Invalid Input", "ERROR!",JOptionPane.ERROR_MESSAGE);
+
+			
+			gui.refreshMovie_reqTransactionTable();
+			ClearmovreqtransacInputs();
+			break;
 		}
+		
 
 	}
 	catch (Exception ex) {
@@ -771,7 +790,15 @@ public class Controller implements ActionListener, DocumentListener{
 	}
 	}
 	
-
+	public void ClearmovreqtransacInputs() {
+		gui.setMRTTapproved("");
+		gui.setMRTTdate_filled("");
+		gui.setMRTTmedia_type("");
+		gui.setMRTTmovie_name("");
+		gui.setMRTTrequest_no("");
+		gui.setMRTTuser_no("");
+		
+	}
 	private boolean loginHandlerAdmin(){
 		JTextField user = new JTextField(20);
 		JTextField pass = new JPasswordField(20);
@@ -795,6 +822,7 @@ public class Controller implements ActionListener, DocumentListener{
 
 	}
 
+	
 	public void ClearUserManagementnputs() {
 		gui.setURfirst_name("");
 		gui.setURlast_name("");

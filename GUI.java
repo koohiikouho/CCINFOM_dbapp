@@ -4859,9 +4859,59 @@ try {
 		btnreturntohomefromMRTT.addActionListener(listener);
 		btnFileReqReturn.addActionListener(listener);
 		btnFormalizeMovieRequests.addActionListener(listener);
+
+	
 		
 	}
 	
+	public String getMRTTmedia_type() {
+		return MRTTmedia_type.getSelectedItem().toString();
+		}
+			
+	public void setMRTTmedia_type(String num) {
+		MRTTmedia_type.setSelectedItem(num);
+		}
+	public String getMRTTmovie_name() {
+		return MRTTmovie_name.getText();
+		}
+				
+	public void setMRTTmovie_name(String num) {
+		MRTTmovie_name.setText(num);
+				}
+	
+	public String getMRTTdate_filled() {
+	    return MRTTdate_filled.getText();
+	}
+	
+	public void setMRTTdate_filled(String num) {
+		MRTTdate_filled.setText(num);
+	}
+	
+	public String getMRTTuser_no() {
+	    return MRTTuser_no.getText();
+	}
+	
+	public void setMRTTuser_no(String num) {
+		MRTTuser_no.setText(num);
+	}
+
+
+	public void setMRTTrequest_no(String num) {
+		MRTTrequest_no.setText(num);
+	}
+	
+	public String getMRTTrequest_no() {
+	    return MRTTrequest_no.getText();
+	}
+	
+	public void setMRTTapproved(String num) {
+		MRTTapproved.setSelectedItem(num);
+	}
+	
+	public String getMRTTapproved() {
+	    return MRTTapproved.getSelectedItem().toString();
+	}
+
 	public String getLoggedInAdmin(){
 		return loggedInAdmin;
 	}
