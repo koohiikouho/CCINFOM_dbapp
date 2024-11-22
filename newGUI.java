@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 
-public class GUI extends JFrame{
+public class newGUI extends JFrame{
 	
 	//main menu
 	private JButton btnRecordManagement,btnReports, btnEXIT, btnTransactions;
@@ -147,7 +147,7 @@ public class GUI extends JFrame{
 	
 	public static Connection connection;
 
-	public GUI(Connection connections) {
+	public newGUI(Connection connections) {
 		super("DB APP"); //frame name
 		
 		connection = connections;
