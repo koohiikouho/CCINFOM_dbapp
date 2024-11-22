@@ -6,7 +6,7 @@ public class Driver{
 		try {
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		//this controls which server to connect to, either use localhost (127.0.0.1:3306) or the tunnel (147.185.221.23:51100)
-		Connection connections = DriverManager.getConnection("jdbc:mysql://192.168.1.41:3306/dbmovieRental", "user", "12345");
+		Connection connections = DriverManager.getConnection("jdbc:mysql://147.185.221.23:51100/dbmovieRental", "user", "12345");
 			return connections;
 			} catch (Exception e) {
 				e.printStackTrace(); // Print stack trace for debugging
