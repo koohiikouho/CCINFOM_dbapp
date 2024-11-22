@@ -4566,8 +4566,6 @@ try {
 
 			try {
 			   // Load the JDBC driver
-			   Class.forName("com.mysql.cj.jdbc.Driver");
-
 			   // Establish connection
 			   try (
 					Statement statement = connection.createStatement();
@@ -4594,7 +4592,6 @@ try {
 					   list.add(row);
 				   }
 			   }
-
 			   // Convert the list to a 2D array
 			   return list.toArray(new Object[0][6]);
 
@@ -4605,9 +4602,10 @@ try {
 			}
 		//refreshing admin table
 	public void refreshMovie_reqTransactionTable() {
-		String showUnapprovedQuery = "SELECT * FROM movie_req WHERE approved IS NULL";
-				tableMovieFileModel.setDataVector(getMovie_reqTransaction(showUnapprovedQuery), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
-				tableModelMovie_reqTransaction.setDataVector(getMovie_reqTransaction(showUnapprovedQuery), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
+		String showUnapproved = "SELECT * FROM movie_req WHERE approved IS NULL";
+		String showAll = "SELECT * FROM movie_req";
+		tableMovieFileModel.setDataVector(getMovie_reqTransaction(showAll), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
+		tableModelMovie_reqTransaction.setDataVector(getMovie_reqTransaction(showUnapproved), new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
 	}
 
 	
@@ -4753,11 +4751,47 @@ try {
 			FileMovieReq.add(panelSouth, BorderLayout.SOUTH);
 		
 	}
-	
-	public void refreshMoveReqPanel(){
-		String showUnapprovedQuery = "SELECT * FROM movie_req";
-		tableMovieFileModel.setDataVector(getMovie_reqTransaction(showUnapprovedQuery),new String[]{"request_number", "movie_name","date_filled", "user_no", "approved","media_type"});
-	}
+
+	public Object[][] getFiling(String query) {
+
+		ArrayList<Object[]> list = new ArrayList<>();
+
+		try {
+		   // Load the JDBC driver
+		   // Establish connection
+		   try (
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(query)) {
+
+			   // Process the ResultSet
+			   
+			   
+			   while (resultSet.next()) {
+				   Object[] row = new Object[6];
+				   row[0] = resultSet.getInt(1); 
+				   row[1] = resultSet.getString(2);            
+				   row[2] = resultSet.getString(3);
+				   row[3] = resultSet.getInt(4); 
+				   String transmute;
+				   
+				   if(resultSet.getObject(5) == null) {
+					   transmute = "";
+				   }else if(resultSet.getInt(5) == 0 ){
+					   transmute = "NO";
+				   }else transmute = "YES";
+				   row[4] = transmute;
+				   row[5] = resultSet.getString(6);           
+				   list.add(row);
+			   }
+		   }
+		   // Convert the list to a 2D array
+		   return list.toArray(new Object[0][6]);
+
+		} catch (Exception e) {
+		   e.printStackTrace(); // Print stack trace for debugging
+		   return null;
+		}
+		}
 
 	public String getReqMovieName() {
 		return reqMovieName.getText();

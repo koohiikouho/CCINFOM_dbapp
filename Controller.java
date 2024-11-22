@@ -756,7 +756,7 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.setInt(2, gui.getReqUserNum());
 			pstmt.setString(3, gui.getReqMediaType());
 			pstmt.execute();
-			gui.refreshMoveReqPanel();
+			gui.refreshMovie_reqTransactionTable();
 			gui.ClearAllTableInputs();
 			break;
 
