@@ -764,6 +764,7 @@ public class Controller implements ActionListener, DocumentListener{
 
 			
 			gui.refreshMovie_reqTransactionTable();
+			ClearmovreqtransacInputs();
 			break;
 		}
 
@@ -835,6 +836,18 @@ public class Controller implements ActionListener, DocumentListener{
 		gui.setMediaRelease("");
 	}
 
+	public void ClearmovreqtransacInputs() {
+		gui.setMRTTapproved("");
+		gui.setMRTTdate_filled("");
+		gui.setMRTTmedia_type("");
+		gui.setMRTTmovie_name("");
+		gui.setMRTTrequest_no("");
+		gui.setMRTTuser_no("");
+		
+	}
+
+
+	
 	@Override
 	public void insertUpdate(DocumentEvent e) {
 		// TODO Auto-generated method stub
