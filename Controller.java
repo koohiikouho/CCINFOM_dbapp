@@ -542,7 +542,7 @@ public class Controller implements ActionListener, DocumentListener{
 			String first_name8, last_name8, email8, birthday8, password8;
 			
 			try {
-			String InsertUser = " insert into users (user_no, first_name, last_name, email,birthday,password)"
+			String InsertUser = " insert into users (user_no, first_name, last_name, email,memberSince,password)"
 				    + " values (?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertUser);
 			
@@ -575,7 +575,7 @@ public class Controller implements ActionListener, DocumentListener{
 					birthday8 = gui.getUbirthday();
 					password8 = gui.getUpassword();
 					
-					String updateMovieReq = "UPDATE users SET first_name = ?, last_name = ?, email = ?,birthday =?, password =? WHERE user_no = ?";
+					String updateMovieReq = "UPDATE users SET first_name = ?, last_name = ?, email = ?,memberSince =?, password =? WHERE user_no = ?";
 					pstmt = connections.prepareStatement(updateMovieReq);
 					
 					pstmt.setString(1,first_name8);

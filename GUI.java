@@ -2043,7 +2043,7 @@ try {
 		   gbc.gridy = 4;
 		   centerPanel.add(Uemail, gbc);
 		   
-		   JLabel bday = new JLabel("Birthday");
+		   JLabel bday = new JLabel("Member Since");
 		   bday.setForeground(Color.BLACK);
 		   bday.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
@@ -2090,7 +2090,7 @@ try {
    
    
    public void showUserTable() {
-	   String[] col = {"user_no", "first_name","last_name", "email", "birthday","password"};
+	   String[] col = {"user_no", "first_name","last_name", "email", "member since","password"};
 	   tableModelUser = new DefaultTableModel(getUser(), col){
 		   @Override
 		   public boolean isCellEditable(int row, int column) {
@@ -2190,7 +2190,7 @@ try {
 
    //refreshing user table
    public void refreshUserTable() {
-	   tableModelUser.setDataVector(getUser(), new String[]{"user_no", "first_name","last_name", "email", "birthday","password"});
+	   tableModelUser.setDataVector(getUser(), new String[]{"user_no", "first_name","last_name", "email", "member since","password"});
    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// END OF USERS
