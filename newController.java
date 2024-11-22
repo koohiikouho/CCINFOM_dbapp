@@ -13,13 +13,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Controller implements ActionListener, DocumentListener{
+public class newController implements ActionListener, DocumentListener{
 	private GUI gui;
 	private Model model;
 	private static Connection connections;
 	protected Integer loggedInAdmin;
 
-	public Controller(GUI gui, Model model, Connection connection) {
+	public newController(GUI gui, Model model, Connection connection) {
 		this.gui = gui;
 		this.model = model;
 		gui.setActionListener(this);

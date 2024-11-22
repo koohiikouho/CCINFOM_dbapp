@@ -749,16 +749,17 @@ public class Controller implements ActionListener, DocumentListener{
 		case "File Movie Request":
 			gui.createMovieRequestPanel();
 			break;
-
+		case "UpdateMovie_reqTransactionTable":
+			String updateTransaction = "";
+			
+			break;
 		case "AddMovieRequest":
-			System.out.println("THIS IS BEING EXECUTED");
 			String addReq = "insert into movie_req (movie_name, date_filed, user_no, media_type) values (?, CURDATE(), ?, ?)";
 			pstmt = connections.prepareStatement(addReq);
 			pstmt.setString(1, gui.getReqMovieName());
 			pstmt.setInt(2, gui.getReqUserNum());
 			pstmt.setString(3, gui.getReqMediaType());
 			pstmt.execute();
-			System.out.println("THIS IS BEING EXECUTED");
 			gui.refreshMoveReqPanel();
 			gui.ClearAllTableInputs();
 			break;
