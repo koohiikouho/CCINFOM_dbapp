@@ -4344,7 +4344,7 @@ try {
 			String updateAvailable = "UPDATE media_type SET copies_available = CASE WHEN ? > 0 THEN ? + 1 ELSE 1 END WHERE product_id = ?";
 			String updateTransaction = "UPDATE transactions SET date_returned = CURDATE(), payment = ?, admin_re = ? WHERE transaction_no = ?";
 
-			//try {
+			try {
 				PreparedStatement returnSt = connection.prepareStatement(updateAvailable);
 				returnSt.setInt(1, copiesAvailable);
 				returnSt.setInt(2, copiesAvailable);
@@ -4358,10 +4358,10 @@ try {
 				returnSt.setInt(2, Integer.parseInt(loggedInAdmin) );
 				returnSt.setInt(3, transactionNo);
 				returnSt.executeUpdate();
-//			} catch (Exception e) {
-//				JOptionPane.showMessageDialog(null, "Something went wrong!", "Error", JOptionPane.ERROR_MESSAGE);
-//				return;
-//			}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Something went wrong!", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 
 			displayResult = String.format("""
 					Transaction Completed!\n
