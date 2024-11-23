@@ -121,7 +121,7 @@ public class GUI extends JFrame{
 	private DefaultTableModel tableModelUser;
 	
 	
-	private JTextField Ttransaction_no, Tmovie_code, Tuser_no, Tdate_borrowed, Tdate_toreturn, Tdate_returned,Tpayment, Tadmin_no,Tproduct_id;
+	private JTextField Ttransaction_no, Tmovie_code, Tuser_no, Tdate_borrowed, Tdate_toreturn, Tdate_returned,Tpayment, Tadmin_bo,Tadmin_re,Tproduct_id;
 	private JScrollPane scrollerTransactionTable;
 	private JTable tableTransactionTable;
 	private DefaultTableModel tableModelTransaction;
@@ -1218,16 +1218,20 @@ public class GUI extends JFrame{
 	                String media_type = (String)tableMediaTable.getValueAt(row,3);             
 	                int copies_available = (int)tableMediaTable.getValueAt(row,4); 
 	                float rental_price = (float)tableMediaTable.getValueAt(row,5); 
-	            
 
 	                MTproduct_id.setText(String.valueOf(product_id));
 	            	MTmovie_code.setText(String.valueOf(movie_code));
-	            	MTrelease.setText(release_date.substring(0, 4));
+	            	if(release_date == null) {
+	            		MTrelease.setText("");
+	            	}else MTrelease.setText(release_date.substring(0, 4));
 	            	MTmedia_type.setSelectedItem(media_type);
 	            	MTcopies.setText(String.valueOf(copies_available));         
 	            	MTrentprice.setText(String.valueOf(rental_price));               
 	            }
-	        }
+	           
+	            }
+	        
+	        
 	    });
 	    
 	    scrollerMediaTable = new JScrollPane(tableMediaTable);
@@ -1827,16 +1831,28 @@ public class GUI extends JFrame{
 		   gbc.gridy = 8;
 		   centerPanel.add(Tpayment, gbc);
 		   
-		   JLabel admin_no = new JLabel("Admin no.");
+		   JLabel admin_no = new JLabel("Admin Borrow");
 		   admin_no.setForeground(Color.BLACK);
 		   admin_no.setFont(new Font("Verdana", Font.BOLD, 19));
 		   gbc.gridx = 1;
 		   gbc.gridy = 9;
 		   centerPanel.add(admin_no , gbc);
-		   Tadmin_no =  new JTextField(20);
+		   Tadmin_bo =  new JTextField(20);
 		   gbc.gridx = 2;
 		   gbc.gridy = 9;
-		   centerPanel.add(Tadmin_no, gbc);
+		   centerPanel.add(Tadmin_bo, gbc);
+		   
+		   JLabel admin_re = new JLabel("Admin Return");
+		   admin_re.setForeground(Color.BLACK);
+		   admin_re.setFont(new Font("Verdana", Font.BOLD, 19));
+		   gbc.gridx = 1;
+		   gbc.gridy = 10;
+		   centerPanel.add(admin_re , gbc);
+		   Tadmin_re =  new JTextField(20);
+		   gbc.gridx = 2;
+		   gbc.gridy = 10;
+		   centerPanel.add(Tadmin_re, gbc);
+		   
 		   
 		   TransactionsTable.add(centerPanel , BorderLayout.EAST);
 
@@ -1861,7 +1877,7 @@ public class GUI extends JFrame{
 
 
 	public void showTransactionTable() {
-   String[] col = {"transaction_no", "movie_code","product_id", "user_no", "date_borrowed", "date_toreturn","date_returned","payment", "admin_no"};
+   String[] col = {"transaction_no", "movie_code","product_id", "user_no", "date_borrowed", "date_toreturn","date_returned","payment", "admin_no","admin_return"};
    tableModelTransaction = new DefaultTableModel(getTransaction(), col){
 	   @Override
 	   public boolean isCellEditable(int row, int column) {
@@ -1877,37 +1893,37 @@ public class GUI extends JFrame{
    // Add a mouse click listener to the table
    tableTransactionTable.addMouseListener(new java.awt.event.MouseAdapter() {
 	  
-	   public void mouseClicked(java.awt.event.MouseEvent evt) {
-		   int row = tableTransactionTable.getSelectedRow(); // Get selected row index
-		  
-		   
-		   if (row != -1) { // Ensure a valid cell is selected
-			   int transaction_no = (int)tableTransactionTable.getValueAt(row,0);
-			   int movie_code = (int)tableTransactionTable.getValueAt(row,1);
-			   int product_id = (int)tableTransactionTable.getValueAt(row,2);
-			   int user_no = (int)tableTransactionTable.getValueAt(row,3);
-			   String date_borrowed = (String)tableTransactionTable.getValueAt(row,4);
-			   String date_toreturn = (String)tableTransactionTable.getValueAt(row,5);             
-			   String date_returned = (String)tableTransactionTable.getValueAt(row,6); 
-			   String payment = (String)tableTransactionTable.getValueAt(row,7);             
-			   int admin_no = (int)tableTransactionTable.getValueAt(row,8); 
-	   
-			  
-			   
-			   Ttransaction_no.setText(String.valueOf(transaction_no));
-			   Tmovie_code.setText(String.valueOf(movie_code));
-			   Tproduct_id.setText(String.valueOf(product_id));
-			   Tuser_no.setText(String.valueOf(user_no));
-			   Tdate_borrowed.setText(date_borrowed);
-			   Tdate_toreturn.setText(date_toreturn);
-			   Tdate_returned.setText(date_returned);
-			   Tpayment.setText(payment);
-			   Tadmin_no.setText(String.valueOf(admin_no));
-							  
-		   }
-	   }
-   });
-   
+	 public void mouseClicked(java.awt.event.MouseEvent evt) {
+    int row = tableTransactionTable.getSelectedRow(); // Get selected row index
+    
+    if (row != -1) { // Ensure a valid cell is selected
+        // Safely retrieve and assign values from the table
+        Object transaction_no = tableTransactionTable.getValueAt(row, 0);
+        Object movie_code = tableTransactionTable.getValueAt(row, 1);
+        Object product_id = tableTransactionTable.getValueAt(row, 2);
+        Object user_no = tableTransactionTable.getValueAt(row, 3);
+        Object date_borrowed = tableTransactionTable.getValueAt(row, 4);
+        Object date_toreturn = tableTransactionTable.getValueAt(row, 5);
+        Object date_returned = tableTransactionTable.getValueAt(row, 6);
+        Object payment = tableTransactionTable.getValueAt(row, 7);
+        Object admin_bo = tableTransactionTable.getValueAt(row, 8);
+        Object admin_re = tableTransactionTable.getValueAt(row, 9);
+
+        // Assign values to text fields with null checks
+        Ttransaction_no.setText(transaction_no != null ? transaction_no.toString() : "");
+        Tmovie_code.setText(movie_code != null ? movie_code.toString() : "");
+        Tproduct_id.setText(product_id != null ? product_id.toString() : "");
+        Tuser_no.setText(user_no != null ? user_no.toString() : "");
+        Tdate_borrowed.setText(date_borrowed != null ? date_borrowed.toString() : "");
+        Tdate_toreturn.setText(date_toreturn != null ? date_toreturn.toString() : "");
+        Tdate_returned.setText(date_returned != null ? date_returned.toString() : "");
+        Tpayment.setText(payment != null ? payment.toString() : "");
+        Tadmin_bo.setText(admin_bo != null ? admin_bo.toString() : "");
+        Tadmin_re.setText(admin_re != null ? admin_re.toString() : "");
+    }
+}
+	 });
+
    scrollerTransactionTable = new JScrollPane(tableTransactionTable);
    scrollerTransactionTable.setPreferredSize(new Dimension(425, 200)); // Set preferred size
    
@@ -1947,7 +1963,7 @@ try {
 	   
 	   
 	   while (resultSet.next()) {
-		   Object[] row = new Object[9];
+		   Object[] row = new Object[10];
 		   row[0] = resultSet.getInt(1); 
 		   row[1] = resultSet.getInt(2);            
 		   row[2] = resultSet.getInt(3);
@@ -1956,13 +1972,17 @@ try {
 		   row[5] = resultSet.getString(6);
 		   row[6] = resultSet.getString(7); 
 		   row[7] = resultSet.getString(8);
-		   row[8] = resultSet.getInt(9);          
+		   row[8] = resultSet.getInt(9);
+		   row[9] = resultSet.getInt(10); 
+		   if (resultSet.wasNull()) {
+			    row[9] = ""; // Assign default value for null
+			}
 		   list.add(row);
 	   }
    }
 
    // Convert the list to a 2D array
-   return list.toArray(new Object[0][9]);
+   return list.toArray(new Object[0][10]);
 
 } catch (Exception e) {
    e.printStackTrace(); // Print stack trace for debugging
@@ -1972,7 +1992,7 @@ try {
 
 //refreshing transaction table
 	public void refreshTransactionTable() {
-   tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","product_id","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_no"});
+   tableModelTransaction.setDataVector(getTransaction(), new String[]{"transaction_no", "movie_code","product_id","user_no", "date_borrowed", "date_toreturn","date_returned", "payment", "admin_borrow","admin_return"});
 }
 	////////////////////////////////////////////////////////////////////////////////////////////////// END OF TRANSACTIONS
 	/// 
@@ -5221,13 +5241,22 @@ try {
 		Tpayment.setText(num);
 	}
 	
-	public int getTadmin_no() {
-	    return Integer.parseInt(Tadmin_no.getText());
+	public int getTadmin_bo() {
+	    return Integer.parseInt(Tadmin_bo.getText());
 	}
 	
-	public void setTadmin_no(String num) {
-		Tadmin_no.setText(num);
+	public void setTadmin_bo(String num) {
+		Tadmin_bo.setText(num);
 	}
+	
+	public int getTadmin_re() {
+	    return Integer.parseInt(Tadmin_re.getText());
+	}
+	
+	public void setTadmin_re(String num) {
+		Tadmin_re.setText(num);
+	}
+	
 	
 	public int getMmovie_code() {
 	    return Integer.parseInt(Mmovie_code.getText());
@@ -5410,7 +5439,7 @@ try {
 		setMRUserno("");
 		setMediaRelease("");
 		
-		setTadmin_no("");
+		setTadmin_bo("");
 		setTdate_borrowed("");
 		setTdate_returned("");
 		setTdate_toreturn("");
