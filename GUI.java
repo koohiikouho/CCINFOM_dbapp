@@ -759,18 +759,21 @@ public class GUI extends JFrame{
 		           
 		            
 		            if (row != -1) { // Ensure a valid cell is selected
-		                int admin_number = (int)tableAdminTable.getValueAt(row,0);
-		                String first_name = (String)tableAdminTable.getValueAt(row,1);
-		                String last_name = (String)tableAdminTable.getValueAt(row,2);
-		                String password = (String)tableAdminTable.getValueAt(row,3);             
-		                int admin_lvl = (int)tableAdminTable.getValueAt(row,4); 
-		                
-		                ATAdminNo.setText(String.valueOf(admin_number));
-		                ATFirst_Name.setText(first_name);
-		            	ATLast_Name.setText(last_name);
-		            	ATPass.setText(password);
-		            	ATAdminLevel.setText(String.valueOf(admin_lvl));		               
+		                // Safely retrieve values from the table
+		                Object admin_number = tableAdminTable.getValueAt(row, 0);
+		                Object first_name = tableAdminTable.getValueAt(row, 1);
+		                Object last_name = tableAdminTable.getValueAt(row, 2);
+		                Object password = tableAdminTable.getValueAt(row, 3);
+		                Object admin_lvl = tableAdminTable.getValueAt(row, 4);
+
+		                // Set values with null checks
+		                ATAdminNo.setText(admin_number != null ? admin_number.toString() : "");
+		                ATFirst_Name.setText(first_name != null ? first_name.toString() : "");
+		                ATLast_Name.setText(last_name != null ? last_name.toString() : "");
+		                ATPass.setText(password != null ? password.toString() : "");
+		                ATAdminLevel.setText(admin_lvl != null ? admin_lvl.toString() : "");
 		            }
+
 		        }
 		    });
 		    
@@ -799,12 +802,6 @@ public class GUI extends JFrame{
 
 		//getting data from db
 	public Object[][] getAdmin() {
-		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//		String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//	    String username = "root";
-//	    String password = "dl_MySQL_su";
 
 	    ArrayList<Object[]> list = new ArrayList<>();
 
@@ -931,11 +928,13 @@ public class GUI extends JFrame{
 	           
 	            
 	            if (row != -1) { // Ensure a valid cell is selected
-	                int genre_number = (int)tableGenreTable.getValueAt(row,0);
-	                String description = (String)tableGenreTable.getValueAt(row,1);
-	                 
-	                GTGenre_Num.setText(String.valueOf(genre_number));
-	            	GTDesc.setText(description);  			            
+	                // Safely retrieve values from the table
+	                Object genre_number = tableGenreTable.getValueAt(row, 0);
+	                Object description = tableGenreTable.getValueAt(row, 1);
+
+	                // Set values with null checks
+	                GTGenre_Num.setText(genre_number != null ? genre_number.toString() : "");
+	                GTDesc.setText(description != null ? description.toString() : "");
 	            }
 	        }
 	    });
@@ -965,13 +964,6 @@ public class GUI extends JFrame{
 
 	//getting data from db
 	public Object[][] getGenre() {
-		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
- //   String username = "root";
- //   String password = "dl_MySQL_su";
-
     ArrayList<Object[]> list = new ArrayList<>();
 
     try {
@@ -1008,17 +1000,17 @@ public class GUI extends JFrame{
     }
 
 	public void showMediaRecordTable() {
-	    String[] col = {"product_id", "movie_name", "movie_code","release_date","media_type","copies_available","rental_price"};
+	    String[] col = {"product_id", "movie_code","release_date","media_type","copies_available","rental_price"};
 	    tableModelMediaRecord = new DefaultTableModel(getMedia(), col) {
            @Override
            public boolean isCellEditable(int row, int column) {
                return false; // Disable editing for all cells
            }
        };
+;
 	    tableMediaRecord = new JTable(tableModelMediaRecord);
 	    tableMediaRecord.setEnabled(true); // Enable selection
 	    
-	    // Add a mouse click listener to the table
 	   
 	    scrollerMediaRecord = new JScrollPane(tableMediaRecord);
 	    scrollerMediaRecord.setPreferredSize(new Dimension(450, 200)); // Set preferred size
@@ -1211,22 +1203,30 @@ public class GUI extends JFrame{
 	           
 	            
 	            if (row != -1) { // Ensure a valid cell is selected
-	                int product_id = (int)tableMediaTable.getValueAt(row,0);
-	                int movie_code = (int)tableMediaTable.getValueAt(row,1);
-	                String release_date = (String)tableMediaTable.getValueAt(row,2);
-	                String media_type = (String)tableMediaTable.getValueAt(row,3);             
-	                int copies_available = (int)tableMediaTable.getValueAt(row,4); 
-	                float rental_price = (float)tableMediaTable.getValueAt(row,5); 
+	                // Safely retrieve values from the table
+	                Object product_id = tableMediaTable.getValueAt(row, 0);
+	                Object movie_code = tableMediaTable.getValueAt(row, 1);
+	                Object release_date = tableMediaTable.getValueAt(row, 2);
+	                Object media_type = tableMediaTable.getValueAt(row, 3);
+	                Object copies_available = tableMediaTable.getValueAt(row, 4);
+	                Object rental_price = tableMediaTable.getValueAt(row, 5);
 
-	                MTproduct_id.setText(String.valueOf(product_id));
-	            	MTmovie_code.setText(String.valueOf(movie_code));
-	            	if(release_date == null) {
-	            		MTrelease.setText("");
-	            	}else MTrelease.setText(release_date.substring(0, 4));
-	            	MTmedia_type.setSelectedItem(media_type);
-	            	MTcopies.setText(String.valueOf(copies_available));         
-	            	MTrentprice.setText(String.valueOf(rental_price));               
+	                // Set values with null checks
+	                MTproduct_id.setText(product_id != null ? product_id.toString() : "");
+	                MTmovie_code.setText(movie_code != null ? movie_code.toString() : "");
+	                
+	                // Handle release_date safely
+	                if (release_date != null && release_date.toString().length() >= 4) {
+	                    MTrelease.setText(release_date.toString().substring(0, 4)); // Extract year
+	                } else {
+	                    MTrelease.setText(""); // Default to empty string
+	                }
+	                
+	                MTmedia_type.setSelectedItem(media_type != null ? media_type.toString() : ""); // For JComboBox
+	                MTcopies.setText(copies_available != null ? copies_available.toString() : "");
+	                MTrentprice.setText(rental_price != null ? rental_price.toString() : "");
 	            }
+
 	           
 	            }
 	        
@@ -1258,12 +1258,7 @@ public class GUI extends JFrame{
 	
 	//getting data from db
 	public Object[][] getMedia() {
-		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-		String username = "user";
-		String password= "12345";
-//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-//    String username = "root";
-//    String password = "dl_MySQL_su";
+
 
     ArrayList<Object[]> list = new ArrayList<>();
 
@@ -1329,20 +1324,23 @@ public class GUI extends JFrame{
 				   
 					
 					if (row != -1) { // Ensure a valid cell is selected
-						int movie_code = (int)tableMoviesTable.getValueAt(row,0);
-						String movie_name = (String)tableMoviesTable.getValueAt(row,1);
-						int year = (int)tableMoviesTable.getValueAt(row,2);
-						String rating = (String)tableMoviesTable.getValueAt(row,3);
-						String language = (String)tableMoviesTable.getValueAt(row,4);             
-						int genre_id = (int)tableMoviesTable.getValueAt(row,5); 
-						
-						Mmovie_code.setText(String.valueOf(movie_code));
-						Mmovie_name.setText(movie_name);
-						Myear.setText(String.valueOf(year));
-						Mrating.setSelectedItem(rating);
-						Mlanguage.setText(language);
-						Mgenre_id.setText(String.valueOf(genre_id));	               
+					    // Safely retrieve values from the table
+					    Object movie_code = tableMoviesTable.getValueAt(row, 0);
+					    Object movie_name = tableMoviesTable.getValueAt(row, 1);
+					    Object year = tableMoviesTable.getValueAt(row, 2);
+					    Object rating = tableMoviesTable.getValueAt(row, 3);
+					    Object language = tableMoviesTable.getValueAt(row, 4);
+					    Object genre_id = tableMoviesTable.getValueAt(row, 5);
+
+					    // Set values with null checks
+					    Mmovie_code.setText(movie_code != null ? movie_code.toString() : "");
+					    Mmovie_name.setText(movie_name != null ? movie_name.toString() : "");
+					    Myear.setText(year != null ? year.toString() : "");
+					    Mrating.setSelectedItem(rating != null ? rating.toString() : ""); // Assuming it's a JComboBox
+					    Mlanguage.setText(language != null ? language.toString() : "");
+					    Mgenre_id.setText(genre_id != null ? genre_id.toString() : "");
 					}
+
 				}
 			});
 			
@@ -1368,15 +1366,7 @@ public class GUI extends JFrame{
 			MoviesTable.revalidate(); // Refresh the UI
 			MoviesTable.repaint(); // Ensure it's redrawn
 		}
-	
 	public Object[][] getMovies() {
-			String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
-			String username = "user";
-			String password= "12345";
-	//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
-	//    String username = "root";
-	//    String password = "dl_MySQL_su";
-	
 		ArrayList<Object[]> list = new ArrayList<>();
 	
 		try {
@@ -1579,18 +1569,21 @@ public class GUI extends JFrame{
 			   
 				
 				if (row != -1) { // Ensure a valid cell is selected
-					int review_no = (int)tableReviewTable.getValueAt(row,0);
-					int stars = (int)tableReviewTable.getValueAt(row,1);
-					String review = (String)tableReviewTable.getValueAt(row,2);
-					int movie_code = (int)tableReviewTable.getValueAt(row,3);
-					int user_no = (int)tableReviewTable.getValueAt(row,4);             
-					
-					Rreview_no.setText(String.valueOf(review_no));
-					Rstars.setSelectedItem(Integer.toString(stars));
-					Rreview.setText(review);
-					Rmovie_code.setText(String.valueOf(movie_code));
-					Ruser_no.setText(String.valueOf(user_no));               
+				    // Safely retrieve values from the table
+				    Object review_no = tableReviewTable.getValueAt(row, 0);
+				    Object stars = tableReviewTable.getValueAt(row, 1);
+				    Object review = tableReviewTable.getValueAt(row, 2);
+				    Object movie_code = tableReviewTable.getValueAt(row, 3);
+				    Object user_no = tableReviewTable.getValueAt(row, 4);
+
+				    // Set values in text fields and combo boxes with null checks
+				    Rreview_no.setText(review_no != null ? review_no.toString() : "");
+				    Rstars.setSelectedItem(stars != null ? stars.toString() : ""); // Assuming Rstars is a JComboBox
+				    Rreview.setText(review != null ? review.toString() : "");
+				    Rmovie_code.setText(movie_code != null ? movie_code.toString() : "");
+				    Ruser_no.setText(user_no != null ? user_no.toString() : "");
 				}
+
 			}
 		});
 	
@@ -2137,21 +2130,23 @@ try {
 			  
 			   
 			   if (row != -1) { // Ensure a valid cell is selected
-				   int user_no = (int)tableUserTable.getValueAt(row,0);
-				   String first_name = (String)tableUserTable.getValueAt(row,1);
-				   String last_name = (String)tableUserTable.getValueAt(row,2);
-				   String email = (String)tableUserTable.getValueAt(row,3);
-				   String birthday = (String)tableUserTable.getValueAt(row,4);             
-				   String password = (String)tableUserTable.getValueAt(row,5); 
-		   
-				   Uuser_no.setText(String.valueOf(user_no));
-				   Ufirst_name.setText(first_name);
-				   Ulast_name.setText(last_name);
-				   Uemail.setText(email);
-				   Ubirthday.setText(birthday);
-				   Upassword.setText(password);
-								  
-			   }
+				    // Safely retrieve values from the table
+				    Object user_no = tableUserTable.getValueAt(row, 0);
+				    Object first_name = tableUserTable.getValueAt(row, 1);
+				    Object last_name = tableUserTable.getValueAt(row, 2);
+				    Object email = tableUserTable.getValueAt(row, 3);
+				    Object birthday = tableUserTable.getValueAt(row, 4);
+				    Object password = tableUserTable.getValueAt(row, 5);
+
+				    // Set values with null checks
+				    Uuser_no.setText(user_no != null ? user_no.toString() : "");
+				    Ufirst_name.setText(first_name != null ? first_name.toString() : "");
+				    Ulast_name.setText(last_name != null ? last_name.toString() : "");
+				    Uemail.setText(email != null ? email.toString() : "");
+				    Ubirthday.setText(birthday != null ? birthday.toString() : "");
+				    Upassword.setText(password != null ? password.toString() : "");
+				}
+
 		   }
 	   });
 	   
@@ -2360,21 +2355,23 @@ try {
 		  
 		   
 		   if (row != -1) { // Ensure a valid cell is selected
-			   int request_number = (int)tableMovieReqTable.getValueAt(row,0);
-			   String movie_name = (String)tableMovieReqTable.getValueAt(row,1);
-			   String date_filled = (String)tableMovieReqTable.getValueAt(row,2);
-			   int user_no = (int)tableMovieReqTable.getValueAt(row,3);
-			   String approved = (String)tableMovieReqTable.getValueAt(row,4);             
-			   String media_type = (String)tableMovieReqTable.getValueAt(row,5); 
-			   
-			   MRrequest_no.setText(String.valueOf(request_number));
-			   MRmovie_name.setText(movie_name);
-			   MRdate_filled.setText(date_filled);
-			   MRuser_no.setText(String.valueOf(user_no));
-			   MRapproved.setSelectedItem(approved);
-			   MRmedia_type.setSelectedItem(media_type);
-								  
-		   }
+			    // Safely retrieve values from the table
+			    Object request_number = tableMovieReqTable.getValueAt(row, 0);
+			    Object movie_name = tableMovieReqTable.getValueAt(row, 1);
+			    Object date_filled = tableMovieReqTable.getValueAt(row, 2);
+			    Object user_no = tableMovieReqTable.getValueAt(row, 3);
+			    Object approved = tableMovieReqTable.getValueAt(row, 4);
+			    Object media_type = tableMovieReqTable.getValueAt(row, 5);
+
+			    // Set values with null checks
+			    MRrequest_no.setText(request_number != null ? request_number.toString() : "");
+			    MRmovie_name.setText(movie_name != null ? movie_name.toString() : "");
+			    MRdate_filled.setText(date_filled != null ? date_filled.toString() : "");
+			    MRuser_no.setText(user_no != null ? user_no.toString() : "");
+			    MRapproved.setSelectedItem(approved != null ? approved.toString() : ""); // Assuming MRapproved is a JComboBox
+			    MRmedia_type.setSelectedItem(media_type != null ? media_type.toString() : ""); // Assuming MRmedia_type is a JComboBox
+			}
+
 	   }
    });
    
@@ -2547,13 +2544,15 @@ try {
 					  
 					   
 					   if (row != -1) { // Ensure a valid cell is selected
-						   int movie_code = (int)tableMovieRecord.getValueAt(row,0);
-						   String movie_name = (String)tableMovieRecord.getValueAt(row,1);
-						   
-						   
-						   MRMmovie_code.setText(String.valueOf(movie_code));
-						   MRMmovie_name.setText(movie_name);				  
-					   }
+						    // Safely retrieve values from the table
+						    Object movie_code = tableMovieRecord.getValueAt(row, 0);
+						    Object movie_name = tableMovieRecord.getValueAt(row, 1);
+
+						    // Set values with null checks
+						    MRMmovie_code.setText(movie_code != null ? movie_code.toString() : "");
+						    MRMmovie_name.setText(movie_name != null ? movie_name.toString() : "");
+						}
+
 				   }
 			   });
 			   
