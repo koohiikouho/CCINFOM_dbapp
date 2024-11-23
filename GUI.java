@@ -999,9 +999,13 @@ public class GUI extends JFrame{
 		tableModelGenre.setDataVector(getGenre(), new String[]{"genre_id", "description"});
     }
 
+	
+	
+	
+	
 	public void showMediaRecordTable() {
-	    String[] col = {"product_id", "movie_code","release_date","media_type","copies_available","rental_price"};
-	    tableModelMediaRecord = new DefaultTableModel(getMedia(), col) {
+		  String[] col = {"product_id", "movie_name", "movie_code","release_date","media_type","copies_available","rental_price"};	    
+		  tableModelMediaRecord = new DefaultTableModel(getMedia(), col) {
            @Override
            public boolean isCellEditable(int row, int column) {
                return false; // Disable editing for all cells
@@ -1067,6 +1071,51 @@ public class GUI extends JFrame{
     		
     		MediaTypeRecord.add(panelSouth, BorderLayout.SOUTH);
 		}
+	
+	
+	public Object[][] getMedia() {
+
+
+	    ArrayList<Object[]> list = new ArrayList<>();
+
+	    try {
+	        // Load the JDBC driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+	        // Establish connection
+	        try (
+	             Statement statement = connection.createStatement();
+	             ResultSet resultSet = statement.executeQuery("""
+		
+				 SELECT mt.product_id, m.movie_name, mt.movie_code, mt.release_date, mt.media_type, mt.copies_available, mt.rental_price
+				 FROM media_type mt JOIN movies m ON m.movie_code = mt.movie_code"""
+						
+					
+				 )) {
+
+	            // Process the ResultSet
+	            while (resultSet.next()) {
+	                Object[] row = new Object[7];
+	                row[0] = resultSet.getInt(1); // Assuming column 1 is int
+					row[1] = resultSet.getString(2);
+	                row[2] = resultSet.getInt(3); // Assuming column 2 is String
+	                row[3] = resultSet.getString(4); // Assuming column 4 is String
+	                row[4] = resultSet.getString(5); // Assuming column 5 is String
+	                row[5] = resultSet.getInt(6); // Assuming column 6 is String
+	                row[6] = resultSet.getFloat(7); // Assuming column 7 is float          
+	                list.add(row);
+	            }
+	        }
+
+	        // Convert the list to a 2D array
+	        return list.toArray(new Object[0][6]);
+
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Print stack trace for debugging
+	        return null;
+	    }
+	}
+		
 	
 	
 	public void Media_TypeTablePanel() {
@@ -1183,8 +1232,8 @@ public class GUI extends JFrame{
 		}
 	
 	public void showMediaTable() {
-	    String[] col = {"product_id", "movie name","movie_code", "release_date","media_type","copies_available","rental_price"};
-	    tableModelMedia = new DefaultTableModel(getMedia(), col) {
+	    String[] col = {"product_id","movie_code", "release_date","media_type","copies_available","rental_price"};
+	    tableModelMedia = new DefaultTableModel(getMediaTypesforcrud(), col) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Disable editing for all cells
@@ -1257,8 +1306,14 @@ public class GUI extends JFrame{
 	}	//getting data from db
 	
 	//getting data from db
-	public Object[][] getMedia() {
-
+	
+	public Object[][] getMediaTypesforcrud() {
+		String url = "jdbc:mysql://192.168.1.41:3306/dbmovieRental";
+		String username = "user";
+		String password= "12345";
+//	String url = "jdbc:mysql://localhost:3306/dbmovieRental";
+//    String username = "root";
+//    String password = "dl_MySQL_su";
 
     ArrayList<Object[]> list = new ArrayList<>();
 
@@ -1269,40 +1324,34 @@ public class GUI extends JFrame{
         // Establish connection
         try (
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("""
-	
-			 SELECT mt.product_id, m.movie_name, mt.movie_code, mt.release_date, mt.media_type, mt.copies_available, mt.rental_price
-			 FROM media_type mt JOIN movies m ON m.movie_code = mt.movie_code"""
-					
-				
-			 )) {
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM media_type")) {
 
             // Process the ResultSet
             while (resultSet.next()) {
-                Object[] row = new Object[7];
-                row[0] = resultSet.getInt(1); // Assuming column 1 is int
-				row[1] = resultSet.getString(2);
-                row[2] = resultSet.getInt(3); // Assuming column 2 is String
-                row[3] = resultSet.getString(4); // Assuming column 4 is String
-                row[4] = resultSet.getString(5); // Assuming column 5 is String
-                row[5] = resultSet.getInt(6); // Assuming column 6 is String
-                row[6] = resultSet.getFloat(7); // Assuming column 7 is float          
-                list.add(row);
-            }
-        }
+            	 Object[] row = new Object[6];
+                 row[0] = resultSet.getInt(1); // Assuming column 1 is int
+                 row[1] = resultSet.getInt(2); // Assuming column 2 is String
+                 row[2] = resultSet.getString(3); // Assuming column 4 is String
+                 row[3] = resultSet.getString(4); // Assuming column 5 is String
+                 row[4] = resultSet.getInt(5); // Assuming column 6 is String
+                 row[5] = resultSet.getFloat(6); // Assuming column 7 is float          
+                 list.add(row);
+             }
+         }
 
-        // Convert the list to a 2D array
-        return list.toArray(new Object[0][6]);
+         // Convert the list to a 2D array
+         return list.toArray(new Object[0][6]);
 
-    } catch (Exception e) {
-        e.printStackTrace(); // Print stack trace for debugging
-        return null;
-    }
-}
-	//refreshing admin table
+     } catch (Exception e) {
+         e.printStackTrace(); // Print stack trace for debugging
+         return null;
+     }
+ }
+            
 	public void refreshMediaTable() {
-	tableModelMedia.setDataVector(getMedia(), new String[]{"product_id", "movie_name", "movie_code", "release_date", "media_type","copies_available","rental_price"});
+	tableModelMedia.setDataVector(getMediaTypesforcrud(), new String[]{"product_id", "movie_code", "release_date", "media_type","copies_available","rental_price"});
     }
+	
 	public void showMoviesTable() {
 			String[] col = {"movie_code", "movie_name", "year","rating","language","genre_id"};
 			tableModelMovies = new DefaultTableModel(getMovies(), col){
@@ -5475,6 +5524,3 @@ try {
 		setRuser_no("");
 		
 	}
-	
-	
-}
