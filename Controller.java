@@ -33,7 +33,7 @@ public class Controller implements ActionListener, DocumentListener{
 		switch(command) {
 			
 		case "RecordManagement":
-			System.out.println("You clicked TableManagement");
+			//System.out.println("You clicked TableManagement");
 			ClearUserManagementnputs();
 			gui.createRecordmanagementPanel();
 			gui.setMRMmovie_name("");
@@ -41,13 +41,13 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 		
 		case "Reports":
-			System.out.println("You clicked Reports");
+			//System.out.println("You clicked Reports");
 			gui.createReportmanagementPanel();
 			break;
 		case "Transactions":
 			if( loginHandlerAdmin() ){
-				System.out.println("Transactions");
-				System.out.println( gui.getLoggedInAdmin() );
+//				System.out.println("Transactions");
+//				System.out.println( gui.getLoggedInAdmin() );
 				gui.createTransactionsPanel();
 				break;
 			} else
@@ -64,7 +64,7 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 			
 		case "MovieRecord" :
-			System.out.println("MovieRecord");
+			//System.out.println("MovieRecord");
 			gui.refreshMovieRecord();
 			gui.createMovieRecordPanel();
 			break;
@@ -247,14 +247,14 @@ public class Controller implements ActionListener, DocumentListener{
 			gui.refreshTransactionTable();
 			gui.refreshUserTable();
 			gui.ClearAllTableInputs();
-			System.out.println("AdminRecord");
+			//System.out.println("AdminRecord");
 			break;
 			}
 			else
 				break;
 			
 		case "MediaTypeRecord" :
-			System.out.println("MediaTypeRecord");
+			//System.out.println("MediaTypeRecord");
 			gui.refreshMediaTable();
 			gui.createMediaRecordTablePanel();
 			break;
@@ -377,7 +377,7 @@ public class Controller implements ActionListener, DocumentListener{
 			try {
 			
 			String InsertMedia = " insert into media_type (product_id,movie_code, release_date,media_type,copies_available,rental_price)"
-				    + " values (?, ?, ?, ?, ?, ?, ?)";
+				    + " values (?, ?, ?, ?, ?, ?)";
 			pstmt = connections.prepareStatement(InsertMedia);
 			
 			copies_available3 = gui.getMediaCopies();
@@ -385,6 +385,7 @@ public class Controller implements ActionListener, DocumentListener{
 			product_id3 = gui.getMProductID();
 			rental_price3 = gui.getRentalPrice();
 			release_date3 = gui.getMediaRelease();
+			System.out.println(gui.getMediaRelease());
 			media_type3 = gui.getMmedia_type();
 	
 			 
@@ -392,21 +393,20 @@ public class Controller implements ActionListener, DocumentListener{
             if(copies_available3>0) {
 			pstmt.setInt(1,product_id3);
 			pstmt.setInt(2,movie_code3);
-			pstmt.setInt(4, Integer.parseInt(release_date3));
-			pstmt.setString(5, media_type3);
-			pstmt.setInt(6, copies_available3);
-			pstmt.setFloat(7, rental_price3);
+			pstmt.setInt(3, Integer.parseInt(release_date3));
+			pstmt.setString(4, media_type3);
+			pstmt.setInt(5, copies_available3);
+			pstmt.setFloat(6, rental_price3);
 			pstmt.execute();
 			gui.refreshMediaTable();
 			}
             else if(copies_available3 == 0) {
         			pstmt.setInt(1,product_id3);
         			pstmt.setInt(2,movie_code3);
-        			pstmt.setInt(3, 0);
-        			pstmt.setInt(4, Integer.parseInt(release_date3));
-        			pstmt.setString(5, media_type3);
-        			pstmt.setInt(6, copies_available3);
-        			pstmt.setFloat(7, rental_price3);
+        			pstmt.setInt(3, Integer.parseInt(release_date3));
+        			pstmt.setString(4, media_type3);
+        			pstmt.setInt(5, copies_available3);
+        			pstmt.setFloat(6, rental_price3);
         			pstmt.execute();
         			gui.refreshMediaTable();
         			}            
@@ -499,11 +499,18 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.setString(2,movie_name4);
 			pstmt.setString(3, date_filled4);
 			pstmt.setInt(4, user_no4);
-			 transmute = 1;
+			String transmuter;
              if(approved4.equals("NO")) {
-             	transmute = 0;
+            	 transmuter = "0";
+            	 pstmt.setInt(5, Integer.parseInt(transmuter));
+             }else if (approved4.equals("YES")){
+            	 transmuter = "1";
+            	 pstmt.setInt(5, Integer.parseInt(transmuter));
+             }else {
+            	 transmuter = null;
+            	 pstmt.setString(5, transmuter);
              }
-			pstmt.setInt(5, transmute);
+
 			pstmt.setString(6, media_type4);
 			pstmt.execute();
 			gui.refreshMovieReqTable();
@@ -527,13 +534,17 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.setString(1, movie_name4);
 			pstmt.setString(2, date_filled4);
 			pstmt.setInt(3, user_no4);
-			
-			transmute =1;
-            if(approved4.equals("NO")) {
-            	transmute = 0;
+			String transmuter;
+			if(approved4.equals("NO")) {
+           	 transmuter = "0";
+           	 pstmt.setInt(4, Integer.parseInt(transmuter));
+            }else if (approved4.equals("YES")){
+           	 transmuter = "1";
+           	 pstmt.setInt(4, Integer.parseInt(transmuter));
+            }else {
+           	 transmuter = null;
+           	 pstmt.setString(4, transmuter);
             }
-			pstmt.setInt(4, transmute);
-			transmute =1;
 			pstmt.setString(5, media_type4);
 			pstmt.setInt(6, request_number4);
 			pstmt.execute();
@@ -555,19 +566,20 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 
 		case "AddInTransactionTable":
-			int transaction_no7,movie_code7, user_no7, admin_no7,product_id;
+			int transaction_no7,movie_code7, user_no7, admin_bo7,admin_re7,product_id;
 			String date_borrowed7, date_toreturn7, date_returned7;
 			float payment7;
 
 			try {
-			String InsertTransaction = " insert into transactions (transaction_no, movie_code, user_no, date_borrowed, date_toreturn, date_returned, payment, admin_no)"
-				    + " values (?, ?, ?, ?, ?, ?,?,?)";
+			String InsertTransaction = " insert into transactions (transaction_no, movie_code,product_id, user_no, date_borrowed, date_toreturn, date_returned, payment, admin_bo,admin_re)"
+				    + " values (?, ?, ?, ?, ?, ?,?,?,?,?)";
 			pstmt = connections.prepareStatement(InsertTransaction);
 			
 			transaction_no7 = gui.getTtransaction_no();
 			movie_code7 = gui.getTmovie_code();
 			user_no7 = gui.getTuser_no();
-			admin_no7 = gui.getTadmin_no();
+			admin_bo7 = gui.getTadmin_bo();
+			admin_re7 = gui.getTadmin_re();
 			date_borrowed7 = gui.getTdate_borrowed();
 			date_toreturn7 = gui.getTdate_toreturn();
 			date_returned7 =  gui.getTdate_returned();
@@ -582,7 +594,9 @@ public class Controller implements ActionListener, DocumentListener{
 			pstmt.setString(6, date_toreturn7);
 			pstmt.setString(7, date_returned7);
 			pstmt.setFloat(8, payment7);
-			pstmt.setInt(9, admin_no7);
+			pstmt.setInt(9, admin_bo7);
+			pstmt.setInt(10, admin_re7);
+			
 			pstmt.execute();
 			gui.refreshTransactionTable();
 			gui.ClearAllTableInputs();
@@ -596,24 +610,26 @@ public class Controller implements ActionListener, DocumentListener{
 				transaction_no7 = gui.getTtransaction_no();
 				movie_code7 = gui.getTmovie_code();
 				user_no7 = gui.getTuser_no();
-				admin_no7 = gui.getTadmin_no();
+				admin_bo7 = gui.getTadmin_bo();
 				date_borrowed7 = gui.getTdate_borrowed();
 				date_toreturn7 = gui.getTdate_toreturn();
 				date_returned7 =  gui.getTdate_returned();
 				product_id = gui.getTproduct_id();	
 				payment7 = gui.getTpayment();
+				admin_re7 = gui.getTadmin_re();
 
-				String updateTransaction = "UPDATE transactions SET movie_code = ?, user_no = ?, admin_no = ?,date_borrowed =?, date_toreturn =?, date_returned =?,payment =? WHERE transaction_no = ?";
+				String updateTransaction = "UPDATE transactions SET movie_code = ?,product_id=?, user_no = ?,date_borrowed =?, date_toreturn =?, date_returned =?,payment =?,admin_bo = ?,admin_re = ? WHERE transaction_no = ?";
 				pstmt = connections.prepareStatement(updateTransaction);
-				pstmt.setInt(1,transaction_no7);
-				pstmt.setInt(2,movie_code7);
-				pstmt.setInt(3,product_id);
-				pstmt.setInt(4,user_no7);
-				pstmt.setString(5,date_borrowed7);
-				pstmt.setString(6, date_toreturn7);
-				pstmt.setString(7, date_returned7);
-				pstmt.setFloat(8, payment7);
-				pstmt.setInt(9, admin_no7);
+				pstmt.setInt(1,movie_code7);
+				pstmt.setInt(2,product_id);
+				pstmt.setInt(3,user_no7);
+				pstmt.setString(4,date_borrowed7);
+				pstmt.setString(5, date_toreturn7);
+				pstmt.setString(6, date_returned7);
+				pstmt.setFloat(7, payment7);
+				pstmt.setInt(8, admin_bo7);
+				pstmt.setInt(9, admin_re7);
+				pstmt.setInt(10,transaction_no7);
 				pstmt.execute();
 				gui.refreshTransactionTable();;
 				gui.ClearAllTableInputs();
@@ -848,9 +864,9 @@ public class Controller implements ActionListener, DocumentListener{
                     row1[0] = rs.getString(1);   //  membership yr
                     row1[1] = rs.getString(2);   // pass
                     
-                    System.out.println(row1[1].toString());
-                   
-                    System.out.println("hi");
+//                    System.out.println(row1[1].toString());
+//                   
+//                    System.out.println("hi");
                     
                     if (row1[1].toString().equals("") || row1[1] == null) { 
                         gui.setUPpass("Password Not Set");
@@ -893,7 +909,7 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 
 			case "UpdateMovie_reqTransactionTable":
-			System.out.println("UpdateMovie_reqTransactionTable");
+			//System.out.println("UpdateMovie_reqTransactionTable");
 			String mrttapproved = gui.getMRTTapproved();
 			String mrttrequest = gui.getMRTTrequest_no();
 			transmute = 1;
@@ -918,7 +934,7 @@ public class Controller implements ActionListener, DocumentListener{
 
 	}
 	catch (Exception ex) {
-		System.out.println(ex);
+		ex.printStackTrace();
 	}
 	}
 	
