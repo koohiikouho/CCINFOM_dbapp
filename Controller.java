@@ -832,6 +832,43 @@ public class Controller implements ActionListener, DocumentListener{
 			break;
 		case "SelectUserRecord":
 			gui.refreshUserProfileTable();
+		    Object[] row1 = new Object[2];
+
+			
+			String getmemyrpass = "SELECT memberSince,password\n"
+	        		+ "	FROM users m\n"
+	        		+ "	WHERE user_no = ?\n";
+
+	        // Use try-with-resources for JDBC resources
+	        try (PreparedStatement pstmt1 = connections.prepareStatement(getmemyrpass)) {
+	            // Set the parameter value
+	        	pstmt1.setInt(1, Integer.parseInt(gui.getURuser_no()));
+	        	ResultSet rs = pstmt1.executeQuery();
+	        	if (rs.next()) {
+                    row1[0] = rs.getString(1);   //  membership yr
+                    row1[1] = rs.getString(2);   // pass
+                    
+                    System.out.println(row1[1].toString());
+                   
+                    System.out.println("hi");
+                    
+                    if (row1[1].toString().equals("") || row1[1] == null) { 
+                        gui.setUPpass("Password Not Set");
+                    } else {
+                        gui.setUPpass(row1[1].toString());
+                    }
+                    
+                    if(row1[0] == null) {
+                    	gui.setUPmembership("No Membership");
+                    }
+                    else {
+	                  gui.setUPmembership(row1[0].toString());
+	                }
+	                    
+                    
+            }
+	       }
+			
 			gui.setUPuserno(Integer.valueOf(gui.getURuser_no()));
 			gui.setUPfirstname(gui.getURfirst_name());
 			gui.setUPlastName(gui.getURlast_name());
