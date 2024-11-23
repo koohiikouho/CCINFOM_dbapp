@@ -134,7 +134,7 @@ public class GUI extends JFrame{
 	private JTable tableMediaRecord;
 	private DefaultTableModel tableModelMediaRecord;
 	
-	JLabel UPuserno ,UPfirstname, UPlastName;
+	JLabel UPuserno ,UPfirstname, UPlastName,UPpass,UPmembership;
 
 	//storing admin number for transactions
 	private String loggedInAdmin;
@@ -2814,14 +2814,14 @@ try {
 		   
 		   UPuserno = new JLabel("User no.");
 		   UPuserno.setForeground(Color.BLACK);
-		   UPuserno.setFont(new Font("Verdana", Font.BOLD, 19));
+		   UPuserno.setFont(new Font("Verdana", Font.BOLD, 17));
 		   gbc.gridx = 1;
 		   gbc.gridy = 1;
 		   centerPanel.add(UPuserno, gbc);
 		   
 		   UPfirstname = new JLabel("First Name");
 		   UPfirstname.setForeground(Color.BLACK);
-		   UPfirstname.setFont(new Font("Verdana", Font.BOLD, 19));
+		   UPfirstname.setFont(new Font("Verdana", Font.BOLD, 17));
 		   gbc.gridx = 1;
 		   gbc.gridy = 2;
 		   centerPanel.add(UPfirstname, gbc);
@@ -2829,16 +2829,29 @@ try {
 		   
 		   UPlastName = new JLabel("Last Name");
 		   UPlastName.setForeground(Color.BLACK);
-		   UPlastName.setFont(new Font("Verdana", Font.BOLD, 19));
+		   UPlastName.setFont(new Font("Verdana", Font.BOLD, 17));
 		   gbc.gridx = 1;
 		   gbc.gridy = 3;
 		   centerPanel.add(UPlastName,gbc);
-		  
 		   
+		   UPmembership = new JLabel("Member Since");
+		   UPmembership.setForeground(Color.BLACK);
+		   UPmembership.setFont(new Font("Verdana", Font.BOLD, 17));
+		   gbc.gridx = 1;
+		   gbc.gridy = 4;
+		   centerPanel.add(UPmembership,gbc);
+		   
+		   UPpass = new JLabel("Password");
+		   UPpass.setForeground(Color.BLACK);
+		   UPpass.setFont(new Font("Verdana", Font.BOLD, 17));
+		   gbc.gridx = 1;
+		   gbc.gridy = 5;
+		   centerPanel.add(UPpass,gbc);
+
 		   UserProfile.add(centerPanel , BorderLayout.CENTER);
 	}
 	public void showUserProfile() {
-		   String[] col = {"movie_name", "date_borrowed", "date_returned"};
+		   String[] col = {"movie_name", "date_borrowed","date_toreturn", "date_returned"};
 		   tableModelUserProfile = new DefaultTableModel(getUserProfileTable(), col){
 			   @Override
 			   public boolean isCellEditable(int row, int column) {
@@ -2883,7 +2896,7 @@ try {
 	        // Establish connection
 	        try (
 	            PreparedStatement pstmt = connection.prepareStatement(
-	                "SELECT m.movie_name, t.date_borrowed, t.date_returned " +
+	                "SELECT m.movie_name, t.date_borrowed,t.date_toreturn, t.date_returned " +
 	                "FROM transactions t " +
 	                "JOIN users u ON u.user_no = t.user_no " +
 	                "JOIN movies m ON m.movie_code = t.movie_code " +
@@ -2896,17 +2909,18 @@ try {
 	            // Execute the query
 	            try (ResultSet resultSet = pstmt.executeQuery()) {
 	                while (resultSet.next()) {
-	                    Object[] row = new Object[3];
+	                    Object[] row = new Object[4];
 	                    row[0] = resultSet.getString(1); // movie_name (String)
 	                    row[1] = resultSet.getDate(2);  // date_borrowed (Date)
-	                    row[2] = resultSet.getDate(3);  // date_returned (Date)
+	                    row[2] = resultSet.getDate(3);  // date_to return (Date)
+	                    row[3] = resultSet.getDate(4);  // date_returned (Date)
 	                    list.add(row);
 	                }
 	            }
 	        }
 
 	        // Convert the list to a 2D array
-	        return list.toArray(new Object[0][3]);
+	        return list.toArray(new Object[0][4]);
 
 	    } catch (Exception e) {
 	        e.printStackTrace(); // Print stack trace for debugging
@@ -2917,7 +2931,7 @@ try {
 	
 	//refreshing admin table
 	public void refreshUserProfileTable() {
-		tableModelUserProfile.setDataVector(getUserProfileTable(), new String[]{"movie_name", "date_borrowed", "date_returned"});
+		tableModelUserProfile.setDataVector(getUserProfileTable(), new String[]{"movie_name", "date_borrowed","date_toreturn", "date_returned"});
 		}
 
 	//REPORTS
@@ -4330,7 +4344,7 @@ try {
 			String updateAvailable = "UPDATE media_type SET copies_available = CASE WHEN ? > 0 THEN ? + 1 ELSE 1 END WHERE product_id = ?";
 			String updateTransaction = "UPDATE transactions SET date_returned = CURDATE(), payment = ?, admin_re = ? WHERE transaction_no = ?";
 
-			try {
+			//try {
 				PreparedStatement returnSt = connection.prepareStatement(updateAvailable);
 				returnSt.setInt(1, copiesAvailable);
 				returnSt.setInt(2, copiesAvailable);
@@ -4344,10 +4358,10 @@ try {
 				returnSt.setInt(2, Integer.parseInt(loggedInAdmin) );
 				returnSt.setInt(3, transactionNo);
 				returnSt.executeUpdate();
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null, "Something went wrong!", "Error", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
+//			} catch (Exception e) {
+//				JOptionPane.showMessageDialog(null, "Something went wrong!", "Error", JOptionPane.ERROR_MESSAGE);
+//				return;
+//			}
 
 			displayResult = String.format("""
 					Transaction Completed!\n
@@ -5346,7 +5360,16 @@ try {
 	 public void setUPlastName(String name) {
 		 UPlastName.setText("   Last Name: " + name);
 		}
-
+	 
+	 public void setUPpass(String name) {
+		 UPpass.setText("   Password: " + name);
+		 System.out.println(name);
+		}
+	 
+	 public void setUPmembership(String name) {
+		 UPmembership.setText("   Membership Date: " + name);
+		}
+	 
 	 public String getMRMmovie_code() {
 		    return MRMmovie_code.getText();
 		}
