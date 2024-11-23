@@ -208,10 +208,10 @@ public class Controller implements ActionListener, DocumentListener{
 		
 					JOptionPane.showMessageDialog(null, panel2, "Current Borrowers List", JOptionPane.INFORMATION_MESSAGE);			
 			
-			// } catch (Exception ex) {
-			//     System.err.println("Error while executing getallMedia query: " + ex.getMessage());
-			//     ex.printStackTrace(); // Detailed log for debugging
-			// }
+//			 } catch (Exception ex) {
+//			     System.err.println("Error while executing getallMedia query: " + ex.getMessage());
+//			     ex.printStackTrace(); // Detailed log for debugging
+//			 }
 		        	
 		        	
 
